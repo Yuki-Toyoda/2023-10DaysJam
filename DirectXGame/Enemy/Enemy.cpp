@@ -18,18 +18,11 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	textureHandle_ = textureHandle;
 
 	// 初期座標
-	worldTransform_.translation_ = {10.0f, 0.0f, 30.0f};
+	worldTransform_.translation_ = {10.0f, 10.0f, 10.0f};
 	worldTransform_.UpdateMatrix();
 
 	// デスフラグ
 	isDead_ = false;
-
-	// 速度
-	velocity_ = {
-	    0.0f,
-	    0.0f,
-	    0.0f,
-	};
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
@@ -42,6 +35,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 /// 更新
 /// </summary>
 void Enemy::Update() {
+
+	Move();
 
 	//ワールド行列更新
 	worldTransform_.UpdateMatrix();
@@ -68,6 +63,27 @@ void Enemy::OnCollision() {
 }
 
 void Enemy::Move() {
+
+	//回転
+
+	// 回転速度
+	const float kRotateSpeed = 0.01f;
+	Vector3 velocity(0.0f, kRotateSpeed, 0.0f);
+	worldTransform_.rotation_ = worldTransform_.rotation_ + velocity;
+	
+	//移動
+	//  速度ベクトルを自機の向きに合わせて回転させる
+	velocity = {
+	    0.0f,
+	    0.0f,
+	    1.0f,
+	};
+	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
+
+}
+
+void Enemy::MoveToPlayer() {
 
 
 

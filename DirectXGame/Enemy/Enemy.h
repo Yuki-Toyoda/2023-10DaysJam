@@ -40,6 +40,11 @@ public: //メンバ関数
 	void Move();
 
 	/// <summary>
+	/// プレイヤーへ移動
+	/// </summary>
+	void MoveToPlayer();
+
+	/// <summary>
 	/// 攻撃
 	/// </summary>
 	void Attack();
@@ -67,13 +72,7 @@ private: //メンバ変数
 	// デスフラグ
 	bool isDead_ = false;
 
-	//速度
-	Vector3 velocity_ = {
-	    0.0f,
-	    0.0f,
-	    0.0f,
-	};
-
+	//エネミーマネージャー
 	EnemyManager* enemyManager_ = nullptr;
 
 };
