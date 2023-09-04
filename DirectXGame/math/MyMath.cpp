@@ -1,5 +1,4 @@
 #include "MyMath.h"
-
 #include "Math.h"
 
 float MyMath::Linear(float t, float start, float end, float time) {
