@@ -20,6 +20,7 @@ void GameScene::Initialize() {
 	// モデル読み込み
 	modelSkyDome_.reset(Model::CreateFromOBJ("SkyDome", true)); // 天球
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true)); // 地面
+	std::vector<Model*> playerModels = {};  // モデルリストの生成
 
 	// クラスインスタンス生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720); // デバックカメラ
@@ -27,12 +28,18 @@ void GameScene::Initialize() {
 	camera_ = std::make_unique<Camera>(); // カメラ
 	skyDome_ = std::make_unique<SkyDome>(); // 天球
 	ground_ = std::make_unique<Ground>(); // 地面
+	player_ = std::make_unique<Player>(); // プレイヤー
 
 	// 生成インスタンス初期化
 	camera_->Intialize(); // カメラ
 	skyDome_->Intialize(modelSkyDome_.get()); // 天球
 	ground_->Intialize(modelGround_.get()); // 地面
+	player_->Initialize(playerModels);
 
+	// カメラの追従対象
+	camera_->SetTarget(player_->GetWorldTransform());
+	// プレイヤーにカメラのビュープロジェクション
+	player_->SetViewProjection(camera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -40,6 +47,7 @@ void GameScene::Update() {
 	camera_->Update(); // カメラ
 	skyDome_->Update(); // 天球
 	ground_->Update(); // 地面
+	player_->Update(); // プレイヤー
 
 	// デバックカメラ有効時
 	if (enableDebugCamera_) {
