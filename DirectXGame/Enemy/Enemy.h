@@ -31,6 +31,26 @@ public: //メンバ関数
 	// 死んでいるか
 	bool GetIsDead() { return isDead_; }
 
+	/// <summary>
+	/// 移動
+	/// </summary>
+	void Move();
+
+	/// <summary>
+	/// 攻撃
+	/// </summary>
+	void Attack();
+
+	/// <summary>
+	/// 突進
+	/// </summary>
+	void Rush();
+
+	/// <summary>
+	/// 追従(ボス)
+	/// </summary>
+	void Follow();
+
 private: //メンバ変数
 
 	// テクスチャハンドル

@@ -63,3 +63,22 @@ void Enemy::OnCollision() {
 	isDead_ = true;
 
 }
+
+void Enemy::Move() {
+
+
+
+}
+
+void Enemy::Attack() {
+
+
+}
+
+void Enemy::Rush() {
+
+}
+
+void Enemy::Follow() {
+
+}
