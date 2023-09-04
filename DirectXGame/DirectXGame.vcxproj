@@ -112,6 +112,7 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="Charactor\BaseCharacter.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
+    <ClCompile Include="Enemy\BossEnemy.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\EnemyManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Charactor\BaseCharacter.h" />
     <ClInclude Include="Collision\collider.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
+    <ClInclude Include="Enemy\BossEnemy.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\EnemyManager.h" />
     <ClInclude Include="input\Input.h" />

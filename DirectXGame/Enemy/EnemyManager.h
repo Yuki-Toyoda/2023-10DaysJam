@@ -36,7 +36,7 @@ public: // メンバ変数
 	/// <summary>
 	/// エネミー追加
 	/// </summary>
-	void AddEnemy(size_t positionNum);
+	void AddEnemy();
 
 	/// <summary>
 	/// エネミー削除

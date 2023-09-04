@@ -7,23 +7,23 @@ EnemyManager* EnemyManager::GetInstance() {
 
 void EnemyManager::Initialize(const std::vector<Model*>& models, uint32_t textureHandle) {
 	
-	//モデル
+	//繝｢繝�繝ｫ
 	models_ = models;
-	// エネミーのテクスチャハンドル
+	// 繧ｨ繝阪Α繝ｼ縺ｮ繝�繧ｯ繧ｹ繝√Ε繝上Φ繝峨Ν
 	textureHandle_ = textureHandle; 
-	//エネミーの数
+	//繧ｨ繝阪Α繝ｼ縺ｮ謨ｰ
 	enemyCount_ = enemyMax;
 
 
-	//初期のエネミー配置
+	//蛻晄悄縺ｮ繧ｨ繝阪Α繝ｼ驟咲ｽｮ
 	for (size_t i = 0; i < enemyMax; i++) {
-		AddEnemy(i);
+		AddEnemy();
 	}
 }
 
 void EnemyManager::Update() {
 
-	//エネミー更新
+	//繧ｨ繝阪Α繝ｼ譖ｴ譁ｰ
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 	}
@@ -32,14 +32,14 @@ void EnemyManager::Update() {
 
 void EnemyManager::Draw(const ViewProjection& viewProjection) {
 
-	//エネミーの描画
+	//繧ｨ繝阪Α繝ｼ縺ｮ謠冗判
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw(viewProjection);
 	}
 
 }
 
-void EnemyManager::AddEnemy(size_t positionNum) {
+void EnemyManager::AddEnemy() {
 	
 	Enemy* enemy = new Enemy();
 
@@ -76,7 +76,7 @@ void EnemyManager::Reset() {
 		enemyCount_ = enemyMax;
 
 		for (size_t i = 0; i < enemyMax; i++) {
-			AddEnemy(i);
+			AddEnemy();
 		}
 	}
 
