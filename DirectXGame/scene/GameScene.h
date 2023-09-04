@@ -8,6 +8,15 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "DebugCamera.h"
+#include "Camera/Camera.h"
+#include "Ambient/SkyDome.h"
+#include "Ambient/Ground.h"
+
+#ifdef _DEBUG
+#include "ImGuiManager.h"
+#endif // _DEBUG
+
 
 /// <summary>
 /// ゲームシーン
@@ -48,4 +57,26 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	// ビュープロジェクション
+	ViewProjection* viewProjection_;
+
+	// 天球モデル
+	std::unique_ptr<Model> modelSkyDome_;
+	// 地面モデル
+	std::unique_ptr<Model> modelGround_;
+
+	// デバックカメラ
+	std::unique_ptr<DebugCamera> debugCamera_;
+	// デバックカメラ有効非有効
+	bool enableDebugCamera_ = true;
+
+	// カメラクラス
+	std::unique_ptr<Camera> camera_;
+
+	// 天球クラス
+	std::unique_ptr<SkyDome> skyDome_;
+	// 地面クラス
+	std::unique_ptr<Ground> ground_;
+
 };
