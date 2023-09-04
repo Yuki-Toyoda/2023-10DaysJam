@@ -47,6 +47,10 @@ public:
 	/// </summary>
 	void TransferMatrix();
 	/// <summary>
+	/// 行列更新
+	/// </summary>
+	void UpdateMatrix();
+	/// <summary>
 	/// 定数バッファの取得
 	/// </summary>
 	/// <returns>定数バッファ</returns>

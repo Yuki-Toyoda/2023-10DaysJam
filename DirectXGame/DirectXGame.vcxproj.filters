@@ -29,6 +29,12 @@
     <Filter Include="audo">
       <UniqueIdentifier>{3a0044cc-1b7d-4ed5-a1a6-9074ed1b1769}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{a5291be5-e056-4828-ae88-892bff806a98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Charactor">
+      <UniqueIdentifier>{32d149ef-5474-49ba-b91e-0bddf677c957}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXCommon.cpp">
@@ -46,6 +52,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\MyMath.cpp">
       <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\CollisionManager.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCharactor.cpp">
+      <Filter>Charactor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +150,15 @@
     </ClInclude>
     <ClInclude Include="math\MyMath.h">
       <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\CollisionManager.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCharactor.h">
+      <Filter>Charactor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
