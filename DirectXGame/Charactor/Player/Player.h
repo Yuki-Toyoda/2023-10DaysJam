@@ -53,6 +53,12 @@ private: // 行動関数
 	/// </summary>
 	void Move();
 
+private: // その他関数
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables() override;
+
 private: // メンバ関数
 
 	// 入力検知用

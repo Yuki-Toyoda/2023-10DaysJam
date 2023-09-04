@@ -1,5 +1,9 @@
 #include "Player.h"
 
+#ifdef _DEBUG
+#include "../../config/GlobalVariables.h"
+#endif // _DEBUG
+
 void Player::Initialize(const std::vector<Model*>& models) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(models);
@@ -12,11 +16,30 @@ void Player::Initialize(const std::vector<Model*>& models) {
 
 	// 移動速度初期化
 	moveSpeed_ = 3.0f;
+
+	#ifdef _DEBUG
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名設定
+	const char* groupName = "Player";
+	// 指定した名前でグループ追加
+	globalVariables->CreateGroup(groupName);
+
+	// メンバ変数の調整したい項目をグローバル変数に追加
+	globalVariables->AddItem(groupName, "Test", 0.0f);
+	globalVariables->AddItem(groupName, "moveSpeed", moveSpeed_);
+
+#endif // _DEBUG
 }
 
 void Player::Update() {
+
 	// 移動処理
 	Move();
+
+	// 調整項目を反映
+	ApplyGlobalVariables();
 
 	// 基底クラス更新
 	BaseCharacter::Update();
@@ -49,4 +72,16 @@ void Player::Move() {
 
 	}
 
+}
+
+void Player::ApplyGlobalVariables() {
+#ifdef _DEBUG
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名の設定
+	const char* groupName = "Player";
+
+	// メンバ変数の調整項目をグローバル変数に追加
+	moveSpeed_ = globalVariables->GetFloatValue(groupName, "moveSpeed");
+#endif // _DEBUG
 }

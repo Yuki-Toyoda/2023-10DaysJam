@@ -22,6 +22,12 @@ void GameScene::Initialize() {
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true)); // 地面
 	std::vector<Model*> playerModels = {};  // モデルリストの生成
 
+	// デバックカメラ無効
+	enableDebugCamera_ = false;
+	#ifdef _DEBUG
+	enableDebugCamera_ = true;
+#endif // _DEBUG
+
 	// クラスインスタンス生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720); // デバックカメラ
 	debugCamera_->SetFarZ(2000.0f);

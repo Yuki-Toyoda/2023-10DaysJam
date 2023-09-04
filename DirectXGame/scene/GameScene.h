@@ -70,7 +70,7 @@ private: // メンバ変数
 	// デバックカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;
 	// デバックカメラ有効非有効
-	bool enableDebugCamera_ = true;
+	bool enableDebugCamera_;
 
 	// カメラクラス
 	std::unique_ptr<Camera> camera_;
