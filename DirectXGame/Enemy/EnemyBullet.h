@@ -10,7 +10,8 @@ public: // メンバ関数
 	/// <param name="models">モデルデータ配列</param>
 	/// <param name="models">位置</param>
 	/// <param name="models">速度</param>
-	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
+	void Initialize(
+	    const std::vector<Model*>& models, const Vector3& position, const Vector3& velocity);
 	
 	/// <summary>
 	/// 更新

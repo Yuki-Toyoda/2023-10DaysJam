@@ -34,7 +34,7 @@ void EnemyBullet::Initialize(
 void EnemyBullet::Update() {
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
-	worldTransform_.translation_ += velocity_;
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 
 	// 行列を更新
 	worldTransform_.UpdateMatrix();

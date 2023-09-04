@@ -41,6 +41,11 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	
+	//リスト削除
+	enemyManager_->DeleteEnemy();
+	enemyManager_->DeleteEnemyBullet();
+
 	// 更新処理全般
 	camera_->Update(); // カメラ
 	skyDome_->Update(); // 天球

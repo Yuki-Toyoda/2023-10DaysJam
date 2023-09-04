@@ -1,6 +1,9 @@
 #pragma once
 #include "../Charactor/BaseCharacter.h"
 
+//エネミーマネージャーの前方宣言
+class EnemyManager;
+
 /// <summary>
 /// エネミークラス
 /// </summary>
@@ -51,6 +54,11 @@ public: //メンバ関数
 	/// </summary>
 	void Follow();
 
+	/// <summary>
+	/// エネミーマネージャー取得
+	/// </summary>
+	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
+
 private: //メンバ変数
 
 	// テクスチャハンドル
@@ -65,5 +73,7 @@ private: //メンバ変数
 	    0.0f,
 	    0.0f,
 	};
+
+	EnemyManager* enemyManager_ = nullptr;
 
 };

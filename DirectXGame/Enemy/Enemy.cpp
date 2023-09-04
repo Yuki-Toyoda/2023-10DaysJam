@@ -1,5 +1,8 @@
 #include "Enemy.h"
+#include "EnemyBullet.h"
+#include "EnemyManager.h"
 #include <cassert>
+#include <MyMath.h>
 
 /// <summary>
 /// 初期化
@@ -72,6 +75,19 @@ void Enemy::Move() {
 
 void Enemy::Attack() {
 
+	// 弾の速度
+	const float kBulletSpeed = 0.5f;
+	Vector3 velocity(0, 0, kBulletSpeed);
+	// 弾の位置
+	Vector3 position = GetWorldPosition();
+
+	position.z += std::cosf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) *5.0f; // コサイン
+	position.x += std::sinf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) * 5.0f;
+	position.y += -std::sinf(worldTransform_.rotation_.x) * std::cosf(worldTransform_.rotation_.z) * 5.0f;
+
+	// 速度ベクトルを自機の向きに合わせて回転させる
+	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
+	enemyManager_->AddEnemyBullet(position, velocity);
 
 }
 

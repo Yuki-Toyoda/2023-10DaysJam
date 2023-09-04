@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Enemy.h"
+#include "EnemyBullet.h"
 
 /// <summary>
 /// エネミーマネージャー
@@ -44,6 +45,16 @@ public: // メンバ変数
 	void DeleteEnemy();
 
 	/// <summary>
+	/// エネミー追加
+	/// </summary>
+	void AddEnemyBullet(const Vector3& position,const Vector3& velocity);
+
+	/// <summary>
+	/// エネミー削除
+	/// </summary>
+	void DeleteEnemyBullet();
+
+	/// <summary>
 	///	削除
 	/// </summary>
 	void Delete();
@@ -74,6 +85,11 @@ private: // メンバ変数
 	std::vector<Model*> models_;
 	// エネミーのテクスチャハンドル
 	uint32_t textureHandle_ = 0u; 
+
+	// エネミーバレット
+	std::list<EnemyBullet*> enemyBullets_;
+	// エネミーバレットモデル
+	std::vector<Model*> bulletModels_;
 
 	// エネミー数
 	size_t enemyCount_;
