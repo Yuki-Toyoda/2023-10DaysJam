@@ -13,7 +13,6 @@
 #include "Ambient/SkyDome.h"
 #include "Ambient/Ground.h"
 #include "Charactor/CharactorList.h"
-#include "Enemy/EnemyManager.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
