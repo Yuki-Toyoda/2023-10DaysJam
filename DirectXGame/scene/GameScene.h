@@ -12,6 +12,7 @@
 #include "Camera/Camera.h"
 #include "Ambient/SkyDome.h"
 #include "Ambient/Ground.h"
+#include "Enemy/EnemyManager.h"
 
 #ifdef _DEBUG
 #include "ImGuiManager.h"
@@ -65,6 +66,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelSkyDome_;
 	// 地面モデル
 	std::unique_ptr<Model> modelGround_;
+	// エネミーモデル
+	std::unique_ptr<Model> modelEnemy_;
 
 	// デバックカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;
@@ -78,5 +81,8 @@ private: // メンバ変数
 	std::unique_ptr<SkyDome> skyDome_;
 	// 地面クラス
 	std::unique_ptr<Ground> ground_;
+
+	// エネミーマネージャー
+	EnemyManager* enemyManager_;
 
 };

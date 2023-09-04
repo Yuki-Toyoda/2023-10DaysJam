@@ -5,12 +5,12 @@ EnemyManager* EnemyManager::GetInstance() {
 	return &instance;
 }
 
-void EnemyManager::Initialize(const std::vector<Model*>& models, uint32_t textureHandle) {
+void EnemyManager::Initialize(const std::vector<Model*>& models) {
 	
 	//モデル
 	models_ = models;
 	// エネミーのテクスチャハンドル
-	textureHandle_ = textureHandle; 
+	//textureHandle_ = textureHandle; 
 	//エネミーの数
 	enemyCount_ = enemyMax;
 

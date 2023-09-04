@@ -20,6 +20,7 @@ void GameScene::Initialize() {
 	// モデル読み込み
 	modelSkyDome_.reset(Model::CreateFromOBJ("SkyDome", true)); // 天球
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true)); // 地面
+	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 
 	// クラスインスタンス生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720); // デバックカメラ
@@ -28,10 +29,14 @@ void GameScene::Initialize() {
 	skyDome_ = std::make_unique<SkyDome>(); // 天球
 	ground_ = std::make_unique<Ground>(); // 地面
 
+	enemyManager_ = EnemyManager::GetInstance();// エネミーマネージャー
+
 	// 生成インスタンス初期化
 	camera_->Intialize(); // カメラ
 	skyDome_->Intialize(modelSkyDome_.get()); // 天球
 	ground_->Intialize(modelGround_.get()); // 地面
+
+	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()});
 
 }
 
@@ -40,6 +45,7 @@ void GameScene::Update() {
 	camera_->Update(); // カメラ
 	skyDome_->Update(); // 天球
 	ground_->Update(); // 地面
+	enemyManager_->Update();// エネミー
 
 	// デバックカメラ有効時
 	if (enableDebugCamera_) {
@@ -96,6 +102,7 @@ void GameScene::Draw() {
 
 	skyDome_->Draw(*viewProjection_); // 天球
 	ground_->Draw(*viewProjection_); // 地面
+	enemyManager_->Draw(*viewProjection_);// エネミー
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

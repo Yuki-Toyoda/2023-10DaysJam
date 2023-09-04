@@ -21,7 +21,7 @@ public: // メンバ変数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle);
+	void Initialize(const std::vector<Model*>& models);
 
 	/// <summary>
 	/// 更新
@@ -73,10 +73,10 @@ private: // メンバ変数
 	// エネミーモデル
 	std::vector<Model*> models_;
 	// エネミーのテクスチャハンドル
-	uint32_t textureHandle_; 
+	uint32_t textureHandle_ = 0u; 
 
 	// エネミー数
 	size_t enemyCount_;
 	// エネミー最大数
-	const size_t enemyMax = 20;
+	const size_t enemyMax = 1;
 };
