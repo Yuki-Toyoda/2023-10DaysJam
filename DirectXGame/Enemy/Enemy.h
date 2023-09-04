@@ -28,6 +28,9 @@ public: //メンバ関数
 	// 衝突時に呼ばれる関数
 	void OnCollision() override;
 
+	// 死んでいるか
+	bool GetIsDead() { return isDead_; }
+
 private: //メンバ変数
 
 	// テクスチャハンドル
