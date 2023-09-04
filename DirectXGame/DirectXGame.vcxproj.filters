@@ -35,6 +35,15 @@
     <Filter Include="Charactor">
       <UniqueIdentifier>{32d149ef-5474-49ba-b91e-0bddf677c957}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Charactor\Player">
+      <UniqueIdentifier>{ac35ba87-dd2e-4ccc-ba9c-cfffe493a3e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ambient">
+      <UniqueIdentifier>{359479b3-a046-429f-92a6-4fe0cffc6012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{496ee59f-3e37-4691-85e2-19eb31657b10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXCommon.cpp">
@@ -56,12 +65,24 @@
     <ClCompile Include="Collision\CollisionManager.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
-    <ClCompile Include="3d\WorldTransformEX.cpp" />
-    <ClCompile Include="Ambient\Ground.cpp" />
-    <ClCompile Include="Ambient\SkyDome.cpp" />
-    <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Charactor\BaseCharacter.cpp" />
-    <ClCompile Include="Charactor\Player\Player.cpp" />
+    <ClCompile Include="Charactor\BaseCharacter.cpp">
+      <Filter>Charactor</Filter>
+    </ClCompile>
+    <ClCompile Include="Charactor\Player\Player.cpp">
+      <Filter>Charactor\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Ambient\Ground.cpp">
+      <Filter>Ambient</Filter>
+    </ClCompile>
+    <ClCompile Include="Ambient\SkyDome.cpp">
+      <Filter>Ambient</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\WorldTransformEX.cpp">
+      <Filter>3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera\Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy\BossEnemy.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\EnemyManager.cpp" />
@@ -164,11 +185,24 @@
     <ClInclude Include="Collision\collider.h">
       <Filter>Collision</Filter>
     </ClInclude>
-    <ClInclude Include="Ambient\Ground.h" />
-    <ClInclude Include="Ambient\SkyDome.h" />
-    <ClInclude Include="Camera\Camera.h" />
-    <ClInclude Include="Charactor\BaseCharacter.h" />
-    <ClInclude Include="Charactor\Player\Player.h" />
+   <ClInclude Include="Charactor\BaseCharacter.h">
+      <Filter>Charactor</Filter>
+    </ClInclude>
+    <ClInclude Include="Charactor\Player\Player.h">
+      <Filter>Charactor\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Ambient\Ground.h">
+      <Filter>Ambient</Filter>
+    </ClInclude>
+    <ClInclude Include="Ambient\SkyDome.h">
+      <Filter>Ambient</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera\Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Charactor\CharactorList.h">
+      <Filter>Charactor</Filter>
+    </ClInclude>
     <ClInclude Include="Enemy\BossEnemy.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\EnemyManager.h" />

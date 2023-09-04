@@ -12,10 +12,11 @@
 #include "Camera/Camera.h"
 #include "Ambient/SkyDome.h"
 #include "Ambient/Ground.h"
+#include "Charactor/CharactorList.h"
 #include "Enemy/EnemyManager.h"
 
 #ifdef _DEBUG
-#include "ImGuiManager.h"
+#include <imgui.h>
 #endif // _DEBUG
 
 
@@ -82,7 +83,9 @@ private: // メンバ変数
 	// 地面クラス
 	std::unique_ptr<Ground> ground_;
 
+	// プレイヤークラス
+	std::unique_ptr<Player> player_ = nullptr;
+
 	// エネミーマネージャー
 	EnemyManager* enemyManager_;
-
 };
