@@ -67,7 +67,18 @@ private: // メンバ関数
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
 
+	// プレイヤー身長
+	float height_;
+
 	// 移動速度
 	float moveSpeed_;
+	// 最大落下ベクトル
+	float kMaxFallSpeed_;
+	// 現在落下速度
+	float fallSpeed_;
+	// 落下加速度
+	float fallAcceleration_;
+	// 接地中か
+	bool isGround_;
 
 };

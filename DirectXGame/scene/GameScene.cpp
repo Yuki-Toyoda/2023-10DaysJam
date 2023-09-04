@@ -25,7 +25,7 @@ void GameScene::Initialize() {
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
 	#ifdef _DEBUG
-	enableDebugCamera_ = true;
+	enableDebugCamera_ = false;
 #endif // _DEBUG
 
 	// クラスインスタンス生成
