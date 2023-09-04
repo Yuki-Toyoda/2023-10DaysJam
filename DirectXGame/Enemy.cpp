@@ -22,7 +22,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	isDead_ = false;
 
 	// 速度
-	Vector3 velocity_ = {
+	velocity_ = {
 	    0.0f,
 	    0.0f,
 	    0.0f,

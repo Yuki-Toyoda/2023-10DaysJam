@@ -26,7 +26,7 @@ public: //メンバ関数
 	void Draw(const ViewProjection& viewProjection) override;
 
 	// 衝突時に呼ばれる関数
-	void OnCollision() override = 0;
+	void OnCollision() override;
 
 private: //メンバ変数
 
