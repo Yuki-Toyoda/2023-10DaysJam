@@ -53,6 +53,17 @@ private: // 行動関数
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// ジャンプ関数
+	/// </summary>
+	void Jump();
+
+private: // その他関数
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables() override;
+
 private: // メンバ関数
 
 	// 入力検知用
@@ -61,7 +72,38 @@ private: // メンバ関数
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
 
+	// Aボタントリガー判定
+	bool pressAButton_;
+	// Bボタントリガー判定
+	bool pressBButton_;
+	// Xボタントリガー判定
+	bool pressXButton_;
+	// Yボタントリガー判定
+	bool pressYButton_;
+
+	// プレイヤー身長
+	float height_;
+
+	// 行動できるか
+	bool canAction_;
+
 	// 移動速度
 	float moveSpeed_;
+	// 最大落下ベクトル
+	float kMaxFallSpeed_;
+	// 現在落下速度
+	float fallSpeed_;
+	// 落下加速度
+	float kFallAcceleration_;
+	// 接地中か
+	bool isGround_;
 
+	// ジャンプできるか
+	bool canJump_;
+	// ジャンプ速度
+	float jumpSpeed_;
+	// 最大ジャンプ速度
+	float kMaxJumpSpeed_;
+	// ジャンプ減衰速度
+	float kJumpDecayRate_;
 };

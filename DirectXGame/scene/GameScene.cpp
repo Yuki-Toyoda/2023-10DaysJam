@@ -23,6 +23,12 @@ void GameScene::Initialize() {
 	std::vector<Model*> playerModels = {};  // モデルリストの生成
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 
+	// デバックカメラ無効
+	enableDebugCamera_ = false;
+	#ifdef _DEBUG
+	enableDebugCamera_ = false;
+#endif // _DEBUG
+
 	// クラスインスタンス生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720); // デバックカメラ
 	debugCamera_->SetFarZ(2000.0f);

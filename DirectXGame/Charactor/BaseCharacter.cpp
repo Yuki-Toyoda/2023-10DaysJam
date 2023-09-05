@@ -32,3 +32,6 @@ Vector3 BaseCharacter::GetWorldPosition() {
 	    worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1],
 	    worldTransform_.matWorld_.m[3][2]};
 }
+
+void BaseCharacter::ApplyGlobalVariables() {
+}

@@ -34,6 +34,12 @@ public: // メンバ関数
 	/// <param name="viewProjection">ビュープロジェクション(参照渡し)</param>
 	virtual void Draw(const ViewProjection& viewProjection);
 
+public: // アクセッサ等
+
+	/// <summary>
+	/// ワールド座標ゲッター
+	/// </summary>
+	/// <returns>ワールド座標</returns>
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	/// <summary>
@@ -44,4 +50,12 @@ public: // メンバ関数
 
 	// 衝突時に呼ばれる関数
 	virtual void OnCollision() override = 0;
+
+public: // その他関数
+
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	virtual void ApplyGlobalVariables();
+
 };

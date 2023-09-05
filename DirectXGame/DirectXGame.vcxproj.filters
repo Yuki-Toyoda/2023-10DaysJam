@@ -44,6 +44,9 @@
     <Filter Include="Camera">
       <UniqueIdentifier>{496ee59f-3e37-4691-85e2-19eb31657b10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{9f1a7d43-10a0-43d8-88ed-3ceb575892aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXCommon.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="config\GlobalVariables.cpp">
+      <Filter>Config</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\BossEnemy.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
@@ -202,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="Charactor\CharactorList.h">
       <Filter>Charactor</Filter>
+    </ClInclude>
+    <ClInclude Include="config\GlobalVariables.h">
+      <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\BossEnemy.h" />
     <ClInclude Include="Enemy\Enemy.h" />
