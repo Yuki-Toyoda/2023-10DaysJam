@@ -209,6 +209,10 @@ void Player::Jump() {
 
 }
 
+void Player::Shot() {
+
+}
+
 void Player::ApplyGlobalVariables() {
 
 	// 調整項目クラスのインスタンス取得
