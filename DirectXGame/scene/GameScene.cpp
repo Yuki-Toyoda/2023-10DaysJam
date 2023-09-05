@@ -20,7 +20,10 @@ void GameScene::Initialize() {
 	// モデル読み込み
 	modelSkyDome_.reset(Model::CreateFromOBJ("SkyDome", true)); // 天球
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true)); // 地面
-	std::vector<Model*> playerModels = {};  // モデルリストの生成
+	std::vector<Model*> playerModels = {};  // プレイヤー用モデルリストの生成
+	modelBullet_.reset(Model::CreateFromOBJ("Bullet", true)); // 弾
+	std::vector<Model*> playerBulletModels = { modelBullet_.get() }; // プレイヤー弾用モデルリストの生成
+
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 
 	// デバックカメラ無効
@@ -44,7 +47,8 @@ void GameScene::Initialize() {
 	camera_->Intialize(); // カメラ
 	skyDome_->Intialize(modelSkyDome_.get()); // 天球
 	ground_->Intialize(modelGround_.get()); // 地面
-	player_->Initialize(playerModels);
+	player_->Initialize(playerModels, playerBulletModels); // プレイヤー
+
 	// カメラの追従対象
 	camera_->SetTarget(player_->GetWorldTransform());
 	// プレイヤーにカメラのビュープロジェクション
@@ -122,6 +126,7 @@ void GameScene::Draw() {
 
 	skyDome_->Draw(*viewProjection_); // 天球
 	ground_->Draw(*viewProjection_); // 地面
+	player_->Draw(*viewProjection_); // プレイヤー
 	enemyManager_->Draw(*viewProjection_);// エネミー
 
 	// 3Dオブジェクト描画後処理

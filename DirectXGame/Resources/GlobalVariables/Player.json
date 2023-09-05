@@ -1,10 +1,18 @@
 {
     "Player": {
+        "BulletSpeed": 20.0,
+        "DistanceToReticleObject": 150.0,
         "FallAcceleration": 0.09799999743700027,
         "Height": 5.0,
         "JumpDecayRate": 0.09799999743700027,
         "MaxFallSpeed": -9.800000190734863,
+        "MaxFireCoolTime": 25.0,
         "MaxJumpHeight": 5.0,
-        "MoveSpeed": 3.0
+        "MoveSpeed": 3.0,
+        "ShotPosOffset": [
+            0.0,
+            -5.0,
+            0.0
+        ]
     }
 }

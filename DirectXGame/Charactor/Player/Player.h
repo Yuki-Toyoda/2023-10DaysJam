@@ -1,8 +1,12 @@
 #pragma once
+#include <list>
+#include <vector>
 #include "../Charactor/BaseCharacter.h"
+#include "Charactor/Player/PlayerBullet/PlayerBullet.h"
 #include "ViewProjection.h"
 #include "../input/Input.h"
 #include "../math/MyMath.h"
+#include "WinApp.h"
 
 /// <summary>
 /// プレイヤークラス
@@ -11,10 +15,11 @@ class Player : public BaseCharacter{
 public: // メンバ関数
 
 	/// <summary>
-	/// 初期化
+	/// 初期化関数
 	/// </summary>
-	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models) override;
+	/// <param name="modelsPlayer">プレイヤーモデル</param>
+	/// <param name="modelsBullet">弾モデル</param>
+	void Initialize(const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet);
 
 	/// <summary>
 	/// 更新関数
@@ -62,8 +67,13 @@ private: // 行動関数
 	/// 射撃関数
 	/// </summary>
 	void Shot();
+	/// <summary>
+	/// リロード関数
+	/// </summary>
+	void Reload();
 
 private: // その他関数
+
 	/// <summary>
 	/// 調整項目適用関数
 	/// </summary>
@@ -74,9 +84,6 @@ private: // メンバ関数
 	// 入力検知用
 	Input* input_ = nullptr;
 
-	// カメラのビュープロジェクション
-	const ViewProjection* viewProjection_ = nullptr;
-
 	// Aボタントリガー判定
 	bool pressAButton_;
 	// Bボタントリガー判定
@@ -85,6 +92,16 @@ private: // メンバ関数
 	bool pressXButton_;
 	// Yボタントリガー判定
 	bool pressYButton_;
+
+	// トリガーデッドゾーン
+	int32_t triggerDeadZone_R_; // 右
+	int32_t triggerDeadZone_L_; // 左
+
+	// カメラのビュープロジェクション
+	const ViewProjection* viewProjection_ = nullptr;
+
+	// 3Dレティクル用座標
+	WorldTransform worldTransform3DReticle_;
 
 	// プレイヤー身長
 	float height_;
@@ -112,10 +129,32 @@ private: // メンバ関数
 	// ジャンプ減衰速度
 	float kJumpDecayRate_;
 
+	// プレイヤーの弾
+	std::list<PlayerBullet*> bullets_;
+	// プレイヤーの弾モデル
+	std::vector<Model*> modelBullet_;
+	// 射撃座標のオフセット
+	Vector3 shotPosOffset_;
+	// カメラから照準オブジェクトの距離
+	float kDistanceToReticleObject_;
 	// 射撃できるか
 	bool canShot_;
+	// 弾速
+	float bulletSpeed_;
 	// 射撃レートカウント用
-	float fireRateCount_;
+	float fireCoolTime_;
 	// 射撃レートデフォルト値
-	float kMaxFireRate_;
+	float kMaxFireCoolTime_;
+	// 現在弾数
+	int32_t magazine_;
+	// 最大弾数
+	int32_t kMaxMagazine_;
+	// リロード中か
+	bool isReloading_;
+	// 現在リロード時間
+	int32_t reloadTime_;
+	// リロード時間
+	int32_t kMaxReloadTime_;
+
+
 };

@@ -47,6 +47,9 @@
     <Filter Include="Config">
       <UniqueIdentifier>{9f1a7d43-10a0-43d8-88ed-3ceb575892aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Charactor\Player\PlayerBullet">
+      <UniqueIdentifier>{b46d4972-3627-4568-8065-58e4a633a7c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXCommon.cpp">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="config\GlobalVariables.cpp">
       <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Charactor\Player\PlayerBullet\PlayerBullet.cpp">
+      <Filter>Charactor\Player\PlayerBullet</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\BossEnemy.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
@@ -211,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="config\GlobalVariables.h">
       <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Charactor\Player\PlayerBullet\PlayerBullet.h">
+      <Filter>Charactor\Player\PlayerBullet</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\BossEnemy.h" />
     <ClInclude Include="Enemy\Enemy.h" />
