@@ -49,22 +49,22 @@ void GlobalVariables::Update() {
 				// int32_t型の値を取得
 				int32_t* ptr = std::get_if<int32_t>(&item.value);
 				// ImGuiのUIを出す
-				ImGui::SliderInt(itemName.c_str(), ptr, 0, 100);
+				ImGui::DragInt(itemName.c_str(), ptr, 1.0f, -100, 100);
 			}
 			// float型の値を保持している場合
 			else if (std::holds_alternative<float>(item.value)) {
 				// float型の値を取得
 				float* ptr = std::get_if<float>(&item.value);
 				// ImGuiのUIを出す
-				ImGui::SliderFloat(itemName.c_str(), ptr, -100.0f, 100.0f);
+				ImGui::DragFloat(itemName.c_str(), ptr, 1.0f, -100.0f, 100.0f);
 			}
 			// Vector3型の値を保持している場合
 			else if (std::holds_alternative<Vector3>(item.value)) {
 				// Vector3型の値を取得
 				Vector3* ptr = std::get_if<Vector3>(&item.value);
 				// ImGuiのUIを出す
-				ImGui::SliderFloat3(
-				    itemName.c_str(), reinterpret_cast<float*>(ptr), -100.0f, 100.0f);
+				ImGui::DragFloat3(
+				    itemName.c_str(), reinterpret_cast<float*>(ptr), 0.1f, -100.0f, 100.0f);
 			}
 		}
 

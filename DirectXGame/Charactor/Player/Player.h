@@ -58,6 +58,11 @@ private: // 行動関数
 	/// </summary>
 	void Jump();
 
+	/// <summary>
+	/// 射撃関数
+	/// </summary>
+	void Shot();
+
 private: // その他関数
 	/// <summary>
 	/// 調整項目適用関数
@@ -102,8 +107,15 @@ private: // メンバ関数
 	bool canJump_;
 	// ジャンプ速度
 	float jumpSpeed_;
-	// 最大ジャンプ速度
-	float kMaxJumpSpeed_;
+	// 最大ジャンプ高度
+	float kMaxJumpHeight_;
 	// ジャンプ減衰速度
 	float kJumpDecayRate_;
+
+	// 射撃できるか
+	bool canShot_;
+	// 射撃レートカウント用
+	float fireRateCount_;
+	// 射撃レートデフォルト値
+	float kMaxFireRate_;
 };
