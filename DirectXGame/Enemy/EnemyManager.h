@@ -6,6 +6,9 @@
 #include "Enemy.h"
 #include "EnemyBullet.h"
 
+// プレイヤー
+class Player;
+
 /// <summary>
 /// エネミーマネージャー
 /// </summary>
@@ -65,11 +68,20 @@ public: // メンバ変数
 	void Reset();
 
 	/// <summary>
-	///
+	/// エネミーゲッター
 	/// </summary>
 	std::list<Enemy*> GetEnemies() { return enemies_; }
 
+	/// <summary>
+	/// エネミーカウントゲッター
+	/// </summary>
+	/// <returns></returns>
 	size_t GetEnemyCount() { return enemyCount_; }
+
+	/// <summary>
+	/// プレイヤーセッター
+	/// </summary>
+	void SetPlayer(Player* player) { player_ = player; }
 
 private: // シングルトンパターン
 	EnemyManager() = default;
@@ -95,4 +107,8 @@ private: // メンバ変数
 	size_t enemyCount_;
 	// エネミー最大数
 	const size_t enemyMax = 1;
+
+	// プレイヤー
+	Player* player_ = nullptr;
+
 };

@@ -3,6 +3,8 @@
 
 //エネミーマネージャーの前方宣言
 class EnemyManager;
+//プレイヤー
+class Player;
 
 /// <summary>
 /// エネミークラス
@@ -60,9 +62,14 @@ public: //メンバ関数
 	void Follow();
 
 	/// <summary>
-	/// エネミーマネージャー取得
+	/// エネミーマネージャーセッター
 	/// </summary>
 	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
+
+	/// <summary>
+	/// プレイヤーセッター
+	/// </summary>
+	void SetPlayer(Player* player) { player_ = player; }
 
 private: //メンバ変数
 
@@ -74,5 +81,7 @@ private: //メンバ変数
 
 	//エネミーマネージャー
 	EnemyManager* enemyManager_ = nullptr;
+	//プレイヤー
+	Player* player_ = nullptr;
 
 };

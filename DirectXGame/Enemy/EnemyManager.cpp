@@ -55,6 +55,7 @@ void EnemyManager::AddEnemy() {
 
 	enemy->Initialize(models_, textureHandle_);
 	enemy->SetEnemyManager(this);
+	enemy->SetPlayer(player_);
 	enemies_.push_back(enemy);
 
 }

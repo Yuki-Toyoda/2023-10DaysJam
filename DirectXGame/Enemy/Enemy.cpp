@@ -3,6 +3,7 @@
 #include "EnemyManager.h"
 #include <cassert>
 #include <MyMath.h>
+#include "Charactor/CharactorList.h"
 
 /// <summary>
 /// 初期化
@@ -36,7 +37,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 /// </summary>
 void Enemy::Update() {
 
-	Move();
+	MoveToPlayer();
 
 	//ワールド行列更新
 	worldTransform_.UpdateMatrix();
@@ -85,7 +86,28 @@ void Enemy::Move() {
 
 void Enemy::MoveToPlayer() {
 
+	// 自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵弾のワールド座標を取得する
+	Vector3 enemyrPos = GetWorldPosition();
+	// 敵弾->自キャラの差分ベクトルを求める
+	Vector3 toPlayer = playerPos - enemyrPos;
+	// ベクトルの正規化
+	toPlayer = MyMath::Normalize(toPlayer);
+	// 弾の速度
+	const float kBulletSpeed = 0.5f;
 
+	Vector3 velocity = toPlayer * kBulletSpeed;
+	// 進行方向に見た目の回転を合わせる
+	//  Y軸周りの角度(Θy)
+	worldTransform_.rotation_.y = std::atan2f(velocity.x, velocity.z);
+	// 横軸方向の長さを求める
+	float length = MyMath::Length(Vector3{velocity.x, 0.0f, velocity.z});
+	// X軸周りの角度(Θx)
+	worldTransform_.rotation_.x = std::atan2f(-velocity.y, length);
+
+	// 座標を移動させる(1フレーム分の移動量を足しこむ)
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
 
 }
 

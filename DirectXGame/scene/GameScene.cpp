@@ -32,6 +32,7 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>(); // プレイヤー
 
 	enemyManager_ = EnemyManager::GetInstance();// エネミーマネージャー
+	enemyManager_->SetPlayer(player_.get());
 
 	// 生成インスタンス初期化
 	camera_->Intialize(); // カメラ
