@@ -83,6 +83,12 @@ public: // メンバ変数
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
 
+private: // その他関数
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables();
+
 private: // シングルトンパターン
 	EnemyManager() = default;
 	~EnemyManager() = default;
@@ -106,7 +112,7 @@ private: // メンバ変数
 	// エネミー数
 	size_t enemyCount_;
 	// エネミー最大数
-	const size_t enemyMax = 1;
+	uint32_t enemyMax = 1;
 
 	// プレイヤー
 	Player* player_ = nullptr;

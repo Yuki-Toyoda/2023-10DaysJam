@@ -1,4 +1,5 @@
 #include "EnemyManager.h"
+#include "../config/GlobalVariables.h"
 
 EnemyManager* EnemyManager::GetInstance() {
 	static EnemyManager instance;
@@ -11,6 +12,17 @@ void EnemyManager::Initialize(const std::vector<Model*>& models) {
 	models_ = models;
 	// エネミーのテクスチャハンドル
 	//textureHandle_ = textureHandle; 
+	
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名設定
+	const char* groupName = "EnemyManager";
+	// 指定した名前でグループ追加
+	globalVariables->CreateGroup(groupName);
+
+	// メンバ変数の調整したい項目をグローバル変数に追加
+	globalVariables->AddItem(groupName, "EnemyMax",  int(enemyMax));
+	
 	//エネミーの数
 	enemyCount_ = enemyMax;
 
@@ -21,6 +33,7 @@ void EnemyManager::Initialize(const std::vector<Model*>& models) {
 	for (size_t i = 0; i < enemyMax; i++) {
 		AddEnemy();
 	}
+
 }
 
 void EnemyManager::Update() {
@@ -117,5 +130,17 @@ void EnemyManager::Reset() {
 			AddEnemy();
 		}
 	}
+
+}
+
+void EnemyManager::ApplyGlobalVariables() {
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名の設定
+	const char* groupName = "EnemyManager";
+
+	// メンバ変数の調整項目をグローバル変数に追加
+	enemyMax = uint32_t(globalVariables->GetIntValue(groupName, "EnemyMax"));
 
 }

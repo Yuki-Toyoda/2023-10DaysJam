@@ -145,6 +145,15 @@ void Enemy::Follow() {
 
 void Enemy::ApplyGlobalVariables() {
 
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名の設定
+	const char* groupName = "Enemy";
 
+	// メンバ変数の調整項目をグローバル変数に追加
+	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed");
+	moveRotateSpeed_ = globalVariables->GetFloatValue(groupName, "MoveRotateSpeed");
+	moveToPlayerSpeed_ = globalVariables->GetFloatValue(groupName, "MoveToPlayerSpeed");
+	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed");
 
 }
