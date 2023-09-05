@@ -51,6 +51,8 @@ void GameScene::Initialize() {
 	player_->SetViewProjection(camera_->GetViewProjection());
 
 	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()});
+	enemyManager_->SetBossEnemyPlayer(player_.get());
+
 }
 
 void GameScene::Update() {

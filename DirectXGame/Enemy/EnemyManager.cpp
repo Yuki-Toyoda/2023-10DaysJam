@@ -29,15 +29,24 @@ void EnemyManager::Initialize(const std::vector<Model*>& models) {
 	//バレットモデル
 	bulletModels_ = models;
 
+	//ボスエネミーモデル
+	bossModels_ = models;
+
 	//初期のエネミー配置
 	for (size_t i = 0; i < enemyMax; i++) {
 		AddEnemy();
 	}
 
+	//ボス
+	bossEnemy_ = std::make_unique<BossEnemy>();
+	bossEnemy_->Initialize(bossModels_, textureHandle_);
+
 }
 
 void EnemyManager::Update() {
 
+	//ボスエネミー更新
+	bossEnemy_->Update();
 	//エネミー更新
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
@@ -51,9 +60,13 @@ void EnemyManager::Update() {
 
 void EnemyManager::Draw(const ViewProjection& viewProjection) {
 
+	// ボスエネミーの描画
+	bossEnemy_->Draw(viewProjection);
+	
 	//エネミーの描画
 	for (Enemy* enemy : enemies_) {
-		enemy->Draw(viewProjection);
+		//enemy->Draw(viewProjection);
+		enemy;
 	}
 	// バレット描画
 	for (EnemyBullet* enemyBullet : enemyBullets_) {

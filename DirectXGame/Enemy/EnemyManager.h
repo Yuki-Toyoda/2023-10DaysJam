@@ -5,6 +5,7 @@
 
 #include "Enemy.h"
 #include "EnemyBullet.h"
+#include "BossEnemy.h"
 
 // プレイヤー
 class Player;
@@ -83,6 +84,12 @@ public: // メンバ変数
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
 
+	/// <summary>
+	/// ボスエネミーゲッター
+	/// </summary>
+	/// <returns></returns>
+	void SetBossEnemyPlayer(Player* player) { bossEnemy_->SetPlayer(player); }
+
 private: // その他関数
 	/// <summary>
 	/// 調整項目適用関数
@@ -108,6 +115,11 @@ private: // メンバ変数
 	std::list<EnemyBullet*> enemyBullets_;
 	// エネミーバレットモデル
 	std::vector<Model*> bulletModels_;
+
+	// ボスエネミー
+	std::unique_ptr<BossEnemy> bossEnemy_;
+	// ボスエネミーモデル
+	std::vector<Model*> bossModels_;
 
 	// エネミー数
 	size_t enemyCount_;

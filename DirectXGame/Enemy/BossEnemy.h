@@ -38,6 +38,16 @@ class BossEnemy : public BaseCharacter {
 	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// 回転
+	/// </summary>
+	void Rotation();
+
+	/// <summary>
+	/// プレイヤーセッター
+	/// </summary>
+	void SetPlayer(Player* player) { player_ = player; }
+
 private: // メンバ変数
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
@@ -53,19 +63,21 @@ private: // メンバ変数
 	};
 
 	//プレイヤー
-	Player* player_;
+	Player* player_ = nullptr;
 
 	// 移動
 
-	//速さ
-	float approachThePlayerSpeed = 1.0f;
-	float moveAwayFromPlayerSpeed = -1.0f;
-	float playerSatelliteSpeed = 1.0f;
+	// 移動通過地点数
+	uint32_t movePointMax = 4;
+	// 移動通過地点番号
+	uint32_t movePointNum = 0;
+	
+	// 移動通過地点
+	Vector3 movePoint[4];
 
-	//適正距離
-	float appropriateDistance = 80.0f;
-	//距離の許容範囲
-	float distanceTolerance = 20.0f;
-
+	// 移動用T
+	float moveT = 0.0f;
+	// 移動時間
+	float moveTime = 10.0f;
 
 };

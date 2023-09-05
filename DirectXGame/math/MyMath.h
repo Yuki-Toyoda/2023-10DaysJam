@@ -308,4 +308,13 @@ public: // メンバ関数
 	/// <returns>ビューポート行列</returns>
 	static Matrix4x4 MakeViewportMatrix(
 	    float left, float top, float width, float height, float minDepth, float maxDepth);
+
+	/// <summary>
+	/// 座標変換(平行移動なし)
+	/// </summary>
+	/// <param name="vector"></param>
+	/// <param name="matrix"></param>
+	/// <returns></returns>
+	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
+
 };
