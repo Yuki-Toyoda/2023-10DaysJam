@@ -48,6 +48,12 @@ class BossEnemy : public BaseCharacter {
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
 
+private: // その他関数
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables() override;
+
 private: // メンバ変数
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;

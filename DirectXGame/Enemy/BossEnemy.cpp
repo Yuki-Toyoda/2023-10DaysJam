@@ -3,6 +3,8 @@
 #include "Charactor/Player/Player.h"
 #include "../config/GlobalVariables.h"
 #include <cassert>
+#include <stdio.h>
+#include <string>
 
 /// <summary>
 /// 初期化
@@ -50,7 +52,13 @@ void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHa
 	globalVariables->CreateGroup(groupName);
 
 	// メンバ変数の調整したい項目をグローバル変数に追加
-
+	globalVariables->AddItem(groupName, "MovePointMax", int(movePointMax));
+	for (size_t i = 0; i < movePointMax; i++) {
+		char str[32];
+		sprintf_s(str, "movePoint%d", int(i));
+		globalVariables->AddItem(groupName, str, movePoint[i]);
+	}
+	globalVariables->AddItem(groupName, "MoveTime", moveTime);
 
 }
 
@@ -123,5 +131,23 @@ void BossEnemy::Rotation() {
 	float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
 	// X軸周りの角度(Θx)
 	worldTransform_.rotation_.x = std::atan2f(-toPlayer.y, length);
+
+}
+
+void BossEnemy::ApplyGlobalVariables() {
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名の設定
+	const char* groupName = "BossEnemy";
+
+	// メンバ変数の調整項目をグローバル変数に追加
+	movePointMax = int(globalVariables->GetIntValue(groupName, "MovePointMax"));
+	for (size_t i = 0; i < movePointMax; i++) {
+		char str[32];
+		sprintf_s(str, "movePoint%d", int(i));
+		movePoint[i] = globalVariables->GetVector3Value(groupName, str);
+	}
+	moveTime = globalVariables->GetFloatValue(groupName, "MoveTime");
 
 }
