@@ -54,8 +54,12 @@ void GameScene::Initialize() {
 	// プレイヤーにカメラのビュープロジェクション
 	player_->SetViewProjection(camera_->GetViewProjection());
 
+	//エネミーマネージャー
 	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()});
 	enemyManager_->SetBossEnemyPlayer(player_.get());
+
+	// 衝突マネージャー
+	collisionManager.reset(new CollisionManager);
 
 }
 
@@ -86,6 +90,23 @@ void GameScene::Update() {
 
 	// 行列を定数バッファに転送
 	viewProjection_->TransferMatrix();
+
+	// リストをクリア
+	collisionManager->ListClear();
+	// コライダーをリストに登録
+	// 自機について
+	collisionManager->ListRegister(player_.get());
+	// 敵全てについて
+	for (Enemy* enemy : enemyManager_->GetEnemies()) {
+		collisionManager->ListRegister(enemy);
+	}
+
+	// 自弾全てについて
+	for (PlayerBullet* playerBullet : player_->GetBullets()) {
+		collisionManager->ListRegister(playerBullet);
+	}
+	// 当たり判定
+	collisionManager->CheakAllCollision();
 
 	#ifdef _DEBUG
 

@@ -13,6 +13,7 @@
 #include "Ambient/SkyDome.h"
 #include "Ambient/Ground.h"
 #include "Charactor/CharactorList.h"
+#include "Collision/CollisionManager.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -89,4 +90,7 @@ private: // メンバ変数
 
 	// エネミーマネージャー
 	EnemyManager* enemyManager_;
+
+	// 衝突マネージャー
+	std::unique_ptr<CollisionManager> collisionManager;
 };

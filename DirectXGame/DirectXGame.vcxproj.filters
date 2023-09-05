@@ -1,278 +1,89 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="シェーダー ファイル">
-      <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="2d">
-      <UniqueIdentifier>{814a0f6d-f847-4c45-856d-4688fa4c9e6c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="base">
-      <UniqueIdentifier>{551d5cf3-f4a6-49b9-832f-076a33cef817}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="input">
-      <UniqueIdentifier>{337d978c-44b1-4af3-811b-c5f6f355f7de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math">
-      <UniqueIdentifier>{4c21a99e-f783-4367-bdcb-0ebd1d434719}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="scene">
-      <UniqueIdentifier>{e2d0b4b8-24a1-4854-8e5b-bb6ed09f1add}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="3d">
-      <UniqueIdentifier>{8ccef709-d514-43f7-ad35-629a9edd5057}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="audo">
-      <UniqueIdentifier>{3a0044cc-1b7d-4ed5-a1a6-9074ed1b1769}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Collision">
-      <UniqueIdentifier>{a5291be5-e056-4828-ae88-892bff806a98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Charactor">
-      <UniqueIdentifier>{32d149ef-5474-49ba-b91e-0bddf677c957}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Charactor\Player">
-      <UniqueIdentifier>{ac35ba87-dd2e-4ccc-ba9c-cfffe493a3e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Ambient">
-      <UniqueIdentifier>{359479b3-a046-429f-92a6-4fe0cffc6012}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Camera">
-      <UniqueIdentifier>{496ee59f-3e37-4691-85e2-19eb31657b10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Config">
-      <UniqueIdentifier>{9f1a7d43-10a0-43d8-88ed-3ceb575892aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Charactor\Player\PlayerBullet">
-      <UniqueIdentifier>{b46d4972-3627-4568-8065-58e4a633a7c1}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="Resources\shaders\TerrainPS.hlsl" />
+    <FxCompile Include="Resources\shaders\TerrainVS.hlsl" />
+    <FxCompile Include="Resources\shaders\ObjPS.hlsl" />
+    <FxCompile Include="Resources\shaders\ObjVS.hlsl" />
+    <FxCompile Include="Resources\shaders\PrimitivePS.hlsl" />
+    <FxCompile Include="Resources\shaders\PrimitiveVS.hlsl" />
+    <FxCompile Include="Resources\shaders\ShapePS.hlsl" />
+    <FxCompile Include="Resources\shaders\ShapeVS.hlsl" />
+    <FxCompile Include="Resources\shaders\SpritePS.hlsl" />
+    <FxCompile Include="Resources\shaders\SpriteVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="base\DirectXCommon.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="base\WinApp.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\GameScene.cpp">
-      <Filter>scene</Filter>
-    </ClCompile>
-    <ClCompile Include="2d\ImGuiManager.cpp">
-      <Filter>2d</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="math\MyMath.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="Collision\CollisionManager.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Charactor\BaseCharacter.cpp">
-      <Filter>Charactor</Filter>
-    </ClCompile>
-    <ClCompile Include="Charactor\Player\Player.cpp">
-      <Filter>Charactor\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Ambient\Ground.cpp">
-      <Filter>Ambient</Filter>
-    </ClCompile>
-    <ClCompile Include="Ambient\SkyDome.cpp">
-      <Filter>Ambient</Filter>
-    </ClCompile>
-    <ClCompile Include="3d\WorldTransformEX.cpp">
-      <Filter>3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera\Camera.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="config\GlobalVariables.cpp">
-      <Filter>Config</Filter>
-    </ClCompile>
-    <ClCompile Include="Charactor\Player\PlayerBullet\PlayerBullet.cpp">
-      <Filter>Charactor\Player\PlayerBullet</Filter>
-    </ClCompile>
+    <ClCompile Include="2d\ImGuiManager.cpp" />
+    <ClCompile Include="3d\WorldTransformEX.cpp" />
+    <ClCompile Include="Ambient\Ground.cpp" />
+    <ClCompile Include="Ambient\SkyDome.cpp" />
+    <ClCompile Include="base\DirectXCommon.cpp" />
+    <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Charactor\BaseCharacter.cpp" />
+    <ClCompile Include="Charactor\Player\Player.cpp" />
+    <ClCompile Include="Charactor\Player\PlayerBullet\PlayerBullet.cpp" />
+    <ClCompile Include="Collision\CollisionManager.cpp" />
+    <ClCompile Include="config\GlobalVariables.cpp" />
     <ClCompile Include="Enemy\BossEnemy.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
-    <ClCompile Include="Enemy\EnemyManager.cpp" />
     <ClCompile Include="Enemy\EnemyBullet.cpp" />
+    <ClCompile Include="Enemy\EnemyManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="math\MyMath.cpp" />
+    <ClCompile Include="scene\GameScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3d\ViewProjection.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\WorldTransform.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\CircleShadow.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\DebugCamera.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\DirectionalLight.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\LightGroup.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\Material.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\Model.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\Mesh.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\PointLight.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\SpotLight.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="audio\Audio.h">
-      <Filter>audo</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\AxisIndicator.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\PrimitiveDrawer.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\Terrain.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="3d\TerrainCommon.h">
-      <Filter>3d</Filter>
-    </ClInclude>
-    <ClInclude Include="2d\ImGuiManager.h">
-      <Filter>2d</Filter>
-    </ClInclude>
-    <ClInclude Include="2d\Sprite.h">
-      <Filter>2d</Filter>
-    </ClInclude>
-    <ClInclude Include="base\DirectXCommon.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="base\SafeDelete.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="base\StringUtility.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="base\TextureManager.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="base\WinApp.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="input\Input.h">
-      <Filter>input</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Matrix4x4.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Vector2.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Vector3.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Vector4.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\GameScene.h">
-      <Filter>scene</Filter>
-    </ClInclude>
-    <ClInclude Include="math\MyMath.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision\CollisionManager.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision\collider.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Charactor\BaseCharacter.h">
-      <Filter>Charactor</Filter>
-    </ClInclude>
-    <ClInclude Include="Charactor\Player\Player.h">
-      <Filter>Charactor\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Ambient\Ground.h">
-      <Filter>Ambient</Filter>
-    </ClInclude>
-    <ClInclude Include="Ambient\SkyDome.h">
-      <Filter>Ambient</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\Camera.h">
-      <Filter>Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Charactor\CharactorList.h">
-      <Filter>Charactor</Filter>
-    </ClInclude>
-    <ClInclude Include="config\GlobalVariables.h">
-      <Filter>Config</Filter>
-    </ClInclude>
-    <ClInclude Include="Charactor\Player\PlayerBullet\PlayerBullet.h">
-      <Filter>Charactor\Player\PlayerBullet</Filter>
-    </ClInclude>
+    <ClInclude Include="2d\ImGuiManager.h" />
+    <ClInclude Include="2d\Sprite.h" />
+    <ClInclude Include="3d\AxisIndicator.h" />
+    <ClInclude Include="3d\CircleShadow.h" />
+    <ClInclude Include="3d\DebugCamera.h" />
+    <ClInclude Include="3d\DirectionalLight.h" />
+    <ClInclude Include="3d\LightGroup.h" />
+    <ClInclude Include="3d\Material.h" />
+    <ClInclude Include="3d\Mesh.h" />
+    <ClInclude Include="3d\Model.h" />
+    <ClInclude Include="3d\PointLight.h" />
+    <ClInclude Include="3d\PrimitiveDrawer.h" />
+    <ClInclude Include="3d\SpotLight.h" />
+    <ClInclude Include="3d\Terrain.h" />
+    <ClInclude Include="3d\TerrainCommon.h" />
+    <ClInclude Include="3d\ViewProjection.h" />
+    <ClInclude Include="3d\WorldTransform.h" />
+    <ClInclude Include="Ambient\Ground.h" />
+    <ClInclude Include="Ambient\SkyDome.h" />
+    <ClInclude Include="audio\Audio.h" />
+    <ClInclude Include="base\DirectXCommon.h" />
+    <ClInclude Include="base\SafeDelete.h" />
+    <ClInclude Include="base\StringUtility.h" />
+    <ClInclude Include="base\TextureManager.h" />
+    <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Charactor\BaseCharacter.h" />
+    <ClInclude Include="Charactor\CharactorList.h" />
+    <ClInclude Include="Charactor\Player\Player.h" />
+    <ClInclude Include="Charactor\Player\PlayerBullet\PlayerBullet.h" />
+    <ClInclude Include="Collision\collider.h" />
+    <ClInclude Include="Collision\CollisionManager.h" />
+    <ClInclude Include="config\GlobalVariables.h" />
     <ClInclude Include="Enemy\BossEnemy.h" />
     <ClInclude Include="Enemy\Enemy.h" />
-    <ClInclude Include="Enemy\EnemyManager.h" />
     <ClInclude Include="Enemy\EnemyBullet.h" />
+    <ClInclude Include="Enemy\EnemyManager.h" />
+    <ClInclude Include="input\Input.h" />
+    <ClInclude Include="math\Matrix4x4.h" />
+    <ClInclude Include="math\MyMath.h" />
+    <ClInclude Include="math\Vector2.h" />
+    <ClInclude Include="math\Vector3.h" />
+    <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="scene\GameScene.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\shaders\SpritePS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\SpriteVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\ShapeVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\ShapePS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\ObjPS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\ObjVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PrimitivePS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\PrimitiveVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shaders\TerrainVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\shaders\Sprite.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
-    <None Include="Resources\shaders\Shape.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
-    <None Include="Resources\shaders\Obj.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
-    <None Include="Resources\shaders\Primitive.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
-    <None Include="Resources\shaders\Terrain.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
+    <None Include="Resources\shaders\Obj.hlsli" />
+    <None Include="Resources\shaders\Primitive.hlsli" />
+    <None Include="Resources\shaders\Shape.hlsli" />
+    <None Include="Resources\shaders\Terrain.hlsli" />
+    <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
 </Project>
