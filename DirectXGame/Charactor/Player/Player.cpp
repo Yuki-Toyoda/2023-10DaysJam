@@ -46,7 +46,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	// ジャンプ速度初期化
 	jumpSpeed_ = 0.0f;
 	// 最大ジャンプ速度設定
-	kMaxJumpSpeed_ = 5.0f;
+	kMaxJumpHeight_ = 5.0f;
 	// ジャンプ減衰速度を設定
 	kJumpDecayRate_ = 0.098f;
 
@@ -62,7 +62,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_); // 移動速度
 	globalVariables->AddItem(groupName, "MaxFallSpeed", kMaxFallSpeed_);  // 最大落下速度
 	globalVariables->AddItem(groupName, "FallAcceleration", kFallAcceleration_); // 落下加速度
-	globalVariables->AddItem(groupName, "MaxJumpHeight", kMaxJumpSpeed_);  // 最大ジャンプ高度
+	globalVariables->AddItem(groupName, "MaxJumpHeight", kMaxJumpHeight_);  // 最大ジャンプ高度
 	globalVariables->AddItem(groupName, "JumpDecayRate", kJumpDecayRate_); // ジャンプ減衰速度
 
 }
@@ -71,13 +71,11 @@ void Player::Update() {
 
 	// 行動可能なら
 	if (canAction_) {
-		
+		// 移動処理
+		Move();
+		// ジャンプ処理
+		Jump();
 	}
-
-	// 移動処理
-	Move();
-	// ジャンプ処理
-	Jump();
 
 	// 調整項目を反映
 	ApplyGlobalVariables();
@@ -179,7 +177,7 @@ void Player::Jump() {
 			// Aボタンが押されたら
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A && !pressAButton_) {
 				// ジャンプさせる
-				jumpSpeed_ = kMaxJumpSpeed_;
+				jumpSpeed_ = kMaxJumpHeight_;
 				// ジャンプ不可に
 				canJump_ = false;
 				// 接地していない状態に
@@ -213,18 +211,18 @@ void Player::Jump() {
 
 void Player::ApplyGlobalVariables() {
 
-	//// 調整項目クラスのインスタンス取得
-	//GlobalVariables* globalVariables = GlobalVariables::GetInstance();
-	//// グループ名の設定
-	//const char* groupName = "Player";
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名の設定
+	const char* groupName = "Player";
 
-	//// メンバ変数の調整項目をグローバル変数に追加
-	//height_ = globalVariables->GetFloatValue(groupName, "Height"); // 身長
-	//moveSpeed_ = globalVariables->GetFloatValue(groupName, "moveSpeed"); // 移動速度
-	//kMaxFallSpeed_ = globalVariables->GetFloatValue(groupName, "MaxFallSpeed"); // 最大落下速度
-	//kFallAcceleration_ = globalVariables->GetFloatValue(groupName, "FallAcceleration"); // 落下加速度
-	//kMaxJumpSpeed_ = globalVariables->GetFloatValue(groupName, "MaxJumpHeight"); // 最大ジャンプ高度
-	//kJumpDecayRate_ = globalVariables->GetFloatValue(groupName, "JumpDecayRate"); // ジャンプ減衰速度
+	// メンバ変数の調整項目をグローバル変数に追加
+	height_ = globalVariables->GetFloatValue(groupName, "Height"); // 身長
+	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed"); // 移動速度
+	kMaxFallSpeed_ = globalVariables->GetFloatValue(groupName, "MaxFallSpeed"); // 最大落下速度
+	kFallAcceleration_ = globalVariables->GetFloatValue(groupName, "FallAcceleration"); // 落下加速度
+	kMaxJumpHeight_ = globalVariables->GetFloatValue(groupName, "MaxJumpHeight"); // 最大ジャンプ高度
+	kJumpDecayRate_ = globalVariables->GetFloatValue(groupName, "JumpDecayRate"); // ジャンプ減衰速度
 
 #ifdef _DEBUG
 	

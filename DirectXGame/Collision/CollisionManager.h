@@ -7,19 +7,30 @@
 /// </summary>
 class CollisionManager {
 public: // メンバ関数
-	// リストのクリア
+	/// <summary>
+	/// リストクリア関数
+	/// </summary>
 	void ListClear();
 
-	// リスト登録
+	/// <summary>
+	/// リストにコライダーを登録する関数
+	/// </summary>
+	/// <param name="collider">登録するコライダー</param>
 	void ListRegister(Collider* collider);
 
-	// 衝突判定と応答
+	/// <summary>
+	/// 全ての衝突判定を検証する関数
+	/// </summary>
 	void CheakAllCollision();
 
+private: // メンバ関数
+	/// <summary>
+	/// 球同士の当たり判定を検証する関数
+	/// </summary>
+	/// <param name="colliderA">球A</param>
+	/// <param name="colliderB">球B</param>
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 private: // メンバ変数
 	// コライダーリスト
 	std::list<Collider*> colliders_;
-
-	// コライダー2つの衝突判定と応答
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 };

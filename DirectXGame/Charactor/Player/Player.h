@@ -102,8 +102,8 @@ private: // メンバ関数
 	bool canJump_;
 	// ジャンプ速度
 	float jumpSpeed_;
-	// 最大ジャンプ速度
-	float kMaxJumpSpeed_;
+	// 最大ジャンプ高度
+	float kMaxJumpHeight_;
 	// ジャンプ減衰速度
 	float kJumpDecayRate_;
 };

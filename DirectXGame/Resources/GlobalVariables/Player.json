@@ -1,10 +1,10 @@
 {
     "Player": {
-        "FallAcceleration": -23.860000610351563,
-        "Height": -40.83300018310547,
-        "JumpDecayRate": 19.889999389648438,
-        "MaxFallSpeed": 19.367000579833984,
-        "MaxJumpHeight": -35.625,
-        "MoveSpeed": 25.91699981689453
+        "FallAcceleration": 0.09799999743700027,
+        "Height": 5.0,
+        "JumpDecayRate": 0.09799999743700027,
+        "MaxFallSpeed": -9.800000190734863,
+        "MaxJumpHeight": 5.0,
+        "MoveSpeed": 3.0
     }
 }
