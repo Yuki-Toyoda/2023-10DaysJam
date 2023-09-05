@@ -6,6 +6,14 @@
 /// プレイヤー弾クラス
 /// </summary>
 class PlayerBullet : public BaseCharacter {
+public: // サブクラス
+	// 弾の種類
+	enum BulletType {
+		Normal,
+		Fire,
+		Water,
+		Thunder
+	};
 public: // メンバ関数
 	
 	/// <summary>
@@ -15,8 +23,9 @@ public: // メンバ関数
 	/// <param name="startPos">初期座標</param>
 	/// <param name="startotation">初期角度</param>
 	/// <param name="velocity">弾速</param>
+	/// <param name="bulletType">撃つ弾の種類</param>
 	void Initialize(const std::vector<Model*>& models, 
-		Vector3 startPos, Vector3 startotation, Vector3 velocity);
+		Vector3 startPos, Vector3 startotation, Vector3 velocity, BulletType bulletType);
 
 	/// <summary>
 	/// 更新関数
@@ -35,6 +44,29 @@ public: // アクセッサ等
 	/// </summary>
 	/// <returns>死亡状態</returns>
 	bool GetIsDead() { return isDead_; }
+
+private: // 弾ごとの行動関数
+
+	/// <summary>
+	/// 通常弾更新処理
+	/// </summary>
+	void NormalBulletUpdate();
+
+	/// <summary>
+	/// 爆発弾更新処理
+	/// </summary>
+	void FireBulletUpdate();
+
+	/// <summary>
+	///  ビーム弾更新処理
+	/// </summary>
+	void WaterBulletUpdate();
+
+	/// <summary>
+	/// 雷弾更新処理
+	/// </summary>
+	void ThunderBulletUpdate();
+
 public: // その他関数
 
 	// 衝突時に呼ばれる関数
@@ -51,5 +83,8 @@ private: // メンバ変数
 
 	// 弾速
 	Vector3 velocity_;
+
+	// 発射する弾の種類
+	BulletType bulletType_;
 
 };

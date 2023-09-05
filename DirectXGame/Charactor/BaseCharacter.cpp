@@ -15,7 +15,6 @@ void BaseCharacter::Update() {
 }
 
 void BaseCharacter::Draw(const ViewProjection& viewProjection) {
-
 	// モデル描画
 	for (Model* model : models_) {
 		model->Draw(worldTransform_, viewProjection);
