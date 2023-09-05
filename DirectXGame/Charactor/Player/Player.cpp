@@ -74,6 +74,16 @@ void Player::Initialize(
 	fireCoolTime_ = 0;
 	// 発射レート設定
 	kMaxFireCoolTime_ = 25;
+	// 最大弾数設定
+	kMaxMagazine_ = 15;
+	// 弾数リセット
+	magazine_ = kMaxMagazine_;
+	// リロード中ではない
+	isReloading_ = false;
+	// リロード時間設定
+	kMaxReloadTime_ = 60;
+	// リロード時間リセット
+	reloadTime_ = kMaxReloadTime_;
 
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -92,7 +102,8 @@ void Player::Initialize(
 	globalVariables->AddItem(groupName, "ShotPosOffset", shotPosOffset_); // 射撃座標オフセット
 	globalVariables->AddItem(groupName, "DistanceToReticleObject", kDistanceToReticleObject_); // カメラから照準オブジェクトの距離
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_); // 弾速
-	globalVariables->AddItem(groupName, "MaxFireCoolTime", kMaxFireCoolTime_); // 弾速
+	globalVariables->AddItem(groupName, "MaxMagazineSize", kMaxMagazine_); // 最大弾数設定
+	globalVariables->AddItem(groupName, "MaxReloadTime", kMaxReloadTime_); // リロードにかかる時間
 }
 
 void Player::Update() {
@@ -114,6 +125,8 @@ void Player::Update() {
 		Jump();
 		// 射撃
 		Shot();
+		// リロード
+		Reload();
 	}
 
 	// 調整項目を反映
@@ -155,6 +168,18 @@ void Player::Update() {
 		else
 			pressYButton_ = true;
 	}
+
+	#ifdef _DEBUG
+
+	ImGui::Begin("player");
+	ImGui::DragInt("magazine", &magazine_, 1.0f);
+	ImGui::Checkbox("isReloading", &isReloading_);
+	ImGui::DragInt("reloadTime", &reloadTime_, 1.0f);
+	ImGui::End();
+
+#endif // _DEBUG
+
+
 }
 
 void Player::Draw(const ViewProjection& viewProjection) { 
@@ -165,6 +190,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 }
 
 void Player::OnCollision() {
+
 }
 
 void Player::Move() {
@@ -300,7 +326,8 @@ void Player::Shot() {
 	if (input_->GetJoystickState(0, joyState)) {
 		// Rトリガーが押されたら
 		if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
-			if (fireCoolTime_ <= 0) {
+			// 射撃可能、リロード中ではなく、弾数が1発以上なら
+			if (fireCoolTime_ <= 0 && !isReloading_ && magazine_ > 0) {
 				// 弾の生成
 				PlayerBullet* newBullet = new PlayerBullet();
 
@@ -332,6 +359,9 @@ void Player::Shot() {
 				// 生成した弾をリストに入れる
 				bullets_.push_back(newBullet);
 
+				// 弾数デクリメント
+				magazine_--;
+
 				// 射撃クールタイムリセット
 				fireCoolTime_ = kMaxFireCoolTime_;
 			}
@@ -346,6 +376,43 @@ void Player::Shot() {
 		fireCoolTime_ = 0;
 	}
 
+}
+
+void Player::Reload() {
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		// xボタンが押されたらリロード待機状態に
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+			// リロード中ではなく、弾数が減っているなら
+			if (!isReloading_ && magazine_ < kMaxMagazine_) {
+				// リロード中状態に
+				isReloading_ = true;
+			}
+		}
+	}
+
+	// マガジンが空なら
+	if (magazine_ == 0) {
+		// 強制的にリロード
+		isReloading_ = true;
+	}
+
+	// リロード中かつ射撃可能状態なら
+	if (isReloading_ && fireCoolTime_ <= 0) {
+		if (reloadTime_ >= 0) {
+			// リロードカウントデクリメント
+			reloadTime_--;
+		} else {
+			// 弾数リセット
+			magazine_ = kMaxMagazine_;
+			// リロード時間リセット
+			reloadTime_ = kMaxReloadTime_;
+			// リロード中ではない
+			isReloading_ = false;
+		}
+	}
+		
 }
 
 void Player::ApplyGlobalVariables() {
@@ -366,6 +433,8 @@ void Player::ApplyGlobalVariables() {
 	kDistanceToReticleObject_ = globalVariables->GetFloatValue(groupName, "DistanceToReticleObject"); // カメラから照準オブジェクトの距離
 	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed"); // 弾速
 	kMaxFireCoolTime_ = globalVariables->GetFloatValue(groupName, "MaxFireCoolTime"); // 発射レート
+	kMaxMagazine_ = globalVariables->GetIntValue(groupName, "MaxMagazineSize"); // 最大弾数設定
+	kMaxReloadTime_ = globalVariables->GetIntValue(groupName, "MaxReloadTime"); // リロードにかかる時間
 
 #ifdef _DEBUG
 	

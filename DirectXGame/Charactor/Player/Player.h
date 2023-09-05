@@ -67,6 +67,10 @@ private: // 行動関数
 	/// 射撃関数
 	/// </summary>
 	void Shot();
+	/// <summary>
+	/// リロード関数
+	/// </summary>
+	void Reload();
 
 private: // その他関数
 
@@ -141,4 +145,16 @@ private: // メンバ関数
 	float fireCoolTime_;
 	// 射撃レートデフォルト値
 	float kMaxFireCoolTime_;
+	// 現在弾数
+	int32_t magazine_;
+	// 最大弾数
+	int32_t kMaxMagazine_;
+	// リロード中か
+	bool isReloading_;
+	// 現在リロード時間
+	int32_t reloadTime_;
+	// リロード時間
+	int32_t kMaxReloadTime_;
+
+
 };
