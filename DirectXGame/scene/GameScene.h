@@ -66,6 +66,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelSkyDome_;
 	// 地面モデル
 	std::unique_ptr<Model> modelGround_;
+	// 弾モデル
+	std::unique_ptr<Model> modelBullet_;
 
 	// デバックカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;

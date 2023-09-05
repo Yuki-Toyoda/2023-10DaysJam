@@ -5,9 +5,14 @@
 
 #endif // _DEBUG
 
-void Player::Initialize(const std::vector<Model*>& models) {
+void Player::Initialize(
+    const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet) {
+
 	// 基底クラス初期化
-	BaseCharacter::Initialize(models);
+	BaseCharacter::Initialize(modelsPlayer);
+
+	// 弾モデル読み込み
+	modelBullet_ = modelsBullet;
 
 	// 入力情報取得
 	input_ = Input::GetInstance();
@@ -23,6 +28,13 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	pressXButton_ = false;
 	// Yボタントリガー判定リセット
 	pressYButton_ = false;
+
+	// トリガーデッドゾーン設定
+	triggerDeadZone_R_ = 25; // 右
+	triggerDeadZone_L_ = 25; // 左
+
+	// 3Dレティクルワールド座標の初期化
+	worldTransform3DReticle_.Initialize();
 
 	// 身長高さ
 	height_ = 5.0f;
@@ -50,6 +62,19 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	// ジャンプ減衰速度を設定
 	kJumpDecayRate_ = 0.098f;
 
+	// 射撃座標のオフセット
+	shotPosOffset_ = {0.0f, -5.0f, 0.0f};
+	// カメラから照準オブジェクトの距離
+	kDistanceToReticleObject_ = 150.0f;
+	// 射撃可能に
+	canShot_ = true;
+	// 弾速設定
+	bulletSpeed_ = 20.0f;
+	// 発射レートリセット
+	fireCoolTime_ = 0;
+	// 発射レート設定
+	kMaxFireCoolTime_ = 25;
+
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名設定
@@ -58,16 +83,28 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	globalVariables->CreateGroup(groupName);
 
 	// メンバ変数の調整したい項目をグローバル変数に追加
-	globalVariables->AddItem(groupName, "Height", height_); // 身長
-	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_); // 移動速度
-	globalVariables->AddItem(groupName, "MaxFallSpeed", kMaxFallSpeed_);  // 最大落下速度
+	globalVariables->AddItem(groupName, "Height", height_);              // 身長
+	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);        // 移動速度
+	globalVariables->AddItem(groupName, "MaxFallSpeed", kMaxFallSpeed_); // 最大落下速度
 	globalVariables->AddItem(groupName, "FallAcceleration", kFallAcceleration_); // 落下加速度
-	globalVariables->AddItem(groupName, "MaxJumpHeight", kMaxJumpHeight_);  // 最大ジャンプ高度
+	globalVariables->AddItem(groupName, "MaxJumpHeight", kMaxJumpHeight_); // 最大ジャンプ高度
 	globalVariables->AddItem(groupName, "JumpDecayRate", kJumpDecayRate_); // ジャンプ減衰速度
-
+	globalVariables->AddItem(groupName, "ShotPosOffset", shotPosOffset_); // 射撃座標オフセット
+	globalVariables->AddItem(groupName, "DistanceToReticleObject", kDistanceToReticleObject_); // カメラから照準オブジェクトの距離
+	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_); // 弾速
+	globalVariables->AddItem(groupName, "MaxFireCoolTime", kMaxFireCoolTime_); // 弾速
 }
 
 void Player::Update() {
+
+	// デスフラグの立った弾を削除
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
 	// 行動可能なら
 	if (canAction_) {
@@ -75,6 +112,8 @@ void Player::Update() {
 		Move();
 		// ジャンプ処理
 		Jump();
+		// 射撃
+		Shot();
 	}
 
 	// 調整項目を反映
@@ -82,6 +121,14 @@ void Player::Update() {
 
 	// 基底クラス更新
 	BaseCharacter::Update();
+
+	// 3Dレティクルのワールド座標更新
+	worldTransform3DReticle_.UpdateMatrix();
+
+	// 弾の更新処理
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
+	}
 
 	// ボタンのトリガー判定をとる
 	// ゲームパッドの状態取得
@@ -110,7 +157,12 @@ void Player::Update() {
 	}
 }
 
-void Player::Draw(const ViewProjection& viewProjection) { viewProjection; }
+void Player::Draw(const ViewProjection& viewProjection) { 
+	// 弾の更新処理
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
+}
 
 void Player::OnCollision() {
 }
@@ -134,6 +186,9 @@ void Player::Move() {
 
 		// 移動
 		worldTransform_.translation_ = worldTransform_.translation_ + move;
+		// プレイヤーの向きを移動方向に合わせる
+		worldTransform_.rotation_ = viewProjection_->rotation_;
+
 	}
 
 	// 接地していないなら
@@ -211,6 +266,86 @@ void Player::Jump() {
 
 void Player::Shot() {
 
+	// ビューポート行列の生成
+	Matrix4x4 matViewport =
+	    MyMath::MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	// ビュー行列とプロジェクション行列、ビューポート行列を合成
+	Matrix4x4 matViewProjectionViewport = viewProjection_->matView * viewProjection_->matProjection * matViewport;
+	// その逆行列を作る
+	Matrix4x4 matInverseVPV = MyMath::Inverse(matViewProjectionViewport);
+
+	// スクリーン座標
+	Vector3 posNear =
+	    Vector3((float)(WinApp::kWindowWidth / 2), (float)(WinApp::kWindowHeight / 2), 0);
+	Vector3 posFar =
+	    Vector3((float)(WinApp::kWindowWidth / 2), (float)(WinApp::kWindowHeight / 2), 1);
+
+	// スクリーンからワールド座標系に
+	posNear = MyMath::Transform(posNear, matInverseVPV);
+	posFar = MyMath::Transform(posFar, matInverseVPV);
+
+	// マウスレイの方向
+	Vector3 mouseDirection = posFar - posNear;
+	mouseDirection = MyMath::Normalize(mouseDirection);
+
+	// カメラから照準オブジェクトの距離を設定
+	mouseDirection = mouseDirection * kDistanceToReticleObject_;
+
+	// 3Dレティクルの座標を設定
+	worldTransform3DReticle_.translation_ = mouseDirection + posNear;
+
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		// Rトリガーが押されたら
+		if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+			if (fireCoolTime_ <= 0) {
+				// 弾の生成
+				PlayerBullet* newBullet = new PlayerBullet();
+
+				// 射撃ベクトル計算用
+				Vector3 shotVelocity;
+
+				// 移動ベクトルを初期化する
+				shotVelocity = {0.0f, 0.0f, 0.0f};
+
+				// レティクルのワールド座標を求める
+				Vector3 ReticleWorldPos;
+				ReticleWorldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+				ReticleWorldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+				ReticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+
+				// 射撃座標調整
+				Vector3 shotPos = BaseCharacter::GetWorldPosition();
+				shotPos = shotPos + shotPosOffset_;
+				shotVelocity = ReticleWorldPos - shotPos;
+				shotVelocity = MyMath::Normalize(shotVelocity) * bulletSpeed_;
+
+				// 生成した弾を初期化
+				newBullet->Initialize(
+				    modelBullet_,  // 3Dモデル
+				    shotPos,                    // 初期位置
+					viewProjection_->rotation_, // 初期角度
+				    shotVelocity); // 弾速
+
+				// 生成した弾をリストに入れる
+				bullets_.push_back(newBullet);
+
+				// 射撃クールタイムリセット
+				fireCoolTime_ = kMaxFireCoolTime_;
+			}
+		}
+	}
+
+	if (fireCoolTime_ > 0) {
+		// 射撃クールタイムデクリメント
+		fireCoolTime_--;
+	} else {
+		// 射撃クールタイム固定
+		fireCoolTime_ = 0;
+	}
+
 }
 
 void Player::ApplyGlobalVariables() {
@@ -227,6 +362,10 @@ void Player::ApplyGlobalVariables() {
 	kFallAcceleration_ = globalVariables->GetFloatValue(groupName, "FallAcceleration"); // 落下加速度
 	kMaxJumpHeight_ = globalVariables->GetFloatValue(groupName, "MaxJumpHeight"); // 最大ジャンプ高度
 	kJumpDecayRate_ = globalVariables->GetFloatValue(groupName, "JumpDecayRate"); // ジャンプ減衰速度
+	shotPosOffset_ = globalVariables->GetVector3Value(groupName, "ShotPosOffset"); // 射撃座標オフセット
+	kDistanceToReticleObject_ = globalVariables->GetFloatValue(groupName, "DistanceToReticleObject"); // カメラから照準オブジェクトの距離
+	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed"); // 弾速
+	kMaxFireCoolTime_ = globalVariables->GetFloatValue(groupName, "MaxFireCoolTime"); // 発射レート
 
 #ifdef _DEBUG
 	
