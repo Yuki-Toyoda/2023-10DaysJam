@@ -52,6 +52,11 @@ public: //メンバ関数
 	void Attack();
 
 	/// <summary>
+	/// 突進開始
+	/// </summary>
+	void RushStart();
+
+	/// <summary>
 	/// 突進
 	/// </summary>
 	void Rush();
@@ -84,6 +89,8 @@ private: //メンバ変数
 
 	// デスフラグ
 	bool isDead_ = false;
+	// 速度
+	Vector3 velocity_ = {};
 
 	//エネミーマネージャー
 	EnemyManager* enemyManager_ = nullptr;
@@ -97,6 +104,8 @@ private: //メンバ変数
 	float moveToPlayerSpeed_ = 0.5f;
 	//弾速度
 	float bulletSpeed_ = 0.5f;
+	//突進速度
+	float rushSpeed_ = 5.0f;
 
 
 };
