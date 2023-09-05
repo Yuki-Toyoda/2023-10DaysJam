@@ -4,6 +4,7 @@
 #include <cassert>
 #include <MyMath.h>
 #include "Charactor/CharactorList.h"
+#include "../config/GlobalVariables.h"
 
 /// <summary>
 /// 初期化
@@ -29,6 +30,19 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000002);
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名設定
+	const char* groupName = "Enemy";
+	// 指定した名前でグループ追加
+	globalVariables->CreateGroup(groupName);
+
+	// メンバ変数の調整したい項目をグローバル変数に追加
+	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
+	globalVariables->AddItem(groupName, "MoveRotateSpeed", moveRotateSpeed_);
+	globalVariables->AddItem(groupName, "MoveToPlayerSpeed", moveToPlayerSpeed_);
+	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 
 }
 
@@ -66,19 +80,14 @@ void Enemy::OnCollision() {
 void Enemy::Move() {
 
 	//回転
-
 	// 回転速度
-	const float kRotateSpeed = 0.01f;
-	Vector3 velocity(0.0f, kRotateSpeed, 0.0f);
+	Vector3 velocity(0.0f, moveRotateSpeed_, 0.0f);
 	worldTransform_.rotation_ = worldTransform_.rotation_ + velocity;
 	
 	//移動
-	//  速度ベクトルを自機の向きに合わせて回転させる
-	velocity = {
-	    0.0f,
-	    0.0f,
-	    1.0f,
-	};
+	// 速度ベクトルを自機の向きに合わせて回転させる
+	velocity = {0.0f, 0.0f, moveSpeed_};
+
 	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
 
@@ -94,10 +103,8 @@ void Enemy::MoveToPlayer() {
 	Vector3 toPlayer = playerPos - enemyrPos;
 	// ベクトルの正規化
 	toPlayer = MyMath::Normalize(toPlayer);
-	// 弾の速度
-	const float kBulletSpeed = 0.5f;
-
-	Vector3 velocity = toPlayer * kBulletSpeed;
+	//速度
+	Vector3 velocity = toPlayer * moveToPlayerSpeed_;
 	// 進行方向に見た目の回転を合わせる
 	//  Y軸周りの角度(Θy)
 	worldTransform_.rotation_.y = std::atan2f(velocity.x, velocity.z);
@@ -114,12 +121,11 @@ void Enemy::MoveToPlayer() {
 void Enemy::Attack() {
 
 	// 弾の速度
-	const float kBulletSpeed = 0.5f;
-	Vector3 velocity(0, 0, kBulletSpeed);
+	Vector3 velocity(0, 0, bulletSpeed_);
 	// 弾の位置
 	Vector3 position = GetWorldPosition();
 
-	position.z += std::cosf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) *5.0f; // コサイン
+	position.z += std::cosf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) * 5.0f; // コサイン
 	position.x += std::sinf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) * 5.0f;
 	position.y += -std::sinf(worldTransform_.rotation_.x) * std::cosf(worldTransform_.rotation_.z) * 5.0f;
 
@@ -134,5 +140,11 @@ void Enemy::Rush() {
 }
 
 void Enemy::Follow() {
+
+}
+
+void Enemy::ApplyGlobalVariables() {
+
+
 
 }

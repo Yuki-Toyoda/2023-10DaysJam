@@ -191,7 +191,7 @@
     <ClInclude Include="Collision\collider.h">
       <Filter>Collision</Filter>
     </ClInclude>
-   <ClInclude Include="Charactor\BaseCharacter.h">
+    <ClInclude Include="Charactor\BaseCharacter.h">
       <Filter>Charactor</Filter>
     </ClInclude>
     <ClInclude Include="Charactor\Player\Player.h">

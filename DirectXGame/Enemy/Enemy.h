@@ -71,6 +71,12 @@ public: //メンバ関数
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
 
+private: // その他関数
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables() override;
+
 private: //メンバ変数
 
 	// テクスチャハンドル
@@ -83,5 +89,14 @@ private: //メンバ変数
 	EnemyManager* enemyManager_ = nullptr;
 	//プレイヤー
 	Player* player_ = nullptr;
+
+	//移動
+	float moveSpeed_ = 1.0f;
+	float moveRotateSpeed_ = 0.01f;
+	//プレイヤーへ移動
+	float moveToPlayerSpeed_ = 0.5f;
+	//弾速度
+	float bulletSpeed_ = 0.5f;
+
 
 };
