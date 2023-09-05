@@ -31,6 +31,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000002);
 
+	radius_ = 1000.0f;
+
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名設定

@@ -86,4 +86,9 @@
     <None Include="Resources\shaders\Terrain.hlsli" />
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{199e3c22-0e0c-4fbe-8b82-2685063f1959}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

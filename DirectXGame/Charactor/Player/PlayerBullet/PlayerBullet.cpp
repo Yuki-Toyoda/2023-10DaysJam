@@ -23,6 +23,11 @@ void PlayerBullet::Initialize(
 	// 生存時間設定
 	deathTimer_ = klifeTime_;
 
+	// 衝突属性を設定
+	SetCollisionAttribute(0xfffffffe);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(0x00000001);
+
 }
 
 void PlayerBullet::Update() {

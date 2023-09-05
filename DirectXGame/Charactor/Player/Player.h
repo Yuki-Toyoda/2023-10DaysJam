@@ -47,6 +47,12 @@ public: // アクセッサ等
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}
+	
+	/// <summary>
+	/// バレットゲッター
+	/// </summary>
+	/// <returns></returns>
+	std::list<PlayerBullet*> GetBullets() { return bullets_; }
 
 	// 衝突時に呼ばれる関数
 	void OnCollision() override;
