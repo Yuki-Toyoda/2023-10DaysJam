@@ -1,6 +1,9 @@
 #pragma once
 #include "../Charactor/BaseCharacter.h"
 
+// プレイヤークラス前方宣言
+class Player;
+
 /// <summary>
 /// ボスエネミー
 /// </summary>
@@ -30,6 +33,11 @@ class BossEnemy : public BaseCharacter {
 	// 死んでいるか
 	bool GetIsDead() { return isDead_; }
 
+	/// <summary>
+	/// 移動
+	/// </summary>
+	void Move();
+
 private: // メンバ変数
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
@@ -43,5 +51,21 @@ private: // メンバ変数
 	    0.0f,
 	    0.0f,
 	};
+
+	//プレイヤー
+	Player* player_;
+
+	// 移動
+
+	//速さ
+	float approachThePlayerSpeed = 1.0f;
+	float moveAwayFromPlayerSpeed = -1.0f;
+	float playerSatelliteSpeed = 1.0f;
+
+	//適正距離
+	float appropriateDistance = 80.0f;
+	//距離の許容範囲
+	float distanceTolerance = 20.0f;
+
 
 };
