@@ -39,18 +39,32 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		return;
 	}
 
-	// ワールド座標を取得
-	Vector3 posA = colliderA->GetWorldPosition();
-	Vector3 posB = colliderB->GetWorldPosition();
-	// 座標AとBの距離を求める
-	float distance = std::sqrtf(
-	    std::powf(posB.x - posA.x, 2.0f) + std::powf(posB.y - posA.y, 2.0f) +
-	    std::powf(posB.z - posA.z, 2.0f));
-	// 球と球の交差判定
-	if (distance <= colliderA->GetRadius() + colliderB->GetRadius()) {
-		// 自弾の衝突時コールバックを呼び出す
-		colliderA->OnCollision();
-		// 敵弾の衝突時コールバックを呼び出す
-		colliderB->OnCollision();
+	//あたり判定タイプ確認
+	WhichCollision(colliderA, colliderB);
+
+}
+
+void CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) {
+
+	if (colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere &&
+	    colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
+		//球と球のあたり判定
+
+		// ワールド座標を取得
+		Vector3 posA = colliderA->GetColliderShape()->GetCenter();
+		Vector3 posB = colliderB->GetColliderShape()->GetCenter();
+		// 座標AとBの距離を求める
+		float distance = std::sqrtf(
+		    std::powf(posB.x - posA.x, 2.0f) + std::powf(posB.y - posA.y, 2.0f) +
+		    std::powf(posB.z - posA.z, 2.0f));
+		// 球と球の交差判定
+		if (distance <= colliderA->GetColliderShape()->GetRadius() +
+		                    colliderB->GetColliderShape()->GetRadius()) {
+			// 自弾の衝突時コールバックを呼び出す
+			colliderA->OnCollision();
+			// 敵弾の衝突時コールバックを呼び出す
+			colliderB->OnCollision();
+		}
+
 	}
 }

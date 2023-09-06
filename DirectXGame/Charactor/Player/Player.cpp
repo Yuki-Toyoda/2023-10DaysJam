@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../../config/GlobalVariables.h"
+#include "Collision/ColliderShape/Sphere.h"
 
 #ifdef _DEBUG
 
@@ -107,6 +108,11 @@ void Player::Initialize(
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000001);
+
+	// コライダーの形
+	Sphere* sphere = new Sphere();
+	sphere->Initialize(GetWorldPosition(), 1000.0f);
+	colliderShape_ = sphere;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -158,6 +164,9 @@ void Player::Update() {
 
 	// 基底クラス更新
 	BaseCharacter::Update();
+
+	// コライダー更新
+	colliderShape_->Update(GetWorldPosition());
 
 	// 3Dレティクルのワールド座標更新
 	worldTransform3DReticle_.UpdateMatrix();

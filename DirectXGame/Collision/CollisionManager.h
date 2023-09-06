@@ -1,6 +1,8 @@
 #include "Collider.h"
 #include "Vector3.h"
 #include <list>
+#include "Collision/ColliderShape/ColliderShape.h"
+#include "Collision/ColliderShape/Sphere.h"
 
 /// <summary>
 /// 衝突判定マネージャー
@@ -30,6 +32,16 @@ private: // メンバ関数
 	/// <param name="colliderA">球A</param>
 	/// <param name="colliderB">球B</param>
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+
+private: // 衝突判定
+
+	/// <summary>
+	/// どのあたり判定か
+	/// </summary>
+	/// <param name="ShapeA">コライダーA</param>
+	/// <param name="ShapeB">コライダーB</param>
+	void WhichCollision(Collider* colliderA, Collider* colliderB);
+
 private: // メンバ変数
 	// コライダーリスト
 	std::list<Collider*> colliders_;

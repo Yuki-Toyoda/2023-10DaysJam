@@ -103,7 +103,8 @@ void GameScene::Update() {
 
 	// 自弾全てについて
 	for (PlayerBullet* playerBullet : player_->GetBullets()) {
-		collisionManager->ListRegister(playerBullet);
+		//collisionManager->ListRegister(playerBullet);
+		playerBullet;
 	}
 	// 当たり判定
 	collisionManager->CheakAllCollision();
