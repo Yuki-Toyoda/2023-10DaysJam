@@ -61,7 +61,7 @@ bool Collision::IsCollisionSphereOBB(ColliderShape* ShapeA, ColliderShape* Shape
 	    otientatuons[0].x, otientatuons[1].x, otientatuons[2].x, 0,
 	    otientatuons[0].y, otientatuons[1].y, otientatuons[2].y, 0,
 	    otientatuons[0].z, otientatuons[1].z, otientatuons[2].z, 0,
-	    obbCenter.x, obbCenter.y, obbCenter.y, 1};
+	    obbCenter.x, obbCenter.y, obbCenter.z, 1};
 
 	Matrix4x4 obbWorldMatrixInverse = MyMath::Inverse(obbWorldMatrix);
 
