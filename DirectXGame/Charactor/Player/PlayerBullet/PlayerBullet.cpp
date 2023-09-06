@@ -22,6 +22,17 @@ void PlayerBullet::Initialize(
 	isDead_ = false;
 	// 生存時間設定
 	deathTimer_ = klifeTime_;
+
+	// 衝突属性を設定
+	SetCollisionAttribute(0xfffffffe);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(0x00000001);
+
+	// コライダーの形
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_ = obb;
+
 }
 
 void PlayerBullet::Initialize(
@@ -131,7 +142,7 @@ void PlayerBullet::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
 }
 

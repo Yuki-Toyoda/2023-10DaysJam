@@ -171,13 +171,12 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	player_->SpriteDraw(); // プレイヤー
 
-#ifdef _DEBUG
+	#ifdef _DEBUG
 	player_->ColliderDraw(enableDebugCamera_);
 	enemyManager_->ColliderDraw();
 #endif // _DEBUG
-
-	player_->SpriteDraw(); // プレイヤー
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
