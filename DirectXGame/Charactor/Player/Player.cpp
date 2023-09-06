@@ -622,6 +622,7 @@ void Player::SpecialShot() {
 				shotVelocity = ReticleWorldPos - shotPos;
 				switch (specialShotBulletPlans_) {
 				case PlayerBullet::Fire:
+					// 炎弾の場合の速度
 					shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
 					break;
 				case PlayerBullet::Water:
