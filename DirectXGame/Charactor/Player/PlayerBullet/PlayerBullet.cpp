@@ -60,9 +60,9 @@ void PlayerBullet::Initialize(
 		// 爆破演出用t
 		explosiveT_ = 0.0f;
 		// 爆破演出時間
-		explosiveTime_ = 0.5f;
+		explosiveTime_ = 0.25f;
 		break;
-	case PlayerBullet::Water:
+	case PlayerBullet::Ice:
 		break;
 	case PlayerBullet::Thunder:
 		break;
@@ -85,7 +85,7 @@ void PlayerBullet::Update() {
 		// 炎弾更新
 		FireBulletUpdate();
 		break;
-	case PlayerBullet::Water:
+	case PlayerBullet::Ice:
 		// 水弾更新
 		WaterBulletUpdate();
 		break;
@@ -110,7 +110,7 @@ void PlayerBullet::Draw(const ViewProjection& viewProjection) {
 	case PlayerBullet::Fire:
 		models_[1]->Draw(worldTransform_, viewProjection);
 		break;
-	case PlayerBullet::Water:
+	case PlayerBullet::Ice:
 		models_[2]->Draw(worldTransform_, viewProjection);
 		break;
 	case PlayerBullet::Thunder:
@@ -160,7 +160,8 @@ void PlayerBullet::FireBulletUpdate() {
 			}
 			
 		}
-	} else {
+	} 
+	else {
 		// 爆破演出をイージングで行う
 		if (explosiveT_ <= explosiveTime_) {
 			worldTransform_.scale_ = 

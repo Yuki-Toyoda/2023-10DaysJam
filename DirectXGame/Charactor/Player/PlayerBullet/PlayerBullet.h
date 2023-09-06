@@ -11,7 +11,7 @@ public: // サブクラス
 	enum BulletType {
 		None, // 通常弾
 		Fire, // 炎弾
-		Water, // 水弾
+		Ice, // 水弾
 		Thunder // 雷弾
 	};
 public: // メンバ関数
@@ -101,6 +101,7 @@ private: // メンバ変数
 
 	// 死亡状態
 	bool isDead_;
+
 	// 弾の存在時間
 	static const int32_t klifeTime_ = 60;
 	// デスタイマー
@@ -130,5 +131,16 @@ private: // メンバ変数
 	// 爆破演出時間
 	float explosiveTime_;
 #pragma endregion
+
+	#pragma region 雷弾用変数
+	// 衝突判定
+	bool isFloorHit_;
+	// 演出用t
+	float wallDeployT_;
+	// 壁展開一段階秒数
+	float wallDeployTIme_;
+#pragma endregion
+
+
 
 };

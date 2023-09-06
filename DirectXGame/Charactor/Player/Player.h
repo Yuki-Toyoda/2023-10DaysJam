@@ -117,6 +117,11 @@ private: // メンバ関数
 	bool pressRTrigger_;
 	// 左トリガーのトリガー判定
 	bool pressLTrigger_;
+	// 十字キーのトリガー判定
+	bool pressDpadUp_; // 上
+	bool pressDpadDown_; // 下
+	bool pressDpadLeft_; // 左
+	bool pressDpadRight_; // 右
 
 	// トリガーデッドゾーン
 	int32_t triggerDeadZone_R_; // 右
@@ -206,10 +211,10 @@ private: // メンバ関数
 	int32_t specialShotStrength_;
 	// 特殊射撃できるか
 	bool canSpecialShot_;
-	// 特殊射撃クールタイム
-	int32_t specialShotCoolTime_;
-	// 特殊射撃クールタイムデフォルト値
-	int32_t kSpecialShotCoolTime_;
+	// 変換するオーブの種類
+	PlayerBullet::BulletType selectedType_;
+	// 変換するオーブ
+	int32_t selectedOrb_;
 
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG

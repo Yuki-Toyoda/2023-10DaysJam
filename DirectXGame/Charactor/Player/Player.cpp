@@ -119,6 +119,12 @@ void Player::Initialize(const std::vector<Model*>& modelsPlayer,
 	specialShotBulletPlans_ = PlayerBullet::None;
 	// 特殊射撃の強さをリセット
 	specialShotStrength_ = 1;
+	// 特殊射撃できるか
+	canSpecialShot_ = false;
+	// チャージするオーブの種類リセット
+	selectedType_ = PlayerBullet::Fire;
+	// 現在選択しているオーブ
+	selectedOrb_ = 0;
 
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
@@ -231,6 +237,27 @@ void Player::Update() {
 			pressLTrigger_ = false;
 		else
 			pressLTrigger_ = true;
+
+		// 十字キー上が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP))
+			pressDpadUp_ = false;
+		else
+			pressDpadUp_ = true;
+		// 十字キー下が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN))
+			pressDpadDown_ = false;
+		else
+			pressDpadDown_ = true;
+		// 十字キー左が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT))
+			pressDpadLeft_ = false;
+		else
+			pressDpadLeft_ = true;
+		// 十字キー右が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT))
+			pressDpadRight_ = false;
+		else
+			pressDpadRight_ = true;
 	}
 
 	#ifdef _DEBUG
@@ -240,7 +267,7 @@ void Player::Update() {
 	// 追加するオーブを選択
 	ImGui::RadioButton("Fire", &selectOrbs_, PlayerBullet::Fire);
 	ImGui::SameLine();
-	ImGui::RadioButton("Water", &selectOrbs_, PlayerBullet::Water);
+	ImGui::RadioButton("Water", &selectOrbs_, PlayerBullet::Ice);
 	ImGui::SameLine();
 	ImGui::RadioButton("Thunder", &selectOrbs_, PlayerBullet::Thunder);
 
@@ -263,8 +290,11 @@ void Player::Update() {
 	}
 
 	int specialShotPlan = specialShotBulletPlans_;
+	int selectedType = selectedType_;
 	ImGui::DragInt("SpecialShotPlan", &specialShotPlan, 1.0f);
 	ImGui::DragInt("SpecialShotStrength", &specialShotStrength_, 1.0f);
+	ImGui::DragInt("selectedType", &selectedType, 1.0f);
+	ImGui::DragInt("selectedOrb", &selectedOrb_, 1.0f);
 
 
 	ImGui::End();
@@ -473,7 +503,7 @@ void Player::Shot() {
 				bullets_.push_back(newBullet);
 
 				// 弾数デクリメント
-				magazine_--;
+				//magazine_--;
 
 				// 射撃クールタイムリセット
 				fireCoolTime_ = kMaxFireCoolTime_;
@@ -537,17 +567,16 @@ void Player::SpecialShot() {
 		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)});
 		// サイズ設定
 		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
-	}
 
-	// 全てのスプライトの色を設定
-	for (int i = 0; i < 3; i++) {
 		// とりあえずの色設定
 		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 		// 特殊射撃の予定をリセット
 		specialShotBulletPlans_ = PlayerBullet::None;
 		// 特殊射撃の強さをリセット
 		specialShotStrength_ = 1;
+
 	}
+
 	// 所持しているオーブ数を確認
 	int havingOrbCount = (int)havingOrbs_.size();
 	for (int i = 0; i < havingOrbCount; i++) {
@@ -559,7 +588,7 @@ void Player::SpecialShot() {
 			spriteHavingOrbs_[i]->SetColor({0.8f, 0.0f, 0.0f, 1.0f});
 			
 			break;
-		case PlayerBullet::Water: // 青の場合
+		case PlayerBullet::Ice: // 青の場合
 			// スプライトの色を設定
 			spriteHavingOrbs_[i]->SetColor({0.0f, 0.0f, 0.8f, 1.0f});
 			break;
@@ -625,11 +654,12 @@ void Player::SpecialShot() {
 					// 炎弾の場合の速度
 					shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
 					break;
-				case PlayerBullet::Water:
+				case PlayerBullet::Ice:
 
 					break;
 				case PlayerBullet::Thunder:
-
+					// 雷弾の場合の速度
+					shotVelocity = MyMath::Normalize(shotVelocity) * 20.0f;
 					break;
 				}
 
@@ -650,6 +680,54 @@ void Player::SpecialShot() {
 				havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
 
 			}
+		}
+
+		// 変換するオーブの選択処理
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {	
+			// 十字右
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
+				// 選択しているオーブが最大値を上回っていたら
+				if (selectedOrb_ >= havingOrbCount - 1) {
+					// 最初に戻る
+					selectedOrb_ = 0;
+				} else {
+					selectedOrb_++;
+				}
+			}
+			// 十字左
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
+				// 選択しているオーブが最大値を上回っていたら
+				if (selectedOrb_ <= 0) {
+					// 最初に戻る
+					selectedOrb_ = havingOrbCount - 1;
+				} else {
+					selectedOrb_--;
+				}
+			}
+		}
+		else {
+			// 変換するオーブの種類を選択
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
+				// 変換タイプを炎に設定
+				selectedType_ = PlayerBullet::Fire;
+			}
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
+				// 変換タイプを氷に設定
+				selectedType_ = PlayerBullet::Ice;
+			}
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
+				// 変換タイプを雷に設定
+				selectedType_ = PlayerBullet::Thunder;
+			}
+		}
+	}
+
+	// オーブの数が1以上なら
+	if (havingOrbCount > 0) {
+		// 選択したオーブを別のオーブに変換する
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+			havingOrbs_.insert(havingOrbs_.begin() + selectedOrb_, selectedType_);
+			havingOrbs_.erase(havingOrbs_.begin() + selectedOrb_ + 1);
 		}
 	}
 }
