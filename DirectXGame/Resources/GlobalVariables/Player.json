@@ -8,11 +8,25 @@
         "MaxFallSpeed": -9.800000190734863,
         "MaxFireCoolTime": 25.0,
         "MaxJumpHeight": 5.0,
+        "MaxMagazineSize": 15,
+        "MaxReloadTime": 60,
         "MoveSpeed": 3.0,
         "ShotPosOffset": [
             0.0,
             -5.0,
             0.0
+        ],
+        "SpriteHavingOrbsLineSpace": [
+            96.0,
+            0.0
+        ],
+        "SpriteHavingOrbsSize": [
+            64.0,
+            64.0
+        ],
+        "SpriteHavingOrbsStartPos": [
+            1000.0,
+            100.0
         ]
     }
 }

@@ -7,6 +7,7 @@
 #include "../input/Input.h"
 #include "../math/MyMath.h"
 #include "WinApp.h"
+#include "Sprite.h"
 
 /// <summary>
 /// プレイヤークラス
@@ -19,7 +20,9 @@ public: // メンバ関数
 	/// </summary>
 	/// <param name="modelsPlayer">プレイヤーモデル</param>
 	/// <param name="modelsBullet">弾モデル</param>
-	void Initialize(const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet);
+	void Initialize(
+	    const std::vector<Model*>& modelsPlayer,
+	    const std::vector<Model*>& modelsBullet);
 
 	/// <summary>
 	/// 更新関数
@@ -31,6 +34,11 @@ public: // メンバ関数
 	/// </summary>
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Draw(const ViewProjection& viewProjection) override;
+
+	/// <summary>
+	/// スプライト描画関数
+	/// </summary>
+	void SpriteDraw();
 
 public: // アクセッサ等
 
@@ -117,6 +125,13 @@ private: // メンバ関数
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
 
+	// 1x1テクスチャ
+	uint32_t textureHandle1x1_ = 0u;
+	// レティクル用テクスチャ
+	uint32_t textureHandleReticle_ = 0u;
+
+	// 照準スプライト
+	std::unique_ptr<Sprite> spriteReticle_;
 	// 3Dレティクル用座標
 	WorldTransform worldTransform3DReticle_;
 
@@ -177,6 +192,16 @@ private: // メンバ関数
 	std::vector<PlayerBullet::BulletType> havingOrbs_;
 	// オーブ所持数最大値
 	int32_t kMaxHavingOrbs_;
+	// 所持しているオーブを描画するスプライト
+	std::unique_ptr<Sprite> spriteHavingOrbs_[3];
+	// スプライトの開始座標
+	Vector2 spriteHavingOrbsStartPos_;
+	// スプライトの大きさ
+	Vector2 spriteHavingOrbsSize_;
+	// スプライト１つの行間
+	Vector2 spriteHavingOrbsLineSpace_;
+	// 色
+	Vector4 spriteHavingOrbsColor_;
 	// 特殊射撃できるか
 	bool canSpecialShot_;
 	// 特殊射撃クールタイム

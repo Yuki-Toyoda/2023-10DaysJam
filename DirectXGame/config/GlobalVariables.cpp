@@ -49,14 +49,22 @@ void GlobalVariables::Update() {
 				// int32_t型の値を取得
 				int32_t* ptr = std::get_if<int32_t>(&item.value);
 				// ImGuiのUIを出す
-				ImGui::DragInt(itemName.c_str(), ptr, 1.0f, -100, 100);
+				ImGui::DragInt(itemName.c_str(), ptr, 1.0f);
 			}
 			// float型の値を保持している場合
 			else if (std::holds_alternative<float>(item.value)) {
 				// float型の値を取得
 				float* ptr = std::get_if<float>(&item.value);
 				// ImGuiのUIを出す
-				ImGui::DragFloat(itemName.c_str(), ptr, 1.0f, -100.0f, 100.0f);
+				ImGui::DragFloat(itemName.c_str(), ptr, 1.0f);
+			}
+			// Vector2型の値を保持している場合
+			else if (std::holds_alternative<Vector2>(item.value)) {
+				// Vector2型の値を取得
+				Vector2* ptr = std::get_if<Vector2>(&item.value);
+				// ImGuiのUIを出す
+				ImGui::DragFloat2(
+				    itemName.c_str(), reinterpret_cast<float*>(ptr), 0.1f);
 			}
 			// Vector3型の値を保持している場合
 			else if (std::holds_alternative<Vector3>(item.value)) {
@@ -64,7 +72,7 @@ void GlobalVariables::Update() {
 				Vector3* ptr = std::get_if<Vector3>(&item.value);
 				// ImGuiのUIを出す
 				ImGui::DragFloat3(
-				    itemName.c_str(), reinterpret_cast<float*>(ptr), 0.1f, -100.0f, 100.0f);
+				    itemName.c_str(), reinterpret_cast<float*>(ptr), 0.1f);
 			}
 		}
 
@@ -121,6 +129,13 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 		else if (std::holds_alternative<float>(item.value)) {
 			// float型の値を登録
 			root[groupName][itemName] = std::get<float>(item.value);
+		}
+		// Vector2型の値を保持している場合
+		else if (std::holds_alternative<Vector2>(item.value)) {
+			// Vector2型の値を登録
+			Vector2 value = std::get<Vector2>(item.value);
+			// jsonの配列でVector2の要素一つ一つを格納する
+			root[groupName][itemName] = json::array({value.x, value.y});
 		}
 		// Vector3型の値を保持している場合
 		else if (std::holds_alternative<Vector3>(item.value)) {
@@ -241,6 +256,13 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			// 値をセットする
 			SetValue(groupName, itemName, value);
 		}
+		// Vector2型の値を保持している場合
+		else if (itItem->is_array() && itItem->size() == 2) {
+			// Vector3型の値を登録する
+			Vector2 value = {itItem->at(0), itItem->at(1)};
+			// 値をセットする
+			SetValue(groupName, itemName, value);
+		}
 		// Vector3型の値を保持している場合
 		else if (itItem->is_array() && itItem->size() == 3) {
 			// Vector3型の値を登録する
@@ -273,6 +295,17 @@ void GlobalVariables::SetValue(const std::string& groupName, const std::string& 
 }
 
 void GlobalVariables::SetValue(
+    const std::string& groupName, const std::string& key, const Vector2& value) {
+	// グループの参照を取得する
+	Group& group = datas_[groupName];
+	// 新しい項目のデータを設定
+	Item newItem{};
+	newItem.value = value;
+	// 設定を行った項目をデータコンテナに追加
+	group.items[key] = newItem;
+}
+
+void GlobalVariables::SetValue(
     const std::string& groupName, const std::string& key, const Vector3& value) {
 	// グループの参照を取得する
 	Group& group = datas_[groupName];
@@ -293,6 +326,14 @@ void GlobalVariables::AddItem(const std::string& groupName, const std::string& k
 }
 
 void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, float value) {
+	// 同名のキーを見つけたら処理を抜ける
+	if (datas_[groupName].items.find(key) == datas_[groupName].items.end()) {
+		// 関数呼び出し
+		SetValue(groupName, key, value);
+	}
+}
+
+void GlobalVariables::AddItem(const std::string& groupName, const std::string& key, Vector2 value) {
 	// 同名のキーを見つけたら処理を抜ける
 	if (datas_[groupName].items.find(key) == datas_[groupName].items.end()) {
 		// 関数呼び出し
@@ -337,8 +378,21 @@ float GlobalVariables::GetFloatValue(const std::string& groupName, const std::st
 	return std::get<float>(group.items[key].value);
 }
 
-Vector3
-    GlobalVariables::GetVector3Value(const std::string& groupName, const std::string& key){
+Vector2 GlobalVariables::GetVector2Value(const std::string& groupName, const std::string& key) {
+	// 指定グループがいない場合エラー
+	assert(datas_.find(groupName) != datas_.end());
+
+	// グループの参照を取得する
+	Group& group = datas_[groupName];
+
+	// 指定グループに指定のキーが存在しない場合エラー
+	assert(group.items.find(key) != group.items.end());
+
+	// 指定グループから指定のキーの値を取得
+	return std::get<Vector2>(group.items[key].value);
+}
+
+Vector3 GlobalVariables::GetVector3Value(const std::string& groupName, const std::string& key){
 	// 指定グループがいない場合エラー
 	assert(datas_.find(groupName) != datas_.end());
 

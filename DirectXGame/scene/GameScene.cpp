@@ -27,9 +27,6 @@ void GameScene::Initialize() {
 
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
-	#ifdef _DEBUG
-	enableDebugCamera_ = false;
-#endif // _DEBUG
 
 	// クラスインスタンス生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720); // デバックカメラ
@@ -126,6 +123,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->SpriteDraw(); // プレイヤー
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
