@@ -75,6 +75,6 @@ bool Collision::IsCollisionSphereOBB(ColliderShape* ShapeA, ColliderShape* Shape
 	sphereOBBLocal.Initialize(centerInOBBLocalSpace, sphereRadius);
 
 	// ローカル空間で衝突
-	return IsCollisionSphereAABB(&aabbOBBLocal, &sphereOBBLocal);
+	return IsCollisionSphereAABB(&sphereOBBLocal, &aabbOBBLocal);
 
 }

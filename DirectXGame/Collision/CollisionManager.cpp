@@ -1,5 +1,6 @@
 #include "CollisionManager.h"
 #include <cmath>
+#include "Collision.h"
 
 // リストのクリア
 void CollisionManager::ListClear() { colliders_.clear(); }
@@ -46,25 +47,45 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 
 void CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) {
 
-	if (colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere &&
-	    colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
-		//球と球のあたり判定
+	//あたったか
+	bool isCollision = false;
 
-		// ワールド座標を取得
-		Vector3 posA = colliderA->GetColliderShape()->GetCenter();
-		Vector3 posB = colliderB->GetColliderShape()->GetCenter();
-		// 座標AとBの距離を求める
-		float distance = std::sqrtf(
-		    std::powf(posB.x - posA.x, 2.0f) + std::powf(posB.y - posA.y, 2.0f) +
-		    std::powf(posB.z - posA.z, 2.0f));
-		// 球と球の交差判定
-		if (distance <= colliderA->GetColliderShape()->GetRadius() +
-		                    colliderB->GetColliderShape()->GetRadius()) {
-			// 自弾の衝突時コールバックを呼び出す
-			colliderA->OnCollision();
-			// 敵弾の衝突時コールバックを呼び出す
-			colliderB->OnCollision();
+	// 球のあたり判定
+	if (colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
+		// 球のあたり判定
+		if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
+			isCollision = Collision::IsCollisionSphereSphere(colliderA->GetColliderShape(), colliderB->GetColliderShape());
+		} 
+		// AABBのあたり判定
+		else if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::AABB) {
+			isCollision = Collision::IsCollisionSphereAABB(colliderA->GetColliderShape(), colliderB->GetColliderShape());
+		}
+		// OBBのあたり判定
+		else if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::OBB) {
+			isCollision = Collision::IsCollisionSphereOBB(colliderA->GetColliderShape(), colliderB->GetColliderShape());
 		}
 
+	} 
+	// AABBのあたり判定
+	else if (colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::AABB) {
+		// 球のあたり判定
+		if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
+			isCollision = Collision::IsCollisionSphereAABB(colliderB->GetColliderShape(), colliderA->GetColliderShape());
+		} 
 	}
+	// OBBのあたり判定
+	else if (
+	    colliderA->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::OBB) {
+		// 球のあたり判定
+		if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
+			isCollision = Collision::IsCollisionSphereOBB(colliderB->GetColliderShape(), colliderA->GetColliderShape());
+		}
+	}
+
+	//衝突時の動作
+	if (isCollision) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
+
 }

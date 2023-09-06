@@ -111,7 +111,7 @@ void Player::Initialize(
 
 	// コライダーの形
 	Sphere* sphere = new Sphere();
-	sphere->Initialize(GetWorldPosition(), 1.0f);
+	sphere->Initialize(GetWorldPosition(), 10.0f);
 	colliderShape_ = sphere;
 	
 	// 調整項目クラスのインスタンス取得
@@ -168,7 +168,7 @@ void Player::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), 1.0f);
+	colliderShape_->Update(GetWorldPosition(), 10.0f);
 
 	// 3Dレティクルのワールド座標更新
 	worldTransform3DReticle_.UpdateMatrix();
