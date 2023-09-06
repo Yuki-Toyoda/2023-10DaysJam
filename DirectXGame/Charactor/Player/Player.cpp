@@ -683,7 +683,7 @@ void Player::SpecialShot() {
 		}
 
 		// 変換するオーブの選択処理
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {	
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {	
 			// 十字右
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
 				// 選択しているオーブが最大値を上回っていたら
