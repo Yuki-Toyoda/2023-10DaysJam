@@ -26,7 +26,7 @@ public: // メンバ変数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(const std::vector<Model*>& models);
+	void Initialize(const std::vector<Model*>& models, std::vector<uint32_t> textureHandles);
 
 	/// <summary>
 	/// 更新
@@ -114,7 +114,7 @@ private: // メンバ変数
 	// エネミーモデル
 	std::vector<Model*> models_;
 	// エネミーのテクスチャハンドル
-	uint32_t textureHandle_ = 0u; 
+	std::vector<uint32_t> textureHandles_;
 
 	// エネミーバレット
 	std::list<EnemyBullet*> enemyBullets_;
@@ -133,5 +133,8 @@ private: // メンバ変数
 
 	// プレイヤー
 	Player* player_ = nullptr;
+
+	//次のエネミータイプ
+	Enemy::EnemyType enemyTypeNext;
 
 };

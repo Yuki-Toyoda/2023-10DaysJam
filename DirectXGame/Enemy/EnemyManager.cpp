@@ -6,12 +6,12 @@ EnemyManager* EnemyManager::GetInstance() {
 	return &instance;
 }
 
-void EnemyManager::Initialize(const std::vector<Model*>& models) {
+void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uint32_t> textureHandles) {
 	
 	//モデル
 	models_ = models;
 	// エネミーのテクスチャハンドル
-	//textureHandle_ = textureHandle; 
+	textureHandles_ = textureHandles; 
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -31,6 +31,9 @@ void EnemyManager::Initialize(const std::vector<Model*>& models) {
 
 	//ボスエネミーモデル
 	//bossModels_ = models;
+
+	//エネミータイプ
+	enemyTypeNext = Enemy::EnemyType::Thunder;
 
 	//初期のエネミー配置
 	for (size_t i = 0; i < enemyMax; i++) {
@@ -91,7 +94,7 @@ void EnemyManager::AddEnemy() {
 	
 	Enemy* enemy = new Enemy();
 
-	enemy->Initialize(models_, textureHandle_);
+	enemy->Initialize(models_, textureHandles_[enemyTypeNext], enemyTypeNext);
 	enemy->SetEnemyManager(this);
 	enemy->SetPlayer(player_);
 	enemies_.push_back(enemy);

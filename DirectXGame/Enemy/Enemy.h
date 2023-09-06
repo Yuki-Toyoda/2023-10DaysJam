@@ -11,13 +11,22 @@ class Player;
 /// </summary>
 class Enemy : public BaseCharacter {
 
+public: //サブクラス
+	//  弾の種類
+	enum EnemyType {
+		None,   // 通常
+		Fire,   // 炎
+		Ice,    // 氷
+		Thunder // 雷
+	};
+
 public: //メンバ関数
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle);
+	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType);
 
 	/// <summary>
 	/// 更新
@@ -107,5 +116,7 @@ private: //メンバ変数
 	//突進速度
 	float rushSpeed_ = 5.0f;
 
+	//エネミータイプ
+	EnemyType enemyType_;
 
 };

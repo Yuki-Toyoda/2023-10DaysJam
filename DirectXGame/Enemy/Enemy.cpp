@@ -11,7 +11,7 @@
 /// 初期化
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
-void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle) {
+void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -26,6 +26,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 
 	// デスフラグ
 	isDead_ = false;
+
+	enemyType_ = enemyType;
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
@@ -77,7 +79,7 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& viewProjection) {
 
 	for (Model* model : models_) {
-		model->Draw(worldTransform_, viewProjection);
+		model->Draw(worldTransform_, viewProjection, textureHandle_);
 	}
 
 }

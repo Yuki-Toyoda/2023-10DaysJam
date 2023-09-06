@@ -61,8 +61,16 @@ void GameScene::Initialize() {
 	// プレイヤーにカメラのビュープロジェクション
 	player_->SetViewProjection(camera_->GetViewProjection());
 
+	//テクスチャハンドル
+	std::vector<uint32_t> textureHandles = {
+	    TextureManager::GetInstance()->Load("./Resources/white1x1.png"),
+	    TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyFire.png"),
+	    TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyIce.png"),
+	    TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyThunder.png"),
+	};
+
 	//エネミーマネージャー
-	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()});
+	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()}, textureHandles);
 	//enemyManager_->SetBossEnemyPlayer(player_.get());
 
 	// 衝突マネージャー
