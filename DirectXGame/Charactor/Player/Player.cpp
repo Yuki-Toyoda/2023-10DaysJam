@@ -655,19 +655,7 @@ void Player::SpecialShot() {
 				Vector3 shotPos = worldTransform_.translation_;
 				shotPos = shotPos + shotPosOffset_;
 				shotVelocity = ReticleWorldPos - shotPos;
-				switch (specialShotBulletPlans_) {
-				case PlayerBullet::Fire:
-					// 炎弾の場合の速度
-					shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
-					break;
-				case PlayerBullet::Ice:
-
-					break;
-				case PlayerBullet::Thunder:
-					// 雷弾の場合の速度
-					shotVelocity = MyMath::Normalize(shotVelocity) * 20.0f;
-					break;
-				}
+				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
 
 				// 生成した弾を初期化
 				newBullet->Initialize(
@@ -741,7 +729,8 @@ void Player::SpecialShot() {
 			// 変換クールタイムを設定
 			changeCoolTime_ = kChangeCoolTime_;
 		}
-	} else {
+	} 
+	else {
 		if (changeCoolTime_ > 0) {
 			// 変換クールタイムデクリメント
 			changeCoolTime_--;

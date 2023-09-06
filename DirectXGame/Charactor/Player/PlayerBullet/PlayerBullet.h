@@ -11,9 +11,20 @@ public: // サブクラス
 	enum BulletType {
 		None, // 通常弾
 		Fire, // 炎弾
-		Ice, // 水弾
+		Ice, // 氷弾
 		Thunder // 雷弾
 	};
+
+private: // サブクラス
+	// 行動中間地点
+	enum ActionWayPoint {
+		WayPoint1, // 行動中間地点1 ~
+		WayPoint2,
+		WayPoint3,
+		WayPoint4,
+		WayPoint5,
+	};
+
 public: // メンバ関数
 	
 	/// <summary>
@@ -115,7 +126,7 @@ private: // メンバ変数
 	// 発射する弾の強さ
 	int32_t bulletStrength_;
 
-	#pragma region 炎弾用変数
+	#pragma region 特殊弾用変数
 	// 衝突判定
 	bool isHit_;
 	// 弾道落下用スピード
@@ -124,21 +135,29 @@ private: // メンバ変数
 	float kMaxFallSpeed_;
 	// 弾道落下用加速度
 	float kFallAcceleration_;
+	// 演出用t
+	float animT_;
+	// 演出用行動中間地点
+	int actionWayPoint_;
+
+#pragma endregion
+
+	#pragma region 炎弾用変数
 	// 爆破範囲
 	Vector3 explosiveRange_;
-	// 爆破演出用t
-	float explosiveT_;
 	// 爆破演出時間
 	float explosiveTime_;
 #pragma endregion
 
-	#pragma region 雷弾用変数
-	// 衝突判定
-	bool isFloorHit_;
-	// 演出用t
-	float wallDeployT_;
-	// 壁展開一段階秒数
-	float wallDeployTIme_;
+	#pragma region 氷弾用変数
+	// 展開する壁のサイズ
+	Vector3 deployWallSize_;
+	// 展開演出時間
+	float deployStagingTime_;
+	// 展開時間
+	float deploymentTime_;
+	// 終了演出時間
+	float deployEndStagingTime_;
 #pragma endregion
 
 

@@ -42,27 +42,44 @@ void PlayerBullet::Initialize(
 	bulletType_ = bulletType;
 	bulletStrength_ = bulletStrength;
 
+	// 特殊弾用変数初期化
+	// 何とも衝突していない
+	isHit_ = false;
+	// 落下速度初期化
+	fallSpeed_ = 0.0f;
+	// 弾道落下スピード最大値設定
+	kMaxFallSpeed_ = 3.0f;
+	// 落下加速度初期化
+	kFallAcceleration_ = 0.00098f;
+	// 演出用t初期化
+	animT_ = 0.0f;
+	// 行動中間地点リセット
+	actionWayPoint_ = WayPoint1;
+
 	switch (bulletType_) {
 	case PlayerBullet::Fire:
-		// 何とも衝突していない
-		isHit_ = false;
-		// 落下速度初期化
-		fallSpeed_ = 0.0f;
-		// 弾道落下スピード最大値設定
-		kMaxFallSpeed_ = 3.0f;
-		// 落下加速度初期化
-		kFallAcceleration_ = 0.00098f;
 		// 爆破範囲設定
 		explosiveRange_ = {
-		    50.0f * (1.0f + 0.35f * bulletStrength), 
-			50.0f * (1.0f + 0.35f * bulletStrength),
-		    50.0f * (1.0f + 0.35f * bulletStrength)};
-		// 爆破演出用t
-		explosiveT_ = 0.0f;
+		    50.0f * (1.0f + 0.45f * (bulletStrength - 1)), 
+			50.0f * (1.0f + 0.45f * (bulletStrength - 1)),
+		    50.0f * (1.0f + 0.45f * (bulletStrength - 1))};
 		// 爆破演出時間
 		explosiveTime_ = 0.25f;
 		break;
 	case PlayerBullet::Ice:
+		// 回転角をリセット
+		worldTransform_.rotation_ = {0.0f, worldTransform_.rotation_.y, 0.0f};
+		// 壁のサイズ設定
+		deployWallSize_ = {
+		    50.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
+			20.0f * (1.0f + 0.15f * (bulletStrength - 1)), 
+			10.0f * (1.0f + 0.15f * (bulletStrength - 1))};
+		// 展開演出時間設定
+		deployStagingTime_ = 0.35f;
+		// 展開時間設定
+		deploymentTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
+		// 終了演出時間設定
+		deployEndStagingTime_ = 0.15f;
 		break;
 	case PlayerBullet::Thunder:
 		break;
@@ -163,11 +180,11 @@ void PlayerBullet::FireBulletUpdate() {
 	} 
 	else {
 		// 爆破演出をイージングで行う
-		if (explosiveT_ <= explosiveTime_) {
+		if (animT_ <= explosiveTime_) {
 			worldTransform_.scale_ = 
-				MyMath::EaseOut(explosiveT_, {0.5f, 0.5f, 0.5f}, explosiveRange_, explosiveTime_);
+				MyMath::EaseOut(animT_, {0.5f, 0.5f, 0.5f}, explosiveRange_, explosiveTime_);
 			// 演出用tを加算
-			explosiveT_ += 1.0f / 60.0f;
+			animT_ += 1.0f / 60.0f;
 		} else {
 			// 弾を消去する
 			isDead_ = true;
@@ -176,7 +193,97 @@ void PlayerBullet::FireBulletUpdate() {
 }
 
 void PlayerBullet::WaterBulletUpdate() {
+	// 床と衝突していなければ
+	if (!isHit_) {
+		// 弾をベクトルの方向に前進させる
+		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 
+		// １フレーム落下した後の座標を一時的に計算
+		float tempTranslateY = worldTransform_.translation_.y + fallSpeed_;
+		// 一時座標が床以下になったら
+		if (tempTranslateY <= 0.0f) {
+			// 座標を床位置にリセット
+			worldTransform_.translation_.y = 0.0f;
+			// 落下速度初期化
+			fallSpeed_ = 0.0f;
+			// 床と衝突
+			isHit_ = true;
+		} else {
+			// 落下スピード加算
+			velocity_.y += fallSpeed_;
+			if (fallSpeed_ <= kMaxFallSpeed_) {
+				fallSpeed_ -= kFallAcceleration_;
+			} else {
+				fallSpeed_ = kMaxFallSpeed_;
+			}
+		}
+	} else {
+		switch (actionWayPoint_) {
+		case PlayerBullet::WayPoint1:
+			// 展開演出をイージングで行う
+			if (animT_ <= deployStagingTime_) {
+				worldTransform_.scale_ = MyMath::EaseOut(
+				    animT_, {1.0f, 0.1f, 1.0f}, {deployWallSize_.x, 0.1f, deployWallSize_.z},
+				    deployStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 次の演出時間を設定
+				deployStagingTime_ = 0.25f;
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint2:
+			// 展開演出をイージングで行う
+			if (animT_ <= deployStagingTime_) {
+				worldTransform_.scale_ = MyMath::EaseOut(
+				    animT_, {deployWallSize_.x, 0.1f, deployWallSize_.z}, deployWallSize_,
+				    deployStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint3:
+			// 指定時間まで展開
+			if (animT_ <= deploymentTime_) {
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint4:
+			// 展開演出をイージングで行う
+			if (animT_ <= deployEndStagingTime_) {
+				worldTransform_.scale_ =
+				    MyMath::EaseOut(animT_, deployWallSize_, {deployWallSize_.x, 0.0f, deployWallSize_.z},
+				    deployStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 演出終了
+				actionWayPoint_ = WayPoint1;
+				// 弾を消去
+				isDead_ = true;
+			}
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void PlayerBullet::ThunderBulletUpdate() {

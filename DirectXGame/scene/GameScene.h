@@ -70,8 +70,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelBullet_;
 	// 炎弾モデル
 	std::unique_ptr<Model> modelFireBullet_;
-	// 水弾モデル
-	std::unique_ptr<Model> modelWaterBullet_;
+	// 氷弾モデル
+	std::unique_ptr<Model> modelIceBullet_;
 	// 雷弾モデル
 	std::unique_ptr<Model> modelThunderBullet_;
 
