@@ -699,7 +699,9 @@ void Player::SpecialShot() {
 				// 選択しているオーブが最大値を上回っていたら
 				if (selectedOrb_ <= 0) {
 					// 最初に戻る
-					selectedOrb_ = havingOrbCount - 1;
+					if (havingOrbCount < 0) {
+						selectedOrb_ = havingOrbCount - 1;
+					}
 				} else {
 					selectedOrb_--;
 				}
