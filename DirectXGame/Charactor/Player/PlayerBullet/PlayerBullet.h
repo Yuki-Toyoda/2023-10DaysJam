@@ -9,10 +9,10 @@ class PlayerBullet : public BaseCharacter {
 public: // サブクラス
 	// 弾の種類
 	enum BulletType {
-		Normal,
-		Fire,
-		Water,
-		Thunder
+		None, // 通常弾
+		Fire, // 炎弾
+		Water, // 水弾
+		Thunder // 雷弾
 	};
 public: // メンバ関数
 	
@@ -72,12 +72,12 @@ private: // 弾ごとの行動関数
 	void NormalBulletUpdate();
 
 	/// <summary>
-	/// 爆発弾更新処理
+	/// 炎弾更新処理
 	/// </summary>
 	void FireBulletUpdate();
 
 	/// <summary>
-	///  ビーム弾更新処理
+	/// 水弾更新処理
 	/// </summary>
 	void WaterBulletUpdate();
 
@@ -107,5 +107,22 @@ private: // メンバ変数
 	BulletType bulletType_;
 	// 発射する弾の強さ
 	int32_t bulletStrength_;
+
+	#pragma region 炎弾用変数
+	// 衝突判定
+	bool isHit_;
+	// 弾道落下用スピード
+	float fallSpeed_;
+	// 弾道落下スピード最大値
+	float kMaxFallSpeed_;
+	// 弾道落下用加速度
+	float kFallAcceleration_;
+	// 爆破範囲
+	Vector3 explosiveRange_;
+	// 爆破演出用t
+	float explosiveT_;
+	// 爆破演出時間
+	float explosiveTime_;
+#pragma endregion
 
 };

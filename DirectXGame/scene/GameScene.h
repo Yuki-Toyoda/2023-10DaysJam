@@ -66,7 +66,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelSkyDome_;
 	// 地面モデル
 	std::unique_ptr<Model> modelGround_;
-	// 弾モデル
+	// 通常弾モデル
 	std::unique_ptr<Model> modelBullet_;
 	// 炎弾モデル
 	std::unique_ptr<Model> modelFireBullet_;

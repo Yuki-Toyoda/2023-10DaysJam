@@ -593,7 +593,7 @@ void Player::SpecialShot() {
 	if (specialShotBulletPlans_ == PlayerBullet::None)
 		canSpecialShot_ = false;
 	else
-		canShot_ = true;
+		canSpecialShot_ = true;
 
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
@@ -620,7 +620,7 @@ void Player::SpecialShot() {
 				Vector3 shotPos = worldTransform_.translation_;
 				shotPos = shotPos + shotPosOffset_;
 				shotVelocity = ReticleWorldPos - shotPos;
-				shotVelocity = MyMath::Normalize(shotVelocity) * bulletSpeed_;
+				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
 
 				// 生成した弾を初期化
 				newBullet->Initialize(
@@ -635,11 +635,9 @@ void Player::SpecialShot() {
 				// 生成した弾をリストに入れる
 				bullets_.push_back(newBullet);
 
-				// 弾数デクリメント
-				magazine_--;
+				// 所持オーブのリセット
+				havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
 
-				// 射撃クールタイムリセット
-				fireCoolTime_ = kMaxFireCoolTime_;
 			}
 		}
 	}

@@ -21,8 +21,16 @@ void GameScene::Initialize() {
 	modelSkyDome_.reset(Model::CreateFromOBJ("SkyDome", true)); // 天球
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true)); // 地面
 	std::vector<Model*> playerModels = {};  // プレイヤー用モデルリストの生成
-	modelBullet_.reset(Model::CreateFromOBJ("Bullet", true)); // 弾
-	std::vector<Model*> playerBulletModels = { modelBullet_.get()}; // プレイヤー弾用モデルリストの生成
+	modelBullet_.reset(Model::CreateFromOBJ("Bullet", true)); // 通常弾
+	modelFireBullet_.reset(Model::CreateFromOBJ("Bomb", true)); // 炎弾
+	modelWaterBullet_.reset(Model::CreateFromOBJ("Beam", true));    // 水弾
+	modelThunderBullet_.reset(Model::CreateFromOBJ("Wall", true)); // 雷弾
+	std::vector<Model*> playerBulletModels = { 
+		modelBullet_.get(), // 通常弾
+	    modelFireBullet_.get(), // 炎弾
+	    modelWaterBullet_.get(), // 水弾
+	    modelThunderBullet_.get(), // 雷弾
+	}; // プレイヤー弾用モデルリストの生成
 
 
 	// デバックカメラ無効
