@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector3.h"
+#include "ViewProjection.h"
 /// <summary>
 /// コライダーの形
 /// </summary>
@@ -41,6 +42,11 @@ public: // 継承メンバ関数
 	/// 調整項目適用関数
 	/// </summary>
 	virtual void ApplyGlobalVariables(const char* groupName) = 0;
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	virtual void Draw() = 0;
 
 	//球
 	virtual void Update(Vector3 posision, float radius);

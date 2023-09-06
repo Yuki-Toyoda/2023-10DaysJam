@@ -23,6 +23,11 @@ public: // メンバ関数
 	void Update(Vector3 min, Vector3 max) override;
 
 	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
+
+	/// <summary>
 	/// グローバル変数に追加
 	/// </summary>
 	/// <param name="groupName"></param>

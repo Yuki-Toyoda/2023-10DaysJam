@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include <PrimitiveDrawer.h>
 
 GameScene::GameScene() {}
 
@@ -56,7 +57,7 @@ void GameScene::Initialize() {
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()});
-	enemyManager_->SetBossEnemyPlayer(player_.get());
+	//enemyManager_->SetBossEnemyPlayer(player_.get());
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
@@ -123,6 +124,8 @@ void GameScene::Draw() {
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	//ライン描画のビュープロジェクション設定
+	PrimitiveDrawer::GetInstance()->SetViewProjection(viewProjection_);
 
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
@@ -162,6 +165,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+#ifdef _DEBUG
+	player_->ColliderDraw(enableDebugCamera_);
+	enemyManager_->ColliderDraw();
+#endif // _DEBUG
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

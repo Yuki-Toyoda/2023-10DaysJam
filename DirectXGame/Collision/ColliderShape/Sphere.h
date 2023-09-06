@@ -20,6 +20,11 @@ public: //メンバ関数
 	/// </summary>
 	/// <param name="posision">ワールドポジション</param>
 	void Update(Vector3 posision, float radius) override;
+	
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
 
 	/// <summary>
 	/// グローバル変数に追加

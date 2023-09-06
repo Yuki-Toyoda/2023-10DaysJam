@@ -248,6 +248,17 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
+void Player::ColliderDraw(bool enableDebugCamera) {
+
+	if (enableDebugCamera) {
+		GetColliderShape()->Draw();
+	}
+
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->GetColliderShape()->Draw();
+	}
+}
+
 void Player::OnCollision() {
 
 }

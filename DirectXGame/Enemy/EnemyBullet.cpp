@@ -1,6 +1,7 @@
 #include "EnemyBullet.h"
 #include <cassert>
 #include "MyMath.h"
+#include "Collision/ColliderShape/OBB.h"
 
 void EnemyBullet::Initialize(
     const std::vector<Model*>& models, const Vector3& position, const Vector3& velocity) {
@@ -29,15 +30,24 @@ void EnemyBullet::Initialize(
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000002);
 
+	// コライダーの形
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_ = obb;
+
+
 }
 
 void EnemyBullet::Update() {
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+	
+	// 基底クラス更新
+	BaseCharacter::Update();
 
-	// 行列を更新
-	worldTransform_.UpdateMatrix();
+	// コライダー更新
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
 
 	// 時間経過でデス
 	if (--deathTimer_ <= 0) {

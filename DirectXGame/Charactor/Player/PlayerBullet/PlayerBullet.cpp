@@ -1,4 +1,5 @@
 #include "PlayerBullet.h"
+#include "Collision/ColliderShape/OBB.h"
 
 void PlayerBullet::Initialize(
     const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
@@ -28,6 +29,12 @@ void PlayerBullet::Initialize(
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000001);
 
+	// コライダーの形
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_ = obb;
+
+
 }
 
 void PlayerBullet::Update() {
@@ -55,6 +62,9 @@ void PlayerBullet::Update() {
 
 	// 基底クラス更新
 	BaseCharacter::Update();
+
+	// コライダー更新
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
 
 }
 

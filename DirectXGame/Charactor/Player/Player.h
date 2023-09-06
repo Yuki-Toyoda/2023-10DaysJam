@@ -32,6 +32,11 @@ public: // メンバ関数
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Draw(const ViewProjection& viewProjection) override;
 
+	/// <summary>
+	/// コライダーの描画関数
+	/// </summary>
+	void ColliderDraw(bool enableDebugCamera);
+
 public: // アクセッサ等
 
 	/// <summary>

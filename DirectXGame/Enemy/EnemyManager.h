@@ -39,6 +39,11 @@ public: // メンバ変数
 	void Draw(const ViewProjection& viewProjection);
 
 	/// <summary>
+	/// コライダーの描画
+	/// </summary>
+	void ColliderDraw();
+
+	/// <summary>
 	/// エネミー追加
 	/// </summary>
 	void AddEnemy();
@@ -85,10 +90,10 @@ public: // メンバ変数
 	void SetPlayer(Player* player) { player_ = player; }
 
 	/// <summary>
-	/// ボスエネミーゲッター
+	/// ボスエネミープレイヤーセッター
 	/// </summary>
 	/// <returns></returns>
-	void SetBossEnemyPlayer(Player* player) { bossEnemy_->SetPlayer(player); }
+	//void SetBossEnemyPlayer(Player* player) { bossEnemy_->SetPlayer(player); }
 
 private: // その他関数
 	/// <summary>
@@ -117,9 +122,9 @@ private: // メンバ変数
 	std::vector<Model*> bulletModels_;
 
 	// ボスエネミー
-	std::unique_ptr<BossEnemy> bossEnemy_;
+	//std::unique_ptr<BossEnemy> bossEnemy_;
 	// ボスエネミーモデル
-	std::vector<Model*> bossModels_;
+	//std::vector<Model*> bossModels_;
 
 	// エネミー数
 	size_t enemyCount_;

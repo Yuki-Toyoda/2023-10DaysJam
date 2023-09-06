@@ -21,6 +21,11 @@ public: // メンバ関数
 	void Update(Vector3 position, Vector3 rotate, Vector3 size) override;
 
 	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
+
+	/// <summary>
 	/// グローバル変数に追加
 	/// </summary>
 	/// <param name="groupName"></param>
