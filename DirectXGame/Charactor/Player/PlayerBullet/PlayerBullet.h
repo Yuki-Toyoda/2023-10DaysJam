@@ -9,11 +9,22 @@ class PlayerBullet : public BaseCharacter {
 public: // サブクラス
 	// 弾の種類
 	enum BulletType {
-		Normal,
-		Fire,
-		Water,
-		Thunder
+		None, // 通常弾
+		Fire, // 炎弾
+		Ice, // 氷弾
+		Thunder // 雷弾
 	};
+
+private: // サブクラス
+	// 行動中間地点
+	enum ActionWayPoint {
+		WayPoint1, // 行動中間地点1 ~
+		WayPoint2,
+		WayPoint3,
+		WayPoint4,
+		WayPoint5,
+	};
+
 public: // メンバ関数
 	
 	/// <summary>
@@ -23,9 +34,21 @@ public: // メンバ関数
 	/// <param name="startPos">初期座標</param>
 	/// <param name="startotation">初期角度</param>
 	/// <param name="velocity">弾速</param>
-	/// <param name="bulletType">撃つ弾の種類</param>
 	void Initialize(const std::vector<Model*>& models, 
-		Vector3 startPos, Vector3 startotation, Vector3 velocity, BulletType bulletType);
+		Vector3 startPos, Vector3 startotation, Vector3 velocity);
+
+	/// <summary>
+	/// 初期化関数
+	/// </summary>
+	/// <param name="models">3Dモデル</param>
+	/// <param name="startPos">初期座標</param>
+	/// <param name="startotation">初期角度</param>
+	/// <param name="velocity">弾速</param>
+	/// <param name="bulletType">撃つ弾の種類</param>
+	/// <param name="bulletStrength">撃つ弾の強さ</param>
+	void Initialize(
+	    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
+	    BulletType bulletType, int32_t bulletStrength);
 
 	/// <summary>
 	/// 更新関数
@@ -39,11 +62,24 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewProjection) override;
 
 public: // アクセッサ等
+
 	/// <summary>
 	/// 死亡状態のゲッター
 	/// </summary>
 	/// <returns>死亡状態</returns>
 	bool GetIsDead() { return isDead_; }
+
+	/// <summary>
+	/// 弾の種類ゲッター
+	/// </summary>
+	/// <returns>弾の種類</returns>
+	BulletType GetBulletType() { return bulletType_; }
+
+	/// <summary>
+	/// 炎弾が衝突した状態セッター
+	/// </summary>
+	/// <param name="isHit">衝突したか</param>
+	void SetIsHit(bool isHit) { isHit_ = isHit; }
 
 private: // 弾ごとの行動関数
 
@@ -53,12 +89,12 @@ private: // 弾ごとの行動関数
 	void NormalBulletUpdate();
 
 	/// <summary>
-	/// 爆発弾更新処理
+	/// 炎弾更新処理
 	/// </summary>
 	void FireBulletUpdate();
 
 	/// <summary>
-	///  ビーム弾更新処理
+	/// 水弾更新処理
 	/// </summary>
 	void WaterBulletUpdate();
 
@@ -76,6 +112,7 @@ private: // メンバ変数
 
 	// 死亡状態
 	bool isDead_;
+
 	// 弾の存在時間
 	static const int32_t klifeTime_ = 60;
 	// デスタイマー
@@ -86,5 +123,43 @@ private: // メンバ変数
 
 	// 発射する弾の種類
 	BulletType bulletType_;
+	// 発射する弾の強さ
+	int32_t bulletStrength_;
+
+	#pragma region 特殊弾用変数
+	// 衝突判定
+	bool isHit_;
+	// 弾道落下用スピード
+	float fallSpeed_;
+	// 弾道落下スピード最大値
+	float kMaxFallSpeed_;
+	// 弾道落下用加速度
+	float kFallAcceleration_;
+	// 演出用t
+	float animT_;
+	// 演出用行動中間地点
+	int actionWayPoint_;
+
+#pragma endregion
+
+	#pragma region 炎弾用変数
+	// 爆破範囲
+	Vector3 explosiveRange_;
+	// 爆破演出時間
+	float explosiveTime_;
+#pragma endregion
+
+	#pragma region 氷弾用変数
+	// 展開する壁のサイズ
+	Vector3 deployWallSize_;
+	// 展開演出時間
+	float deployStagingTime_;
+	// 展開時間
+	float deploymentTime_;
+	// 終了演出時間
+	float deployEndStagingTime_;
+#pragma endregion
+
+
 
 };

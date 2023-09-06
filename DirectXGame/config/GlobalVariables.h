@@ -82,6 +82,13 @@ public: // メンバ関数
 	/// <param name="value">セットする値</param>
 	void SetValue(const std::string& groupName, const std::string& key, float value);
 	/// <summary>
+	/// 値のセット関数（Vector2）
+	/// </summary>
+	/// <param name="groupName">セットするグループ</param>
+	/// <param name="key">セットするキー</param>
+	/// <param name="value">セットする値</param>
+	void SetValue(const std::string& groupName, const std::string& key, const Vector2& value);
+	/// <summary>
 	/// 値のセット関数（Vector3）
 	/// </summary>
 	/// <param name="groupName">セットするグループ</param>
@@ -103,6 +110,13 @@ public: // メンバ関数
 	/// <param name="key">追加するキー</param>
 	/// <param name="value">追加する値</param>
 	void AddItem(const std::string& groupName, const std::string& key, float value);
+	/// <summary>
+	/// 項目追加関数(Vector2)
+	/// </summary>
+	/// <param name="groupName">追加する対象のグループ</param>
+	/// <param name="key">追加するキー</param>
+	/// <param name="value">追加する値</param>
+	void AddItem(const std::string& groupName, const std::string& key, Vector2 value);
 	/// <summary>
 	/// 項目追加関数(Vector3)
 	/// </summary>
@@ -126,6 +140,13 @@ public: // メンバ関数
 	/// <returns>値</returns>
 	float GetFloatValue(const std::string& groupName, const std::string& key);
 	/// <summary>
+	/// 値を取得する関数(Vector2)
+	/// </summary>
+	/// <param name="groupName">取得するグループ名</param>
+	/// <param name="key">取得するキー</param>
+	/// <returns>値</returns>
+	Vector2 GetVector2Value(const std::string& groupName, const std::string& key);
+	/// <summary>
 	/// 値を取得する関数(Vector3)
 	/// </summary>
 	/// <param name="groupName">取得するグループ名</param>
@@ -138,7 +159,7 @@ private: // メンバ変数
 	// 項目列挙子
 	struct Item {
 		// 項目の値
-		std::variant<int32_t, float, Vector3> value;
+		std::variant<int32_t, float, Vector2, Vector3> value;
 	};
 
 	// グループ列挙子

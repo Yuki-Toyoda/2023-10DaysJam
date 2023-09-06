@@ -2,13 +2,8 @@
 #include "../../config/GlobalVariables.h"
 #include "Collision/ColliderShape/OBB.h"
 
-#ifdef _DEBUG
-
-#endif // _DEBUG
-
-void Player::Initialize(
-    const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet) {
-
+void Player::Initialize(const std::vector<Model*>& modelsPlayer,
+    const std::vector<Model*>& modelsBullet) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(modelsPlayer);
 
@@ -38,6 +33,17 @@ void Player::Initialize(
 	triggerDeadZone_R_ = 25; // 右
 	triggerDeadZone_L_ = 25; // 左
 
+	// テクスチャ読み込み
+	textureHandle1x1_ = TextureManager::Load("white1x1.png"); // white1x1
+	textureHandleReticle_ = TextureManager::Load("Image/Player/reticle.png"); // 照準
+	
+	// 照準スプライト初期化
+	spriteReticle_.reset(Sprite::Create(
+	    textureHandleReticle_, {(float)WinApp::kWindowWidth / 2, (float)WinApp::kWindowHeight / 2},
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	// 照準スプライト大きさ設定
+	spriteReticle_->SetSize({64.0f, 64.0f});
+	
 	// 3Dレティクルワールド座標の初期化
 	worldTransform3DReticle_.Initialize();
 
@@ -94,6 +100,36 @@ void Player::Initialize(
 	kMaxHavingOrbs_ = 3;
 	// 所持オーブのリセット
 	havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
+	// 開始座標設定
+	spriteHavingOrbsStartPos_ = {1000.0f, 100.0f};
+	// 大きさ設定
+	spriteHavingOrbsSize_ = {64.0f, 64.0f};
+	// 行間設定
+	spriteHavingOrbsLineSpace_ = {96.0f, 0.0f};
+	for (int i = 0; i < 3; i++) {
+		// スプライトの生成
+		spriteHavingOrbs_[i].reset(Sprite::Create(
+		    textureHandle1x1_,
+		    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * i),
+		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)},
+		    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+		// サイズ設定
+		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
+	}
+	// 特殊射撃で撃つ予定の弾のリセット
+	specialShotBulletPlans_ = PlayerBullet::None;
+	// 特殊射撃の強さをリセット
+	specialShotStrength_ = 1;
+	// 特殊射撃できるか
+	canSpecialShot_ = false;
+	// チャージするオーブの種類リセット
+	selectedChangeType_ = PlayerBullet::Fire;
+	// 現在選択しているオーブ
+	selectedChangeOrb_ = 0;
+	// 変換クールタイム
+	changeCoolTime_ = 0;
+	// 変換クールタイムデフォルト値
+	kChangeCoolTime_ = 120;
 
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
@@ -129,11 +165,18 @@ void Player::Initialize(
 	globalVariables->AddItem(groupName, "MaxJumpHeight", kMaxJumpHeight_); // 最大ジャンプ高度
 	globalVariables->AddItem(groupName, "JumpDecayRate", kJumpDecayRate_); // ジャンプ減衰速度
 	globalVariables->AddItem(groupName, "ShotPosOffset", shotPosOffset_); // 射撃座標オフセット
-	globalVariables->AddItem(groupName, "DistanceToReticleObject", kDistanceToReticleObject_); // カメラから照準オブジェクトの距離
-	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_); // 弾速
+	globalVariables->AddItem(
+	    groupName, "DistanceToReticleObject",
+	    kDistanceToReticleObject_); // カメラから照準オブジェクトの距離
+	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);      // 弾速
 	globalVariables->AddItem(groupName, "MaxMagazineSize", kMaxMagazine_); // 最大弾数設定
 	globalVariables->AddItem(groupName, "MaxReloadTime", kMaxReloadTime_); // リロードにかかる時間
-
+	globalVariables->AddItem(
+		groupName, "SpriteHavingOrbsStartPos", spriteHavingOrbsStartPos_); // 所持オーブ描画UIの開始座標
+	globalVariables->AddItem(
+		groupName, "SpriteHavingOrbsSize", spriteHavingOrbsSize_); // 所持オーブ描画UIの大きさ
+	globalVariables->AddItem(
+		groupName, "SpriteHavingOrbsLineSpace", spriteHavingOrbsLineSpace_); // 所持オーブ描画UIの行間
 	colliderShape_->AddToGlobalVariables(groupName);
 
 }
@@ -159,6 +202,8 @@ void Player::Update() {
 		Shot();
 		// リロード
 		Reload();
+		// 特殊射撃
+		SpecialShot();
 	}
 
 	// 調整項目を反映
@@ -212,6 +257,27 @@ void Player::Update() {
 			pressLTrigger_ = false;
 		else
 			pressLTrigger_ = true;
+
+		// 十字キー上が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP))
+			pressDpadUp_ = false;
+		else
+			pressDpadUp_ = true;
+		// 十字キー下が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN))
+			pressDpadDown_ = false;
+		else
+			pressDpadDown_ = true;
+		// 十字キー左が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT))
+			pressDpadLeft_ = false;
+		else
+			pressDpadLeft_ = true;
+		// 十字キー右が押されていなければ
+		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT))
+			pressDpadRight_ = false;
+		else
+			pressDpadRight_ = true;
 	}
 
 	#ifdef _DEBUG
@@ -221,7 +287,7 @@ void Player::Update() {
 	// 追加するオーブを選択
 	ImGui::RadioButton("Fire", &selectOrbs_, PlayerBullet::Fire);
 	ImGui::SameLine();
-	ImGui::RadioButton("Water", &selectOrbs_, PlayerBullet::Water);
+	ImGui::RadioButton("Water", &selectOrbs_, PlayerBullet::Ice);
 	ImGui::SameLine();
 	ImGui::RadioButton("Thunder", &selectOrbs_, PlayerBullet::Thunder);
 
@@ -230,10 +296,29 @@ void Player::Update() {
 		AddOrbs((PlayerBullet::BulletType)selectOrbs_);
 	}
 
-	for (int i = 0; i < havingOrbs_.size(); i++) {
-		int OrbType = havingOrbs_[i];
-		ImGui::DragInt("havingOrbType", &OrbType, 1.0f);
+	if (ImGui::Button("Reset")) {
+		// 所持オーブのリセット
+		havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
 	}
+
+	if (ImGui::TreeNode("HavingOrbs")) {
+		for (int i = 0; i < havingOrbs_.size(); i++) {
+			int OrbType = havingOrbs_[i];
+			ImGui::DragInt("havingOrbType", &OrbType, 1.0f);
+		}
+		ImGui::TreePop();
+	}
+
+	int specialShotPlan = specialShotBulletPlans_;
+	int selectedType = selectedChangeType_;
+	ImGui::DragInt("SpecialShotPlan", &specialShotPlan, 1.0f);
+	ImGui::DragInt("SpecialShotStrength", &specialShotStrength_, 1.0f);
+	ImGui::DragInt("selectedType", &selectedType, 1.0f);
+	ImGui::DragInt("selectedOrb", &selectedChangeOrb_, 1.0f);
+	ImGui::DragInt("ChangeCoolTime", &changeCoolTime_, 1.0f);
+	ImGui::DragInt("DefaultChangeCoolTime", &kChangeCoolTime_, 1.0f);
+
+
 	ImGui::End();
 
 #endif // _DEBUG
@@ -246,6 +331,14 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
+}
+void Player::SpriteDraw() {
+	// 照準描画
+	spriteReticle_->Draw();
+
+	for (int i = 0; i < 3; i++)
+		spriteHavingOrbs_[i]->Draw();
+
 }
 
 void Player::ColliderDraw(bool enableDebugCamera) {
@@ -426,7 +519,7 @@ void Player::Shot() {
 				ReticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
 
 				// 射撃座標調整
-				Vector3 shotPos = BaseCharacter::GetWorldPosition();
+				Vector3 shotPos = worldTransform_.translation_;
 				shotPos = shotPos + shotPosOffset_;
 				shotVelocity = ReticleWorldPos - shotPos;
 				shotVelocity = MyMath::Normalize(shotVelocity) * bulletSpeed_;
@@ -436,13 +529,13 @@ void Player::Shot() {
 				    modelBullet_,  // 3Dモデル
 				    shotPos,                    // 初期位置
 					viewProjection_->rotation_, // 初期角度
-				    shotVelocity, PlayerBullet::Normal); // 弾速
+				    shotVelocity); // 弾速
 
 				// 生成した弾をリストに入れる
 				bullets_.push_back(newBullet);
 
 				// 弾数デクリメント
-				magazine_--;
+				//magazine_--;
 
 				// 射撃クールタイムリセット
 				fireCoolTime_ = kMaxFireCoolTime_;
@@ -498,14 +591,175 @@ void Player::Reload() {
 }
 
 void Player::SpecialShot() {
+	// UIの設定
+	for (int i = 0; i < 3; i++) {
+		// スプライトの生成
+		spriteHavingOrbs_[i]->SetPosition(
+		    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * i),
+		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)});
+		// サイズ設定
+		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
+
+		// とりあえずの色設定
+		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		// 特殊射撃の予定をリセット
+		specialShotBulletPlans_ = PlayerBullet::None;
+		// 特殊射撃の強さをリセット
+		specialShotStrength_ = 1;
+
+	}
+
+	// 所持しているオーブ数を確認
+	int havingOrbCount = (int)havingOrbs_.size();
+	for (int i = 0; i < havingOrbCount; i++) {
+		// 該当するオーブの色を取得
+		PlayerBullet::BulletType haveOrb = havingOrbs_[i];
+		switch (haveOrb) {
+		case PlayerBullet::Fire: // 赤の場合
+			// スプライトの色を設定
+			spriteHavingOrbs_[i]->SetColor({0.8f, 0.0f, 0.0f, 1.0f});
+			
+			break;
+		case PlayerBullet::Ice: // 青の場合
+			// スプライトの色を設定
+			spriteHavingOrbs_[i]->SetColor({0.0f, 0.0f, 0.8f, 1.0f});
+			break;
+		case PlayerBullet::Thunder: // 黄の場合
+			spriteHavingOrbs_[i]->SetColor({0.8f, 0.8f, 0.0f, 1.0f});
+			break;
+		}
+
+		// 特殊射撃がもともと同じだったら
+		if (specialShotBulletPlans_ == haveOrb) {
+			// 特殊射撃の強さをインクリメント
+			specialShotStrength_++;
+		}
+		// 特殊射撃の強さが1以下なら
+		else if (specialShotStrength_ <= 1) {
+			// 特殊射撃の予定変更
+			specialShotBulletPlans_ = haveOrb;
+			// 強さリセット
+			specialShotStrength_ = 1;
+		}
+
+	}
+	if (specialShotStrength_ <= 1 && havingOrbCount > 0) {
+		// 最初のオーブの特殊射撃を使用
+		specialShotBulletPlans_ = havingOrbs_[0];
+		// 強さリセット
+		specialShotStrength_ = 1;
+	}
+
+	// オーブを所持していない場合、特殊射撃は行えない
+	if (specialShotBulletPlans_ == PlayerBullet::None)
+		canSpecialShot_ = false;
+	else
+		canSpecialShot_ = true;
+
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
 		// 左トリガーが押されたら特殊射撃
 		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ && !pressLTrigger_) {
 			if (canSpecialShot_) {
-			
+				// 弾の生成
+				PlayerBullet* newBullet = new PlayerBullet();
+
+				// 射撃ベクトル計算用
+				Vector3 shotVelocity;
+
+				// 移動ベクトルを初期化する
+				shotVelocity = {0.0f, 0.0f, 0.0f};
+
+				// レティクルのワールド座標を求める
+				Vector3 ReticleWorldPos;
+				ReticleWorldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+				ReticleWorldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+				ReticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+
+				// 射撃座標調整
+				Vector3 shotPos = worldTransform_.translation_;
+				shotPos = shotPos + shotPosOffset_;
+				shotVelocity = ReticleWorldPos - shotPos;
+				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
+
+				// 生成した弾を初期化
+				newBullet->Initialize(
+				    modelBullet_,               // 3Dモデル
+				    shotPos,                    // 初期位置
+				    viewProjection_->rotation_, // 初期角度
+				    shotVelocity,               // 弾速
+					specialShotBulletPlans_,	// 行う特殊射撃
+					specialShotStrength_		// 特殊攻撃の強さ
+					);             
+
+				// 生成した弾をリストに入れる
+				bullets_.push_back(newBullet);
+
+				// 所持オーブのリセット
+				havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
+
 			}
+		}
+
+		// 変換するオーブの選択処理
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {	
+			// 十字右
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
+				// 選択しているオーブが最大値を上回っていたら
+				if (selectedChangeOrb_ >= havingOrbCount - 1) {
+					// 最初に戻る
+					selectedChangeOrb_ = 0;
+				} else {
+					selectedChangeOrb_++;
+				}
+			}
+			// 十字左
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
+				// 選択しているオーブが最大値を上回っていたら
+				if (selectedChangeOrb_ <= 0) {
+					// 最初に戻る
+					if (havingOrbCount < 0) {
+						selectedChangeOrb_ = havingOrbCount - 1;
+					}
+				} else {
+					selectedChangeOrb_--;
+				}
+			}
+		}
+		else {
+			// 変換するオーブの種類を選択
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
+				// 変換タイプを炎に設定
+				selectedChangeType_ = PlayerBullet::Fire;
+			}
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
+				// 変換タイプを氷に設定
+				selectedChangeType_ = PlayerBullet::Ice;
+			}
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
+				// 変換タイプを雷に設定
+				selectedChangeType_ = PlayerBullet::Thunder;
+			}
+		}
+	}
+
+	// オーブの数が1以上なら
+	if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
+		// 選択したオーブを別のオーブに変換する
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+			// 所持しているオーブリストの指定された位置に新しいオーブを挿入
+			havingOrbs_.insert(havingOrbs_.begin() + selectedChangeOrb_, selectedChangeType_);
+			// 変換に使用したオーブを削除
+			havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
+			// 変換クールタイムを設定
+			changeCoolTime_ = kChangeCoolTime_;
+		}
+	} 
+	else {
+		if (changeCoolTime_ > 0) {
+			// 変換クールタイムデクリメント
+			changeCoolTime_--;
 		}
 	}
 }
@@ -530,6 +784,13 @@ void Player::ApplyGlobalVariables() {
 	kMaxFireCoolTime_ = globalVariables->GetFloatValue(groupName, "MaxFireCoolTime"); // 発射レート
 	kMaxMagazine_ = globalVariables->GetIntValue(groupName, "MaxMagazineSize"); // 最大弾数設定
 	kMaxReloadTime_ = globalVariables->GetIntValue(groupName, "MaxReloadTime"); // リロードにかかる時間
+	spriteHavingOrbsStartPos_ =
+	    globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsStartPos"); // 所持オーブ描画UIの開始座標
+	spriteHavingOrbsSize_ = 
+		globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsSize"); // 所持オーブ描画UIの大きさ
+	spriteHavingOrbsLineSpace_ = 
+		globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsLineSpace"); // 所持オーブ描画UIの行間
+	
 
 #ifdef _DEBUG
 	

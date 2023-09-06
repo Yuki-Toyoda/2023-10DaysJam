@@ -22,16 +22,22 @@ void GameScene::Initialize() {
 	modelSkyDome_.reset(Model::CreateFromOBJ("SkyDome", true)); // 天球
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true)); // 地面
 	std::vector<Model*> playerModels = {};  // プレイヤー用モデルリストの生成
-	modelBullet_.reset(Model::CreateFromOBJ("Bullet", true)); // 弾
-	std::vector<Model*> playerBulletModels = { modelBullet_.get() }; // プレイヤー弾用モデルリストの生成
+	modelBullet_.reset(Model::CreateFromOBJ("Bullet", true)); // 通常弾
+	modelFireBullet_.reset(Model::CreateFromOBJ("Bomb", true)); // 炎弾
+	modelIceBullet_.reset(Model::CreateFromOBJ("Wall", true));    // 氷弾
+	modelThunderBullet_.reset(Model::CreateFromOBJ("Wall", true)); // 雷弾
+	std::vector<Model*> playerBulletModels = {
+		modelBullet_.get(), // 通常弾
+		modelFireBullet_.get(), // 炎弾
+		modelIceBullet_.get(), // 水弾
+		modelThunderBullet_.get(), // 雷弾
+	}; // プレイヤー弾用モデルリストの生成
+
 
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
-	#ifdef _DEBUG
-	enableDebugCamera_ = false;
-#endif // _DEBUG
 
 	// クラスインスタンス生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720); // デバックカメラ
@@ -170,6 +176,8 @@ void GameScene::Draw() {
 	player_->ColliderDraw(enableDebugCamera_);
 	enemyManager_->ColliderDraw();
 #endif // _DEBUG
+
+	player_->SpriteDraw(); // プレイヤー
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
