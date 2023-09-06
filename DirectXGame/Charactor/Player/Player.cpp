@@ -105,18 +105,20 @@ void Player::Initialize(const std::vector<Model*>& modelsPlayer,
 	spriteHavingOrbsSize_ = {64.0f, 64.0f};
 	// 行間設定
 	spriteHavingOrbsLineSpace_ = {96.0f, 0.0f};
-	// 色設定
-	spriteHavingOrbsColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
 	for (int i = 0; i < 3; i++) {
 		// スプライトの生成
 		spriteHavingOrbs_[i].reset(Sprite::Create(
 		    textureHandle1x1_,
 		    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * i),
 		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)},
-		    spriteHavingOrbsColor_, {0.5f, 0.5f}));
+		    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 		// サイズ設定
 		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
 	}
+	// 特殊射撃で撃つ予定の弾のリセット
+	specialShotBulletPlans_ = PlayerBullet::Normal;
+	// 特殊射撃の強さをリセット
+	specialShotStrength_ = 1;
 
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
@@ -252,12 +254,18 @@ void Player::Update() {
 		havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
 	}
 
-	for (int i = 0; i < havingOrbs_.size(); i++) {
-		int OrbType = havingOrbs_[i];
-		ImGui::DragInt("havingOrbType", &OrbType, 1.0f);
+	if (ImGui::TreeNode("HavingOrbs")) {
+		for (int i = 0; i < havingOrbs_.size(); i++) {
+			int OrbType = havingOrbs_[i];
+			ImGui::DragInt("havingOrbType", &OrbType, 1.0f);
+		}
+		ImGui::TreePop();
 	}
 
-	ImGui::DragFloat2("start", &spriteHavingOrbsStartPos_.x, 0.1f);
+	int specialShotPlan = specialShotBulletPlans_;
+	ImGui::DragInt("SpecialShotPlan", &specialShotPlan, 1.0f);
+	ImGui::DragInt("SpecialShotStrength", &specialShotStrength_, 1.0f);
+
 
 	ImGui::End();
 
@@ -535,6 +543,10 @@ void Player::SpecialShot() {
 	for (int i = 0; i < 3; i++) {
 		// とりあえずの色設定
 		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		// 特殊射撃の予定をリセット
+		specialShotBulletPlans_ = PlayerBullet::Normal;
+		// 特殊射撃の強さをリセット
+		specialShotStrength_ = 1;
 	}
 	// 所持しているオーブ数を確認
 	int havingOrbCount = (int)havingOrbs_.size();
@@ -543,15 +555,38 @@ void Player::SpecialShot() {
 		PlayerBullet::BulletType haveOrb = havingOrbs_[i];
 		switch (haveOrb) {
 		case PlayerBullet::Fire: // 赤の場合
+			// スプライトの色を設定
 			spriteHavingOrbs_[i]->SetColor({0.8f, 0.0f, 0.0f, 1.0f});
+			
 			break;
 		case PlayerBullet::Water: // 青の場合
+			// スプライトの色を設定
 			spriteHavingOrbs_[i]->SetColor({0.0f, 0.0f, 0.8f, 1.0f});
 			break;
 		case PlayerBullet::Thunder: // 黄の場合
 			spriteHavingOrbs_[i]->SetColor({0.8f, 0.8f, 0.0f, 1.0f});
 			break;
 		}
+
+		// 特殊射撃がもともと同じだったら
+		if (specialShotBulletPlans_ == haveOrb) {
+			// 特殊射撃の強さをインクリメント
+			specialShotStrength_++;
+		}
+		// 特殊射撃の強さが1以下なら
+		else if (specialShotStrength_ <= 1) {
+			// 特殊射撃の予定変更
+			specialShotBulletPlans_ = haveOrb;
+			// 強さリセット
+			specialShotStrength_ = 1;
+		}
+
+	}
+	if (specialShotStrength_ <= 1 && havingOrbCount > 0) {
+		// 最初のオーブの特殊射撃を使用
+		specialShotBulletPlans_ = havingOrbs_[0];
+		// 強さリセット
+		specialShotStrength_ = 1;
 	}
 
 	// ゲームパッドの状態取得
@@ -560,7 +595,7 @@ void Player::SpecialShot() {
 		// 左トリガーが押されたら特殊射撃
 		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ && !pressLTrigger_) {
 			if (canSpecialShot_) {
-			
+				
 			}
 		}
 	}

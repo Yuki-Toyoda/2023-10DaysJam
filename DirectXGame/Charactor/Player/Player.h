@@ -200,8 +200,10 @@ private: // メンバ関数
 	Vector2 spriteHavingOrbsSize_;
 	// スプライト１つの行間
 	Vector2 spriteHavingOrbsLineSpace_;
-	// 色
-	Vector4 spriteHavingOrbsColor_;
+	// 特殊射撃で撃つ予定の弾
+	PlayerBullet::BulletType specialShotBulletPlans_;
+	// 特殊射撃の強さ
+	int32_t specialShotStrength_;
 	// 特殊射撃できるか
 	bool canSpecialShot_;
 	// 特殊射撃クールタイム

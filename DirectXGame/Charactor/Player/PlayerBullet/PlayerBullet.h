@@ -39,11 +39,18 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewProjection) override;
 
 public: // アクセッサ等
+
 	/// <summary>
 	/// 死亡状態のゲッター
 	/// </summary>
 	/// <returns>死亡状態</returns>
 	bool GetIsDead() { return isDead_; }
+
+	/// <summary>
+	/// 弾の種類ゲッター
+	/// </summary>
+	/// <returns>弾の種類</returns>
+	BulletType GetBulletType() { return bulletType_; }
 
 private: // 弾ごとの行動関数
 
