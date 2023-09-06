@@ -5,7 +5,7 @@
 #include "MyMath.h"
 #include "Charactor/CharactorList.h"
 #include "../config/GlobalVariables.h"
-#include "Collision/ColliderShape/Sphere.h"
+#include "Collision/ColliderShape/OBB.h"
 
 /// <summary>
 /// 初期化
@@ -33,9 +33,9 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	SetCollisionMask(0x00000002);
 
 	// コライダーの形
-	Sphere* sphere = new Sphere();
-	sphere->Initialize(GetWorldPosition(), 1000.0f);
-	colliderShape_ = sphere;
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_ = obb;
 
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -64,7 +64,7 @@ void Enemy::Update() {
 	BaseCharacter::Update();
 
 	//コライダー更新
-	colliderShape_->Update(GetWorldPosition());
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
 
 }
 

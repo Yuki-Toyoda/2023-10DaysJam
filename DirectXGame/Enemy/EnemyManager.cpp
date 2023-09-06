@@ -61,12 +61,11 @@ void EnemyManager::Update() {
 void EnemyManager::Draw(const ViewProjection& viewProjection) {
 
 	// ボスエネミーの描画
-	bossEnemy_->Draw(viewProjection);
+	//bossEnemy_->Draw(viewProjection);
 	
 	//エネミーの描画
 	for (Enemy* enemy : enemies_) {
-		//enemy->Draw(viewProjection);
-		enemy;
+		enemy->Draw(viewProjection);
 	}
 	// バレット描画
 	for (EnemyBullet* enemyBullet : enemyBullets_) {

@@ -1,17 +1,17 @@
 #include "Sphere.h"
 
-void Sphere::Initialize(Vector3 center, float radius) {
+void Sphere::Initialize(Vector3 posision, float radius) {
 
 	colliderType_ = ColliderType::Sphere;
 
-	center_ = center;
+	center_ = posision;
 	radius_ = radius;
 
 }
 
-void Sphere::Update(Vector3 posision) {
+void Sphere::Update(Vector3 posision, float radius) {
 
-	//ワールドポジションを代入
 	center_ = posision;
+	radius_ = radius;
 
 }

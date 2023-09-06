@@ -9,10 +9,15 @@ public: // サブクラス
 	// 判定タイプ
 	enum ColliderType {
 		Sphere, 
-		Box 
+		AABB,
+		OBB
 	};
 
 public: // 継承メンバ関数
+	
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	virtual ~ColliderShape() {}
 
 	/// <summary>
@@ -27,10 +32,22 @@ public: // 継承メンバ関数
 	void SetColliderType(ColliderType colliderType) { colliderType_ = colliderType; }
 
 	//球
-	virtual void Update(Vector3 posision) = 0;
+	virtual void Update(Vector3 posision, float radius);
 
-	virtual float GetRadius() = 0;
-	virtual Vector3 GetCenter() = 0;
+	virtual float GetRadius() { return 0.0f; };
+	virtual Vector3 GetCenter() { return Vector3(0.0f, 0.0f, 0.0f); };
+
+	//AABB
+	virtual void Update(Vector3 min, Vector3 max);
+
+	virtual Vector3 GetMin() { return Vector3(0.0f, 0.0f, 0.0f); };
+	virtual Vector3 GetMax() { return Vector3(0.0f, 0.0f, 0.0f); };
+
+	//OBB
+	virtual void Update(Vector3 posision, Vector3 rotate, Vector3 size);
+
+	virtual Vector3* GetOtientatuons() { return nullptr; };
+	virtual Vector3 GetSize() { return Vector3(0.0f, 0.0f, 0.0f); };
 
 protected: // 継承先メンバ変数
 	

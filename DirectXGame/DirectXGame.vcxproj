@@ -117,8 +117,11 @@
     <ClCompile Include="Charactor\Player\Player.cpp" />
     <ClCompile Include="Charactor\Player\PlayerBullet\PlayerBullet.cpp" />
     <ClCompile Include="Collision\collider.cpp" />
+    <ClCompile Include="Collision\ColliderShape\AABB.cpp" />
     <ClCompile Include="Collision\ColliderShape\ColliderShape.cpp" />
+    <ClCompile Include="Collision\ColliderShape\OBB.cpp" />
     <ClCompile Include="Collision\ColliderShape\Sphere.cpp" />
+    <ClCompile Include="Collision\Collision.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
     <ClCompile Include="config\GlobalVariables.cpp" />
     <ClCompile Include="Enemy\BossEnemy.cpp" />
@@ -161,8 +164,11 @@
     <ClInclude Include="Charactor\Player\Player.h" />
     <ClInclude Include="Charactor\Player\PlayerBullet\PlayerBullet.h" />
     <ClInclude Include="Collision\collider.h" />
+    <ClInclude Include="Collision\ColliderShape\AABB.h" />
     <ClInclude Include="Collision\ColliderShape\ColliderShape.h" />
+    <ClInclude Include="Collision\ColliderShape\OBB.h" />
     <ClInclude Include="Collision\ColliderShape\Sphere.h" />
+    <ClInclude Include="Collision\Collision.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
     <ClInclude Include="config\GlobalVariables.h" />
     <ClInclude Include="Enemy\BossEnemy.h" />

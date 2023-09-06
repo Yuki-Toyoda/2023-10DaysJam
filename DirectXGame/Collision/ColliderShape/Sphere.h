@@ -4,18 +4,22 @@
 class Sphere : public ColliderShape {
 
 public: //メンバ関数
+	
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~Sphere() override {}
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Vector3 center, float radius);
+	void Initialize(Vector3 posision, float radius);
 
 	/// <summary>
 	/// 更新
 	/// </summary>
 	/// <param name="posision">ワールドポジション</param>
-	void Update(Vector3 posision) override;
+	void Update(Vector3 posision, float radius) override;
 
 	/// <summary>
 	/// 中心点取得
