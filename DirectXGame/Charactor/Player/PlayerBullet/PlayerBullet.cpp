@@ -75,13 +75,29 @@ void PlayerBullet::Initialize(
 			20.0f * (1.0f + 0.15f * (bulletStrength - 1)), 
 			10.0f * (1.0f + 0.15f * (bulletStrength - 1))};
 		// 展開演出時間設定
-		deployStagingTime_ = 0.35f;
+		deployWallStagingTime_ = 0.35f;
 		// 展開時間設定
-		deploymentTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
+		deploymentWallTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
 		// 終了演出時間設定
-		deployEndStagingTime_ = 0.15f;
+		deployWallEndStagingTime_ = 0.15f;
 		break;
 	case PlayerBullet::Thunder:
+		// 回転角をリセット
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
+		// 展開エリアを設定
+		deployAreaSize_ = {
+			75.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+			10.0f,
+		    75.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+		};
+		// 振動範囲を設定
+		shakeRange_ = 1.0f * (1.0f + 0.35f * (bulletStrength - 1));
+		// 展開演出時間
+		deployAreaStagingTime_ = 0.25f;
+		// 展開時間
+		deploymentAreaTime_ = 7.0f * (1.0f + 0.35f * (bulletStrength - 1));
+		// 終了演出時間
+		deployAreaEndStagingTime_ = 0.15f;
 		break;
 	}
 
@@ -221,15 +237,15 @@ void PlayerBullet::WaterBulletUpdate() {
 		switch (actionWayPoint_) {
 		case PlayerBullet::WayPoint1:
 			// 展開演出をイージングで行う
-			if (animT_ <= deployStagingTime_) {
+			if (animT_ <= deployWallStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
 				    animT_, {1.0f, 0.1f, 1.0f}, {deployWallSize_.x, 0.1f, deployWallSize_.z},
-				    deployStagingTime_);
+				    deployWallStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
 				// 次の演出時間を設定
-				deployStagingTime_ = 0.25f;
+				deployWallStagingTime_ = 0.25f;
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 次の演出へ
@@ -238,10 +254,10 @@ void PlayerBullet::WaterBulletUpdate() {
 			break;
 		case PlayerBullet::WayPoint2:
 			// 展開演出をイージングで行う
-			if (animT_ <= deployStagingTime_) {
+			if (animT_ <= deployWallStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
 				    animT_, {deployWallSize_.x, 0.1f, deployWallSize_.z}, deployWallSize_,
-				    deployStagingTime_);
+				    deployWallStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
@@ -253,7 +269,7 @@ void PlayerBullet::WaterBulletUpdate() {
 			break;
 		case PlayerBullet::WayPoint3:
 			// 指定時間まで展開
-			if (animT_ <= deploymentTime_) {
+			if (animT_ <= deploymentWallTime_) {
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
@@ -265,10 +281,10 @@ void PlayerBullet::WaterBulletUpdate() {
 			break;
 		case PlayerBullet::WayPoint4:
 			// 展開演出をイージングで行う
-			if (animT_ <= deployEndStagingTime_) {
+			if (animT_ <= deployWallEndStagingTime_) {
 				worldTransform_.scale_ =
 				    MyMath::EaseOut(animT_, deployWallSize_, {deployWallSize_.x, 0.0f, deployWallSize_.z},
-				    deployStagingTime_);
+				    deployWallStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
@@ -287,7 +303,121 @@ void PlayerBullet::WaterBulletUpdate() {
 }
 
 void PlayerBullet::ThunderBulletUpdate() {
+	// 何かと衝突していなければ
+	if (!isHit_) {
+		// 弾をベクトルの方向に前進させる
+		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 
+		// １フレーム落下した後の座標を一時的に計算
+		float tempTranslateY = worldTransform_.translation_.y + fallSpeed_;
+		// 一時座標が床以下になったら
+		if (tempTranslateY <= 0.0f) {
+			// 座標を床位置にリセット
+			worldTransform_.translation_.y = 1.0f;
+			// 落下速度初期化
+			fallSpeed_ = 0.0f;
+			// 床と衝突
+			isHit_ = true;
+		} 
+		else {
+			// 落下スピード加算
+			velocity_.y += fallSpeed_;
+			if (fallSpeed_ <= kMaxFallSpeed_) {
+				fallSpeed_ -= kFallAcceleration_;
+			} else {
+				fallSpeed_ = kMaxFallSpeed_;
+			}
+		}
+	} else {
+		switch (actionWayPoint_) {
+		case PlayerBullet::WayPoint1:
+			// 展開演出をイージングで行う
+			if (animT_ <= deployAreaStagingTime_) {
+				worldTransform_.scale_ = MyMath::EaseIn(
+				    animT_, {3.0f, 3.0f, 3.0f}, {2.0f, 2.0f, 2.0f},
+				    deployAreaStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				deployAreaStagingTime_ = 0.35f;
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint2:
+			// 展開演出をイージングで行う
+			if (animT_ <= deployAreaStagingTime_) {
+				worldTransform_.scale_ = MyMath::EaseOut(
+				    animT_, {2.0f, 2.0f, 2.0f}, deployAreaSize_, deployAreaStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint3:
+			// 展開
+			if (animT_ <= deploymentAreaTime_) {
+				// モデルを徐々に回転させる
+				worldTransform_.rotation_.y += 0.01f;
+				// 振動させる
+				float RandomRadius =
+				    deployAreaSize_.x + MyMath::RandomF(-shakeRange_, shakeRange_, 2);
+				// サイズ変更
+				worldTransform_.scale_ = {RandomRadius, 1.0f, RandomRadius};
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint4:
+			// 展開演出をイージングで行う
+			// 展開演出をイージングで行う
+			if (animT_ <= deployAreaEndStagingTime_) {
+				worldTransform_.scale_ = MyMath::EaseOut(
+				    animT_, deployAreaSize_,
+				    {deployAreaSize_.x + 10.0f, deployAreaSize_.y, deployAreaSize_.z + 10.0f},
+				    deployAreaEndStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 次の演出時間を設定
+				deployAreaEndStagingTime_ = 0.35f;
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 次の演出へ
+				actionWayPoint_++;
+			}
+			break;
+		case PlayerBullet::WayPoint5:
+			// 展開演出をイージングで行う
+			if (animT_ <= deployAreaEndStagingTime_) {
+				worldTransform_.scale_ = MyMath::EaseIn(
+				    animT_,
+				    {deployAreaSize_.x + 10.0f, deployAreaSize_.y, deployAreaSize_.z + 10.0f},
+				    {0.0f, 0.0f, 0.0f}, deployAreaEndStagingTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 演出tをリセット
+				animT_ = 0.0f;
+				// 演出終了
+				actionWayPoint_ = WayPoint1;
+				// 弾を消去
+				isDead_ = true;
+			}
+			break;
+		}
+	}
 }
 
 void PlayerBullet::OnCollision() {
