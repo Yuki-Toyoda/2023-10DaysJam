@@ -16,4 +16,7 @@ public: //メンバ関数
 	//球とOBB
 	static bool IsCollisionSphereOBB(ColliderShape* ShapeA, ColliderShape* ShapeB);
 
+	//OBBとOBB
+	static bool IsCollisionOBBOBB(ColliderShape* ShapeA, ColliderShape* ShapeB);
+
 };

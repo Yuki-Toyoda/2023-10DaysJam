@@ -80,6 +80,10 @@ void CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) 
 		if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::Sphere) {
 			isCollision = Collision::IsCollisionSphereOBB(colliderB->GetColliderShape(), colliderA->GetColliderShape());
 		}
+		// OBBのあたり判定
+		else if (colliderB->GetColliderShape()->GetColliderType() == ColliderShape::ColliderType::OBB) {
+			isCollision = Collision::IsCollisionOBBOBB(colliderA->GetColliderShape(), colliderB->GetColliderShape());
+		}
 	}
 
 	//衝突時の動作

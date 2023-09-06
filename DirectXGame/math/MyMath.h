@@ -317,4 +317,12 @@ public: // メンバ関数
 	/// <returns></returns>
 	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
 
+	/// <summary>
+	/// クロス積
+	/// </summary>
+	/// <param name="v1"></param>
+	/// <param name="v2"></param>
+	/// <returns></returns>
+	static Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
 };

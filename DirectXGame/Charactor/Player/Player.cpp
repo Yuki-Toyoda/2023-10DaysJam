@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "../../config/GlobalVariables.h"
-#include "Collision/ColliderShape/Sphere.h"
+#include "Collision/ColliderShape/OBB.h"
 
 #ifdef _DEBUG
 
@@ -110,9 +110,9 @@ void Player::Initialize(
 	SetCollisionMask(0x00000001);
 
 	// コライダーの形
-	Sphere* sphere = new Sphere();
-	sphere->Initialize(GetWorldPosition(), 10.0f);
-	colliderShape_ = sphere;
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_ = obb;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -168,7 +168,7 @@ void Player::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), 10.0f);
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
 
 	// 3Dレティクルのワールド座標更新
 	worldTransform3DReticle_.UpdateMatrix();
