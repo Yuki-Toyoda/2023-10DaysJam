@@ -28,6 +28,10 @@ void Player::Initialize(
 	pressXButton_ = false;
 	// Yボタントリガー判定リセット
 	pressYButton_ = false;
+	// 右トリガーのトリガー判定
+	pressRTrigger_ = false;
+	// 左トリガーのトリガー判定
+	pressLTrigger_ = false;
 
 	// トリガーデッドゾーン設定
 	triggerDeadZone_R_ = 25; // 右
@@ -85,11 +89,25 @@ void Player::Initialize(
 	// リロード時間リセット
 	reloadTime_ = kMaxReloadTime_;
 
+	// オーブ所持数最大値設定
+	kMaxHavingOrbs_ = 3;
+	// 所持オーブのリセット
+	havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
+
+#pragma region ImGuiテスト用変数
+#ifdef _DEBUG
+
+	// 追加するオーブの種類リセット
+	selectOrbs_ = PlayerBullet::Fire;
+
+#endif // _DEBUG
+#pragma endregion
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000001);
-
+	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名設定
@@ -109,6 +127,7 @@ void Player::Initialize(
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_); // 弾速
 	globalVariables->AddItem(groupName, "MaxMagazineSize", kMaxMagazine_); // 最大弾数設定
 	globalVariables->AddItem(groupName, "MaxReloadTime", kMaxReloadTime_); // リロードにかかる時間
+
 }
 
 void Player::Update() {
@@ -172,14 +191,38 @@ void Player::Update() {
 			pressYButton_ = false;
 		else
 			pressYButton_ = true;
+		// 右トリガーが押されていなければ
+		if (!(joyState.Gamepad.bRightTrigger > triggerDeadZone_R_))
+			pressRTrigger_ = false;
+		else
+			pressRTrigger_ = true;
+		// 左トリガーが押されていなければ
+		if (!(joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_))
+			pressLTrigger_ = false;
+		else
+			pressLTrigger_ = true;
 	}
 
 	#ifdef _DEBUG
 
 	ImGui::Begin("player");
-	ImGui::DragInt("magazine", &magazine_, 1.0f);
-	ImGui::Checkbox("isReloading", &isReloading_);
-	ImGui::DragInt("reloadTime", &reloadTime_, 1.0f);
+
+	// 追加するオーブを選択
+	ImGui::RadioButton("Fire", &selectOrbs_, PlayerBullet::Fire);
+	ImGui::SameLine();
+	ImGui::RadioButton("Water", &selectOrbs_, PlayerBullet::Water);
+	ImGui::SameLine();
+	ImGui::RadioButton("Thunder", &selectOrbs_, PlayerBullet::Thunder);
+
+	if (ImGui::Button("AddOrbs")) {
+		// 選択したオーブを追加
+		AddOrbs((PlayerBullet::BulletType)selectOrbs_);
+	}
+
+	for (int i = 0; i < havingOrbs_.size(); i++) {
+		int OrbType = havingOrbs_[i];
+		ImGui::DragInt("havingOrbType", &OrbType, 1.0f);
+	}
 	ImGui::End();
 
 #endif // _DEBUG
@@ -196,6 +239,18 @@ void Player::Draw(const ViewProjection& viewProjection) {
 
 void Player::OnCollision() {
 
+}
+
+void Player::AddOrbs(PlayerBullet::BulletType orbType) {
+	// 所持しているオーブ数を確認
+	int havingOrbCount = (int)havingOrbs_.size();
+	// 所持しているオーブの数が３つ以上の時
+	if (havingOrbCount >= kMaxHavingOrbs_) {
+		// 所持している最初のオーブを削除
+		havingOrbs_.erase(havingOrbs_.begin());
+	}
+	// 引数のオーブを追加
+	havingOrbs_.push_back(orbType);
 }
 
 void Player::Move() {
@@ -359,7 +414,7 @@ void Player::Shot() {
 				    modelBullet_,  // 3Dモデル
 				    shotPos,                    // 初期位置
 					viewProjection_->rotation_, // 初期角度
-				    shotVelocity); // 弾速
+				    shotVelocity, PlayerBullet::Normal); // 弾速
 
 				// 生成した弾をリストに入れる
 				bullets_.push_back(newBullet);
@@ -418,6 +473,19 @@ void Player::Reload() {
 		}
 	}
 		
+}
+
+void Player::SpecialShot() {
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		// 左トリガーが押されたら特殊射撃
+		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ && !pressLTrigger_) {
+			if (canSpecialShot_) {
+			
+			}
+		}
+	}
 }
 
 void Player::ApplyGlobalVariables() {

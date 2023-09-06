@@ -54,8 +54,16 @@ public: // アクセッサ等
 	/// <returns></returns>
 	std::list<PlayerBullet*> GetBullets() { return bullets_; }
 
-	// 衝突時に呼ばれる関数
+	/// <summary>
+	/// 衝突時呼び出し関数
+	/// </summary>
 	void OnCollision() override;
+
+	/// <summary>
+	/// オーブ追加関数
+	/// </summary>
+	/// <param name="orbType">追加するオーブタイプ</param>
+	void AddOrbs(PlayerBullet::BulletType orbType);
 
 private: // 行動関数
 
@@ -78,6 +86,11 @@ private: // 行動関数
 	/// </summary>
 	void Reload();
 
+	/// <summary>
+	/// 特殊射撃
+	/// </summary>
+	void SpecialShot();
+
 private: // その他関数
 
 	/// <summary>
@@ -98,6 +111,10 @@ private: // メンバ関数
 	bool pressXButton_;
 	// Yボタントリガー判定
 	bool pressYButton_;
+	// 右トリガーのトリガー判定
+	bool pressRTrigger_;
+	// 左トリガーのトリガー判定
+	bool pressLTrigger_;
 
 	// トリガーデッドゾーン
 	int32_t triggerDeadZone_R_; // 右
@@ -161,6 +178,26 @@ private: // メンバ関数
 	int32_t reloadTime_;
 	// リロード時間
 	int32_t kMaxReloadTime_;
+
+	// 所持しているオーブ
+	std::vector<PlayerBullet::BulletType> havingOrbs_;
+	// オーブ所持数最大値
+	int32_t kMaxHavingOrbs_;
+	// 特殊射撃できるか
+	bool canSpecialShot_;
+	// 特殊射撃クールタイム
+	int32_t specialShotCoolTime_;
+	// 特殊射撃クールタイムデフォルト値
+	int32_t kSpecialShotCoolTime_;
+
+	#pragma region ImGuiテスト用変数
+	#ifdef _DEBUG
+
+	// 追加するオーブの種類
+	int selectOrbs_;
+
+	#endif // _DEBUG
+#pragma endregion
 
 
 };

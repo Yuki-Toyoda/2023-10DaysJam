@@ -1,9 +1,8 @@
 #include "PlayerBullet.h"
 
-
-
 void PlayerBullet::Initialize(
-    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity) {
+    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
+    BulletType bulletType) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(models);
 
@@ -17,6 +16,7 @@ void PlayerBullet::Initialize(
 	worldTransform_.translation_ = startPos;
 	worldTransform_.rotation_ = startotation;
 	velocity_ = velocity;
+	bulletType_ = bulletType;
 
 	// 生存している状態に
 	isDead_ = false;
@@ -31,15 +31,26 @@ void PlayerBullet::Initialize(
 }
 
 void PlayerBullet::Update() {
-	// 弾をベクトルの方向に前進させる
-	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
-
-	// 死亡タイマーデクリメント
-	deathTimer_--;
-	// 死亡タイマーが0以下になったら
-	if (deathTimer_ <= 0) {
-		// 弾を死亡させる
-		isDead_ = true;
+	// 弾の種類によって更新処理変化
+	switch (bulletType_) {
+	case PlayerBullet::Normal:
+		// 通常弾更新
+		NormalBulletUpdate();
+		break;
+	case PlayerBullet::Fire:
+		// 爆発弾更新
+		FireBulletUpdate();
+		break;
+	case PlayerBullet::Water:
+		// ビーム弾更新
+		WaterBulletUpdate();
+		break;
+	case PlayerBullet::Thunder:
+		// 雷弾更新
+		ThunderBulletUpdate();
+		break;
+	default:
+		break;
 	}
 
 	// 基底クラス更新
@@ -53,4 +64,31 @@ void PlayerBullet::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
-void PlayerBullet::OnCollision() {}
+void PlayerBullet::NormalBulletUpdate() {
+	// 弾をベクトルの方向に前進させる
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+
+	// 死亡タイマーデクリメント
+	deathTimer_--;
+	// 死亡タイマーが0以下になったら
+	if (deathTimer_ <= 0) {
+		// 弾を死亡させる
+		isDead_ = true;
+	}
+}
+
+void PlayerBullet::FireBulletUpdate() {
+
+}
+
+void PlayerBullet::WaterBulletUpdate() {
+
+}
+
+void PlayerBullet::ThunderBulletUpdate() {
+
+}
+
+void PlayerBullet::OnCollision() {
+
+}
