@@ -122,9 +122,13 @@ void Player::Initialize(const std::vector<Model*>& modelsPlayer,
 	// 特殊射撃できるか
 	canSpecialShot_ = false;
 	// チャージするオーブの種類リセット
-	selectedType_ = PlayerBullet::Fire;
+	selectedChangeType_ = PlayerBullet::Fire;
 	// 現在選択しているオーブ
-	selectedOrb_ = 0;
+	selectedChangeOrb_ = 0;
+	// 変換クールタイム
+	changeCoolTime_ = 0;
+	// 変換クールタイムデフォルト値
+	kChangeCoolTime_ = 120;
 
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
@@ -290,11 +294,13 @@ void Player::Update() {
 	}
 
 	int specialShotPlan = specialShotBulletPlans_;
-	int selectedType = selectedType_;
+	int selectedType = selectedChangeType_;
 	ImGui::DragInt("SpecialShotPlan", &specialShotPlan, 1.0f);
 	ImGui::DragInt("SpecialShotStrength", &specialShotStrength_, 1.0f);
 	ImGui::DragInt("selectedType", &selectedType, 1.0f);
-	ImGui::DragInt("selectedOrb", &selectedOrb_, 1.0f);
+	ImGui::DragInt("selectedOrb", &selectedChangeOrb_, 1.0f);
+	ImGui::DragInt("ChangeCoolTime", &changeCoolTime_, 1.0f);
+	ImGui::DragInt("DefaultChangeCoolTime", &kChangeCoolTime_, 1.0f);
 
 
 	ImGui::End();
@@ -687,23 +693,23 @@ void Player::SpecialShot() {
 			// 十字右
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
 				// 選択しているオーブが最大値を上回っていたら
-				if (selectedOrb_ >= havingOrbCount - 1) {
+				if (selectedChangeOrb_ >= havingOrbCount - 1) {
 					// 最初に戻る
-					selectedOrb_ = 0;
+					selectedChangeOrb_ = 0;
 				} else {
-					selectedOrb_++;
+					selectedChangeOrb_++;
 				}
 			}
 			// 十字左
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
 				// 選択しているオーブが最大値を上回っていたら
-				if (selectedOrb_ <= 0) {
+				if (selectedChangeOrb_ <= 0) {
 					// 最初に戻る
 					if (havingOrbCount < 0) {
-						selectedOrb_ = havingOrbCount - 1;
+						selectedChangeOrb_ = havingOrbCount - 1;
 					}
 				} else {
-					selectedOrb_--;
+					selectedChangeOrb_--;
 				}
 			}
 		}
@@ -711,25 +717,34 @@ void Player::SpecialShot() {
 			// 変換するオーブの種類を選択
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
 				// 変換タイプを炎に設定
-				selectedType_ = PlayerBullet::Fire;
+				selectedChangeType_ = PlayerBullet::Fire;
 			}
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
 				// 変換タイプを氷に設定
-				selectedType_ = PlayerBullet::Ice;
+				selectedChangeType_ = PlayerBullet::Ice;
 			}
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
 				// 変換タイプを雷に設定
-				selectedType_ = PlayerBullet::Thunder;
+				selectedChangeType_ = PlayerBullet::Thunder;
 			}
 		}
 	}
 
 	// オーブの数が1以上なら
-	if (havingOrbCount > 0) {
+	if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
 		// 選択したオーブを別のオーブに変換する
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
-			havingOrbs_.insert(havingOrbs_.begin() + selectedOrb_, selectedType_);
-			havingOrbs_.erase(havingOrbs_.begin() + selectedOrb_ + 1);
+			// 所持しているオーブリストの指定された位置に新しいオーブを挿入
+			havingOrbs_.insert(havingOrbs_.begin() + selectedChangeOrb_, selectedChangeType_);
+			// 変換に使用したオーブを削除
+			havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
+			// 変換クールタイムを設定
+			changeCoolTime_ = kChangeCoolTime_;
+		}
+	} else {
+		if (changeCoolTime_ > 0) {
+			// 変換クールタイムデクリメント
+			changeCoolTime_--;
 		}
 	}
 }

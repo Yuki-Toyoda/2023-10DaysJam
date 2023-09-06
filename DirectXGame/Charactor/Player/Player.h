@@ -212,9 +212,13 @@ private: // メンバ関数
 	// 特殊射撃できるか
 	bool canSpecialShot_;
 	// 変換するオーブの種類
-	PlayerBullet::BulletType selectedType_;
+	PlayerBullet::BulletType selectedChangeType_;
 	// 変換するオーブ
-	int32_t selectedOrb_;
+	int32_t selectedChangeOrb_;
+	// 変換クールタイム
+	int32_t changeCoolTime_;
+	// 変換クールタイムデフォルト値
+	int32_t kChangeCoolTime_;
 
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG

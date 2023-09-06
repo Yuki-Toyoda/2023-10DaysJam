@@ -13,7 +13,7 @@
         "MoveSpeed": 3.0,
         "ShotPosOffset": [
             0.0,
-            -0.25,
+            -2.5,
             0.0
         ],
         "SpriteHavingOrbsLineSpace": [
