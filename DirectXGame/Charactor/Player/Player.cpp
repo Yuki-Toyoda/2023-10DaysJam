@@ -116,7 +116,7 @@ void Player::Initialize(const std::vector<Model*>& modelsPlayer,
 		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
 	}
 	// 特殊射撃で撃つ予定の弾のリセット
-	specialShotBulletPlans_ = PlayerBullet::Normal;
+	specialShotBulletPlans_ = PlayerBullet::None;
 	// 特殊射撃の強さをリセット
 	specialShotStrength_ = 1;
 
@@ -467,7 +467,7 @@ void Player::Shot() {
 				    modelBullet_,  // 3Dモデル
 				    shotPos,                    // 初期位置
 					viewProjection_->rotation_, // 初期角度
-				    shotVelocity, PlayerBullet::Normal); // 弾速
+				    shotVelocity); // 弾速
 
 				// 生成した弾をリストに入れる
 				bullets_.push_back(newBullet);
@@ -544,7 +544,7 @@ void Player::SpecialShot() {
 		// とりあえずの色設定
 		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 		// 特殊射撃の予定をリセット
-		specialShotBulletPlans_ = PlayerBullet::Normal;
+		specialShotBulletPlans_ = PlayerBullet::None;
 		// 特殊射撃の強さをリセット
 		specialShotStrength_ = 1;
 	}
@@ -589,13 +589,57 @@ void Player::SpecialShot() {
 		specialShotStrength_ = 1;
 	}
 
+	// オーブを所持していない場合、特殊射撃は行えない
+	if (specialShotBulletPlans_ == PlayerBullet::None)
+		canSpecialShot_ = false;
+	else
+		canShot_ = true;
+
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
 		// 左トリガーが押されたら特殊射撃
 		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ && !pressLTrigger_) {
 			if (canSpecialShot_) {
-				
+				// 弾の生成
+				PlayerBullet* newBullet = new PlayerBullet();
+
+				// 射撃ベクトル計算用
+				Vector3 shotVelocity;
+
+				// 移動ベクトルを初期化する
+				shotVelocity = {0.0f, 0.0f, 0.0f};
+
+				// レティクルのワールド座標を求める
+				Vector3 ReticleWorldPos;
+				ReticleWorldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+				ReticleWorldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+				ReticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+
+				// 射撃座標調整
+				Vector3 shotPos = worldTransform_.translation_;
+				shotPos = shotPos + shotPosOffset_;
+				shotVelocity = ReticleWorldPos - shotPos;
+				shotVelocity = MyMath::Normalize(shotVelocity) * bulletSpeed_;
+
+				// 生成した弾を初期化
+				newBullet->Initialize(
+				    modelBullet_,               // 3Dモデル
+				    shotPos,                    // 初期位置
+				    viewProjection_->rotation_, // 初期角度
+				    shotVelocity,               // 弾速
+					specialShotBulletPlans_,	// 行う特殊射撃
+					specialShotStrength_		// 特殊攻撃の強さ
+					);             
+
+				// 生成した弾をリストに入れる
+				bullets_.push_back(newBullet);
+
+				// 弾数デクリメント
+				magazine_--;
+
+				// 射撃クールタイムリセット
+				fireCoolTime_ = kMaxFireCoolTime_;
 			}
 		}
 	}

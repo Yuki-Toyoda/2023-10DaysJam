@@ -23,9 +23,21 @@ public: // メンバ関数
 	/// <param name="startPos">初期座標</param>
 	/// <param name="startotation">初期角度</param>
 	/// <param name="velocity">弾速</param>
-	/// <param name="bulletType">撃つ弾の種類</param>
 	void Initialize(const std::vector<Model*>& models, 
-		Vector3 startPos, Vector3 startotation, Vector3 velocity, BulletType bulletType);
+		Vector3 startPos, Vector3 startotation, Vector3 velocity);
+
+	/// <summary>
+	/// 初期化関数
+	/// </summary>
+	/// <param name="models">3Dモデル</param>
+	/// <param name="startPos">初期座標</param>
+	/// <param name="startotation">初期角度</param>
+	/// <param name="velocity">弾速</param>
+	/// <param name="bulletType">撃つ弾の種類</param>
+	/// <param name="bulletStrength">撃つ弾の強さ</param>
+	void Initialize(
+	    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
+	    BulletType bulletType, int32_t bulletStrength);
 
 	/// <summary>
 	/// 更新関数
@@ -93,5 +105,7 @@ private: // メンバ変数
 
 	// 発射する弾の種類
 	BulletType bulletType_;
+	// 発射する弾の強さ
+	int32_t bulletStrength_;
 
 };

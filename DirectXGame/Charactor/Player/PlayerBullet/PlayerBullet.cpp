@@ -1,8 +1,30 @@
 #include "PlayerBullet.h"
 
 void PlayerBullet::Initialize(
+    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity) {
+	// 基底クラス初期化
+	BaseCharacter::Initialize(models);
+
+	// モデル受け取り
+	models_ = models;
+
+	// ワールド座標初期化
+	worldTransform_.Initialize();
+
+	// 引数の値をメンバ変数に代入
+	worldTransform_.translation_ = startPos;
+	worldTransform_.rotation_ = startotation;
+	velocity_ = velocity;
+
+	// 生存している状態に
+	isDead_ = false;
+	// 生存時間設定
+	deathTimer_ = klifeTime_;
+}
+
+void PlayerBullet::Initialize(
     const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
-    BulletType bulletType) {
+    BulletType bulletType, int32_t bulletStrength) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(models);
 
@@ -17,6 +39,7 @@ void PlayerBullet::Initialize(
 	worldTransform_.rotation_ = startotation;
 	velocity_ = velocity;
 	bulletType_ = bulletType;
+	bulletStrength_ = bulletStrength;
 
 	// 生存している状態に
 	isDead_ = false;

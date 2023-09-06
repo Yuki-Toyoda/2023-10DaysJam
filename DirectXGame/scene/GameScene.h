@@ -68,6 +68,12 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelGround_;
 	// 弾モデル
 	std::unique_ptr<Model> modelBullet_;
+	// 炎弾モデル
+	std::unique_ptr<Model> modelFireBullet_;
+	// 水弾モデル
+	std::unique_ptr<Model> modelWaterBullet_;
+	// 雷弾モデル
+	std::unique_ptr<Model> modelThunderBullet_;
 
 	// デバックカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;
