@@ -51,6 +51,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 	globalVariables->AddItem(groupName, "RushSpeed", rushSpeed_);
 
+	colliderShape_->AddToGlobalVariables(groupName);
+
 }
 
 /// <summary>

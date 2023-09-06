@@ -31,6 +31,17 @@ public: // 継承メンバ関数
 	/// <param name="colliderType">当たり判定タイプ</param>
 	void SetColliderType(ColliderType colliderType) { colliderType_ = colliderType; }
 
+	/// <summary>
+	/// グローバル変数に追加
+	/// </summary>
+	/// <param name="groupName"></param>
+	virtual void AddToGlobalVariables(const char* groupName) = 0;
+
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	virtual void ApplyGlobalVariables(const char* groupName) = 0;
+
 	//球
 	virtual void Update(Vector3 posision, float radius);
 

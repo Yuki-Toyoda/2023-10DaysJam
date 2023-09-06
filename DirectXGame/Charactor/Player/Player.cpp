@@ -134,6 +134,8 @@ void Player::Initialize(
 	globalVariables->AddItem(groupName, "MaxMagazineSize", kMaxMagazine_); // 最大弾数設定
 	globalVariables->AddItem(groupName, "MaxReloadTime", kMaxReloadTime_); // リロードにかかる時間
 
+	colliderShape_->AddToGlobalVariables(groupName);
+
 }
 
 void Player::Update() {

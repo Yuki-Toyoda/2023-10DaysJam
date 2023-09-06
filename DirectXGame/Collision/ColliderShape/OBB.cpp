@@ -1,6 +1,7 @@
 #include "OBB.h"
 #include "Matrix4x4.h"
 #include "MyMath.h"
+#include "../config/GlobalVariables.h"
 
 void OBB::Initialize(Vector3 position, Vector3 rotate, Vector3 size) {
 
@@ -45,5 +46,25 @@ void OBB::Update(Vector3 position, Vector3 rotate, Vector3 size) {
 	otientatuons_[2].z = rotateMatirx.m[2][2];
 
 	size_ = size;
+
+}
+
+void OBB::AddToGlobalVariables(const char* groupName) {
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	// メンバ変数の調整したい項目をグローバル変数に追加
+	globalVariables->AddItem(groupName, "OBBSize", size_);
+
+}
+
+void OBB::ApplyGlobalVariables(const char* groupName) {
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	// メンバ変数の調整項目をグローバル変数に追加
+	size_ = globalVariables->GetVector3Value(groupName, "OBBSize");
 
 }

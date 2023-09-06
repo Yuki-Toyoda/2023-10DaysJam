@@ -22,6 +22,17 @@ public: //メンバ関数
 	void Update(Vector3 posision, float radius) override;
 
 	/// <summary>
+	/// グローバル変数に追加
+	/// </summary>
+	/// <param name="groupName"></param>
+	void AddToGlobalVariables(const char* groupName) override;
+
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables(const char* groupName) override;
+
+	/// <summary>
 	/// 中心点取得
 	/// </summary>
 	/// <returns></returns>
