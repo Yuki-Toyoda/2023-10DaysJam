@@ -64,6 +64,10 @@ public: // アクセッサ等
 	/// <returns>弾の種類</returns>
 	BulletType GetBulletType() { return bulletType_; }
 
+	/// <summary>
+	/// 炎弾が衝突した状態セッター
+	/// </summary>
+	/// <param name="isHit">衝突したか</param>
 	void SetIsHit(bool isHit) { isHit_ = isHit; }
 
 private: // 弾ごとの行動関数

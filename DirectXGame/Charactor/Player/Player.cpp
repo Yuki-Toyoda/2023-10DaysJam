@@ -620,7 +620,17 @@ void Player::SpecialShot() {
 				Vector3 shotPos = worldTransform_.translation_;
 				shotPos = shotPos + shotPosOffset_;
 				shotVelocity = ReticleWorldPos - shotPos;
-				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
+				switch (specialShotBulletPlans_) {
+				case PlayerBullet::Fire:
+					shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
+					break;
+				case PlayerBullet::Water:
+
+					break;
+				case PlayerBullet::Thunder:
+
+					break;
+				}
 
 				// 生成した弾を初期化
 				newBullet->Initialize(
