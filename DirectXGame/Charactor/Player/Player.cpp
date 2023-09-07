@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "../../config/GlobalVariables.h"
-#include "Collision/ColliderShape/OBB.h"
+#include "Collision/ColliderShape/Sphere.h"
 
 void Player::Initialize(const std::vector<Model*>& modelsPlayer,
     const std::vector<Model*>& modelsBullet) {
@@ -148,9 +148,9 @@ void Player::Initialize(const std::vector<Model*>& modelsPlayer,
 	tag_ = TagPlayer;
 
 	// コライダーの形
-	OBB* obb = new OBB();
-	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
-	colliderShape_ = obb;
+	Sphere* sphere = new Sphere();
+	sphere->Initialize(GetWorldPosition(), 10.0f);
+	colliderShape_ = sphere;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -215,7 +215,7 @@ void Player::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_->Update(GetWorldPosition(), GetColliderShape()->GetRadius());
 
 	// 3Dレティクルのワールド座標更新
 	worldTransform3DReticle_.UpdateMatrix();
@@ -792,6 +792,8 @@ void Player::ApplyGlobalVariables() {
 		globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsSize"); // 所持オーブ描画UIの大きさ
 	spriteHavingOrbsLineSpace_ = 
 		globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsLineSpace"); // 所持オーブ描画UIの行間
+
+	colliderShape_->ApplyGlobalVariables(groupName);
 	
 
 #ifdef _DEBUG

@@ -103,6 +103,13 @@ private: // 弾ごとの行動関数
 	/// </summary>
 	void ThunderBulletUpdate();
 
+private: //コライダー更新
+
+	/// <summary>
+	/// コライダー更新
+	/// </summary>
+	void ColliderUpdate();
+
 public: // その他関数
 
 	// 衝突時に呼ばれる関数

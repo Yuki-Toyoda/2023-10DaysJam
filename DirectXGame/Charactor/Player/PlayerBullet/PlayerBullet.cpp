@@ -166,7 +166,7 @@ void PlayerBullet::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
+	ColliderUpdate();
 
 }
 
@@ -453,6 +453,41 @@ void PlayerBullet::ThunderBulletUpdate() {
 			break;
 		}
 	}
+}
+
+void PlayerBullet::ColliderUpdate() {
+
+	Vector3 pos = GetWorldPosition();
+	Vector3 rotate = worldTransform_.rotation_;
+	Vector3 scale = worldTransform_.scale_;
+
+	switch (bulletType_) {
+	case PlayerBullet::None:
+		// 通常弾更新
+		scale = scale * 2.0f;
+		colliderShape_->Update(pos, rotate, scale);
+		break;
+	case PlayerBullet::Fire:
+		// 炎弾更新
+		scale = scale * 0.85f;
+		colliderShape_->Update(pos, rotate, scale);
+		break;
+	case PlayerBullet::Ice:
+		// 水弾更新
+		pos.y += worldTransform_.scale_.y;
+		rotate.y = -rotate.y;
+		scale.z *= 0.35f;
+		colliderShape_->Update(pos, rotate, scale);
+		break;
+	case PlayerBullet::Thunder:
+		// 雷弾更新
+		rotate.y = -rotate.y;
+		colliderShape_->Update(pos, rotate, scale);
+		break;
+	default:
+		break;
+	}
+
 }
 
 void PlayerBullet::OnCollision(Tag collisionTag) {

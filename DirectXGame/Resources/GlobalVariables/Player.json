@@ -16,6 +16,7 @@
             -2.5,
             0.0
         ],
+        "SphereRadius": 10.0,
         "SpriteHavingOrbsLineSpace": [
             96.0,
             0.0
