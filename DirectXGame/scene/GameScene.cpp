@@ -115,6 +115,10 @@ void GameScene::Update() {
 	for (Enemy* enemy : enemyManager_->GetEnemies()) {
 		collisionManager->ListRegister(enemy);
 	}
+	// ボス敵全てについて
+	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+		collisionManager->ListRegister(bossEnemy);
+	}
 	// 自弾全てについて
 	for (PlayerBullet* playerBullet : player_->GetBullets()) {
 		collisionManager->ListRegister(playerBullet);

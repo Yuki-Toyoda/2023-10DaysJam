@@ -17,7 +17,8 @@ public: //サブクラス
 		TagPlayerBulletIce,  // 氷弾
 		TagPlayerBulletThunder, // 雷弾
 		TagEnemy,               // 敵
-		TagEnemyBullet          // 敵弾
+		TagEnemyBullet,          // 敵弾
+		TagBossEnemy
 	};
 
 

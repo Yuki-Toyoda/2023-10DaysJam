@@ -5,12 +5,14 @@
 #include <cassert>
 #include <stdio.h>
 #include <string>
+#include "Enemy.h"
+#include "Collision/ColliderShape/OBB.h"
 
 /// <summary>
 /// 初期化
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
-void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle) {
+void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -33,10 +35,21 @@ void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHa
 	    0.0f,
 	};
 
+	//エネミー
+	enemies_ = enemies;
+
 	// 衝突属性を設定
-	SetCollisionAttribute(0xfffffffd);
+	SetCollisionAttribute(0xfffffffb);
 	// 衝突対象を自分の属性以外に設定
-	SetCollisionMask(0x00000002);
+	SetCollisionMask(0x00000004);
+
+	// タグ
+	tag_ = TagBossEnemy;
+
+	// コライダーの形
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_ = obb;
 	
 	// 移動通過地点
 	movePoint[0] = {-300, 10, -300};
@@ -60,18 +73,27 @@ void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHa
 	}
 	globalVariables->AddItem(groupName, "MoveTime", moveTime);
 
+	colliderShape_->AddToGlobalVariables(groupName);
+
 }
 
 /// <summary>
 /// 更新
 /// </summary>
-void BossEnemy::Update() {
+void BossEnemy::Update(std::list<Enemy*>* enemies) {
 
-	Move();
-	Rotation();
+	enemies_ = enemies;
+
+	//Move();
+
+	CollectEnemies();
 
 	// ワールド行列更新
 	worldTransform_.UpdateMatrix();
+
+	// コライダー更新
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
+
 }
 
 /// <summary>
@@ -93,54 +115,54 @@ void BossEnemy::OnCollision(Tag collisionTag) {
 		collisionTag == TagPlayerBulletIce ||
 		collisionTag == TagPlayerBulletThunder ||
 	    collisionTag == TagPlayerBulletNone	) {
-		isDead_ = true; 
+		//isDead_ = true; 
 	}
 
 }
 
 void BossEnemy::Move() {
 
-	//位置設定
-	Vector3 startPoint = movePoint[movePointNum];
-	Vector3 endPoint;
-	if (movePointNum == movePointMax - 1) {
-		endPoint = movePoint[0];
-	} else {
-		endPoint = movePoint[movePointNum + 1];
-	}
-
-	//移動
-	worldTransform_.translation_ = MyMath::Linear(moveT, startPoint, endPoint, moveTime);
-
-	//moveTについて
-	moveT += 1.0f / 60.0f;
-	if (moveT >= moveTime) {
-		moveT = 0.0f;
-		movePointNum++;
-		if (movePointNum == movePointMax) {
-			movePointNum = 0;
-		}
-	}
+	
 
 }
 
-void BossEnemy::Rotation() {
+void BossEnemy::CollectEnemies() {
 
-	// 自キャラのワールド座標を取得する
-	Vector3 playerPos = player_->GetWorldPosition();
-	// 敵弾のワールド座標を取得する
-	Vector3 enemyrPos = GetWorldPosition();
-	// 敵弾->自キャラの差分ベクトルを求める
-	Vector3 toPlayer = playerPos - enemyrPos;
-	// ベクトルの正規化
-	toPlayer = MyMath::Normalize(toPlayer);
-	// 進行方向に見た目の回転を合わせる
-	//  Y軸周りの角度(Θy)
-	worldTransform_.rotation_.y = std::atan2f(toPlayer.x, toPlayer.z);
-	// 横軸方向の長さを求める
-	float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
-	// X軸周りの角度(Θx)
-	worldTransform_.rotation_.x = std::atan2f(-toPlayer.y, length);
+	//Wait状態の一番近いエネミーを検索
+
+	//検索出来たか
+	bool enemyFound = false;
+	Vector3 shortestPos = {0.0f, 0.0f, 0.0f};
+	float shortest = 0.0f;
+	// ワールド座標を取得する
+	Vector3 pos = GetWorldPosition();
+	for (Enemy* enemy : *enemies_) {
+		if (enemy) {
+			if (enemy->GetEnemyState() == Enemy::Wait) {
+				// ボスのワールド座標を取得する
+				Vector3 enemyPos = enemy->GetWorldPosition();
+				// 敵弾->自キャラの差分ベクトルを求める
+				Vector3 toEnemy = pos - enemyPos;
+				// 距離
+				float distance = MyMath::Length(toEnemy);
+				if (enemyFound == false || shortest >= distance) {
+					shortest = distance;
+					shortestPos = enemyPos;
+					enemyFound = true;
+				}
+			}
+		}
+	}
+
+	if (enemyFound) {
+		//移動割合
+		float t = 0.025f;
+		worldTransform_.translation_ = {
+		    MyMath::Linear(t, pos.x, shortestPos.x), MyMath::Linear(t, pos.y, shortestPos.y),
+		    MyMath::Linear(t, pos.z, shortestPos.z)};
+	} else {
+		//通常移動
+	}
 
 }
 
@@ -159,5 +181,7 @@ void BossEnemy::ApplyGlobalVariables() {
 		movePoint[i] = globalVariables->GetVector3Value(groupName, str);
 	}
 	moveTime = globalVariables->GetFloatValue(groupName, "MoveTime");
+
+	colliderShape_->ApplyGlobalVariables(groupName);
 
 }

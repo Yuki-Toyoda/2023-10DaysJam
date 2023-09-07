@@ -5,6 +5,8 @@
 class EnemyManager;
 //プレイヤー
 class Player;
+//ボスエネミー
+class BossEnemy;
 
 /// <summary>
 /// エネミークラス
@@ -12,13 +14,21 @@ class Player;
 class Enemy : public BaseCharacter {
 
 public: //サブクラス
-	//  弾の種類
+	//  属性の種類
 	enum EnemyType {
 		None,   // 通常
 		Fire,   // 炎
 		Ice,    // 氷
 		Thunder // 雷
 	};
+
+	// 状態
+	enum EnemyState {
+		Wait,
+		Follow,
+		Rush
+	};
+
 
 public: //メンバ関数
 
@@ -28,7 +38,8 @@ public: //メンバ関数
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
-	    Vector3 posioton, EnemyManager* enemyManager, Player* player);
+	    Vector3 posioton, EnemyManager* enemyManager, Player* player,
+	    std::list<BossEnemy*>* bossEnemies);
 
 	/// <summary>
 	/// 更新
@@ -70,7 +81,7 @@ public: //メンバ関数
 	/// <summary>
 	/// 突進
 	/// </summary>
-	void Rush();
+	void Rushing();
 
 	/// <summary>
 	/// 待ち
@@ -80,7 +91,12 @@ public: //メンバ関数
 	/// <summary>
 	/// 追従(ボス)
 	/// </summary>
-	void Follow();
+	void Following();
+
+	/// <summary>
+	/// 部隊に加わる
+	/// </summary>
+	void Join();
 
 	/// <summary>
 	/// エネミーマネージャーセッター
@@ -91,6 +107,12 @@ public: //メンバ関数
 	/// プレイヤーセッター
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
+
+	/// <summary>
+	/// エネミーの状態ゲッター
+	/// </summary>
+	/// <returns></returns>
+	EnemyState GetEnemyState() { return enemyState_; }
 
 private: // その他関数
 	/// <summary>
@@ -112,6 +134,8 @@ private: //メンバ変数
 	EnemyManager* enemyManager_ = nullptr;
 	//プレイヤー
 	Player* player_ = nullptr;
+	//ボスエネミー
+	std::list<BossEnemy*>* bossEnemies_;
 
 	//移動
 	float moveSpeed_ = 1.0f;
@@ -125,5 +149,8 @@ private: //メンバ変数
 
 	//エネミータイプ
 	EnemyType enemyType_;
+
+	//エネミーの状態
+	EnemyState enemyState_;
 
 };

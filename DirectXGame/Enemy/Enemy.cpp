@@ -12,7 +12,7 @@
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
-	Vector3 posioton, EnemyManager* enemyManager, Player* player) {
+    Vector3 posioton, EnemyManager* enemyManager, Player* player, std::list<BossEnemy*>* bossEnemies) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -30,6 +30,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 
 	enemyType_ = enemyType;
 
+	enemyState_ = Wait;
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
@@ -41,6 +43,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	enemyManager_ = enemyManager;
 	// プレイヤー
 	player_ = player;
+	// ボス
+	bossEnemies_ = bossEnemies;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -70,8 +74,18 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 /// </summary>
 void Enemy::Update() {
 
-	//移動
-	Move();
+	switch (enemyState_) {
+	case Enemy::Wait:
+		Waiting();
+		break;
+	case Enemy::Follow:
+		Following();
+		break;
+	case Enemy::Rush:
+		Rushing();
+	default:
+		break;
+	}
 
 	//グローバル変数適用
 	ApplyGlobalVariables();
@@ -105,6 +119,8 @@ void Enemy::OnCollision(Tag collisionTag) {
 		collisionTag == TagPlayerBulletThunder ||
 	    collisionTag == TagPlayerBulletNone) {
 		isDead_ = true;
+	} else if (collisionTag == TagBossEnemy && enemyState_ == Wait) {
+		Join();
 	}
 
 }
@@ -189,7 +205,7 @@ void Enemy::RushStart() {
 
 }
 
-void Enemy::Rush() {
+void Enemy::Rushing() {
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
@@ -198,11 +214,44 @@ void Enemy::Rush() {
 
 void Enemy::Waiting() {
 
-	Move();
+	//Move();
 
 }
 
-void Enemy::Follow() {
+void Enemy::Following() {
+
+	//最短距離
+	Vector3 shortestPos = {0.0f, 0.0f, 0.0f};
+	float shortest = 0.0f;
+	// ワールド座標を取得する
+	Vector3 pos = GetWorldPosition();
+	for (BossEnemy* bossEnemy : *bossEnemies_) {
+		// ボスのワールド座標を取得する
+		Vector3 bossPos = bossEnemy->GetWorldPosition();
+		// 敵弾->自キャラの差分ベクトルを求める
+		Vector3 toBoss = pos - bossPos;
+		//距離
+		float distance = MyMath::Length(toBoss);
+		if (shortest == 0.0f || shortest >= distance) {
+			shortest = distance;	
+			shortestPos = bossPos;
+		}
+	}
+
+	float t = 0.025f;
+	worldTransform_.translation_ = {
+	    MyMath::Linear(t, pos.x, shortestPos.x),
+		MyMath::Linear(t, pos.y, shortestPos.y),
+	    MyMath::Linear(t, pos.z, shortestPos.z)
+	};
+
+
+
+}
+
+void Enemy::Join() {
+
+	enemyState_ = Follow;
 
 }
 

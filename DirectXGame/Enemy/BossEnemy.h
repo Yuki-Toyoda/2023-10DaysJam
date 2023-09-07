@@ -4,22 +4,32 @@
 // プレイヤークラス前方宣言
 class Player;
 
+// エネミークラスの宣言
+class Enemy;
+
 /// <summary>
 /// ボスエネミー
 /// </summary>
 class BossEnemy : public BaseCharacter {
 
-	public: // メンバ関数
+public: // サブクラス
+	enum BossEnemyState { 
+		Collect,
+		AttackCommand, 
+		Down
+	};
+
+public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle);
+	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies);
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update() override;
+	void Update(std::list<Enemy*>* enemies);
 
 	/// <summary>
 	/// 描画
@@ -39,9 +49,9 @@ class BossEnemy : public BaseCharacter {
 	void Move();
 
 	/// <summary>
-	/// 回転
+	/// エネミーを回収する
 	/// </summary>
-	void Rotation();
+	void CollectEnemies();
 
 	/// <summary>
 	/// プレイヤーセッター
@@ -85,5 +95,11 @@ private: // メンバ変数
 	float moveT = 0.0f;
 	// 移動時間
 	float moveTime = 10.0f;
+
+	// エネミー
+	std::list<Enemy*>* enemies_;
+
+	//ボスエネミー状態
+	BossEnemyState bossEnemyState_;
 
 };

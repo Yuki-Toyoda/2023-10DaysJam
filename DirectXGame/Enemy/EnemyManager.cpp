@@ -30,27 +30,24 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	bulletModels_ = models;
 
 	//ボスエネミーモデル
-	//bossModels_ = models;
+	bossModels_ = models;
 
 	//エネミータイプ
-	enemyTypeNext = Enemy::EnemyType::Thunder;
+	enemyTypeNext_ = Enemy::EnemyType::Thunder;
 
 	// エネミースポナー
-	enemySpawner.Initialize(this);
+	enemySpawner_.Initialize(this);
 
-	//ボス
-	//bossEnemy_ = std::make_unique<BossEnemy>();
-	//bossEnemy_->Initialize(bossModels_, textureHandle_);
+	//ボスエネミーの追加
+	AddBossEnemy();
+
 
 }
 
 void EnemyManager::Update() {
-
-	//ボスエネミー更新
-	//bossEnemy_->Update()
 	
 	//スポナー更新
-	enemySpawner.Update();
+	enemySpawner_.Update();
 	
 	//エネミー更新
 	for (Enemy* enemy : enemies_) {
@@ -60,13 +57,14 @@ void EnemyManager::Update() {
 	for (EnemyBullet* enemyBullet : enemyBullets_) {
 		enemyBullet->Update();
 	}
+	// ボスエネミー更新
+	for (BossEnemy* bossEnemy : bossEnemies_) {
+		bossEnemy->Update(&enemies_);
+	}
 
 }
 
 void EnemyManager::Draw(const ViewProjection& viewProjection) {
-
-	// ボスエネミーの描画
-	//bossEnemy_->Draw(viewProjection);
 	
 	//エネミーの描画
 	for (Enemy* enemy : enemies_) {
@@ -75,6 +73,10 @@ void EnemyManager::Draw(const ViewProjection& viewProjection) {
 	// バレット描画
 	for (EnemyBullet* enemyBullet : enemyBullets_) {
 		enemyBullet->Draw(viewProjection);
+	}
+	//ボスエネミーの描画
+	for (BossEnemy* bossEnemy : bossEnemies_) {
+		bossEnemy->Draw(viewProjection);
 	}
 
 }
@@ -89,6 +91,10 @@ void EnemyManager::ColliderDraw() {
 	for (EnemyBullet* enemyBullet : enemyBullets_) {
 		enemyBullet->GetColliderShape()->Draw();
 	}
+	// ボスエネミーの描画
+	for (BossEnemy* bossEnemy : bossEnemies_) {
+		bossEnemy->GetColliderShape()->Draw();
+	}
 
 }
 
@@ -97,7 +103,7 @@ void EnemyManager::AddEnemy(Vector3 position) {
 	Enemy* enemy = new Enemy();
 
 	enemy->Initialize(
-	    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position, this, player_);
+	    models_, textureHandles_[enemyTypeNext_], enemyTypeNext_, position, this, player_,&bossEnemies_);
 	enemies_.push_back(enemy);
 
 }
@@ -136,6 +142,15 @@ void EnemyManager::DeleteEnemyBullet() {
 
 }
 
+void EnemyManager::AddBossEnemy() {
+
+	BossEnemy* bossEnemy = new BossEnemy();
+
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_);
+	bossEnemies_.push_back(bossEnemy);
+
+}
+
 void EnemyManager::Delete() {
 
 	enemies_.remove_if([](Enemy* enemy) {
@@ -144,6 +159,10 @@ void EnemyManager::Delete() {
 	});
 	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		delete bullet;
+		return true;
+	});
+	bossEnemies_.remove_if([](BossEnemy* bossEnemy) {
+		delete bossEnemy;
 		return true;
 	});
 

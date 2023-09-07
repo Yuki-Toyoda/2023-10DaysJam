@@ -55,14 +55,19 @@ public: // メンバ変数
 	void DeleteEnemy();
 
 	/// <summary>
-	/// エネミー追加
+	/// エネミーバレット追加
 	/// </summary>
 	void AddEnemyBullet(const Vector3& position,const Vector3& velocity);
 
 	/// <summary>
-	/// エネミー削除
+	/// エネミーバレット削除
 	/// </summary>
 	void DeleteEnemyBullet();
+
+	/// <summary>
+	/// ボスエネミー追加
+	/// </summary>
+	void AddBossEnemy();
 
 	/// <summary>
 	///	削除
@@ -78,6 +83,12 @@ public: // メンバ変数
 	/// エネミーゲッター
 	/// </summary>
 	std::list<Enemy*> GetEnemies() { return enemies_; }
+
+	/// <summary>
+	/// ボスエネミーゲッター
+	/// </summary>
+	/// <returns></returns>
+	std::list<BossEnemy*> GetBossEnemis() { return bossEnemies_; }
 
 	/// <summary>
 	/// エネミーカウントゲッター
@@ -123,9 +134,11 @@ private: // メンバ変数
 	std::vector<Model*> bulletModels_;
 
 	// ボスエネミー
-	//std::unique_ptr<BossEnemy> bossEnemy_;
+	std::list<BossEnemy*> bossEnemies_;
 	// ボスエネミーモデル
-	//std::vector<Model*> bossModels_;
+	std::vector<Model*> bossModels_;
+	// ボスエネミーのテクスチャハンドル
+	uint32_t bossTextureHandles_ = 0u;
 
 	// エネミー数
 	size_t enemyCount_;
@@ -136,9 +149,9 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 
 	//次のエネミータイプ
-	Enemy::EnemyType enemyTypeNext;
+	Enemy::EnemyType enemyTypeNext_;
 
 	// エネミースポナー
-	EnemySpawner enemySpawner;
+	EnemySpawner enemySpawner_;
 
 };
