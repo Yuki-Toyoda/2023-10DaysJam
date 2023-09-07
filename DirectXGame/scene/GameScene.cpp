@@ -119,15 +119,6 @@ void GameScene::Update() {
 
 	ImGui::Begin("Debug");
 	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);
-
-	if (ImGui::Button("PlayEffect")) {
-		std::vector<Model*> testModels = {
-		    modelBullet_.get(),        // 通常弾
-		};                             // テスト用モデルリストの生成
-		// 爆発エフェクトの再生
-		effectManager_->PlayExplosiveEffect(testModels, {0.0f, 20.0f, 0.0f});
-	}
-
 	ImGui::End();
 
 #endif // _DEBUG
