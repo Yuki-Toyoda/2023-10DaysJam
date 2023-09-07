@@ -1,19 +1,38 @@
 #include "Camera.h"
+#include "config/GlobalVariables.h"
 
 void Camera::Intialize() {
 	// ビュープロジェクション初期化
-	viewProjection_.farZ = 2000.0f;
+	viewProjection_.farZ = 2500.0f;
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = {0.0f, 5.0f, 0.0f};
 
 	// 入力取得
 	input_ = Input::GetInstance();
 
+	// カメラFOV
+	fov_ = 0.45f;
 	// カメラ感度
 	cameraSensitivity_ = {0.025f, 0.025f};
+
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名設定
+	const char* groupName = "Camera";
+	// 指定した名前でグループ追加
+	globalVariables->CreateGroup(groupName);
+
+	// メンバ変数の調整したい項目をグローバル変数に追加
+	globalVariables->AddItem(groupName, "FOV", fov_);
+	globalVariables->AddItem(groupName, "Sensitivity", cameraSensitivity_);
+
 }
 
 void Camera::Update() {
+
+	// 視野角の設定
+	viewProjection_.fovAngleY = fov_;
+
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
@@ -56,6 +75,20 @@ void Camera::Update() {
 		viewProjection_.translation_ = target_->translation_ + offset;
 	}
 
+	// 調整項目の適用
+	ApplyGlobalVariables();
+
 	// ビュープロジェクション行列の更新
 	viewProjection_.UpdateMatrix();
+}
+
+void Camera::ApplyGlobalVariables() {
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名の設定
+	const char* groupName = "Camera";
+
+	// メンバ変数の調整項目をグローバル変数に追加
+	fov_ = globalVariables->GetFloatValue(groupName, "FOV");                 // 視野角
+	cameraSensitivity_ = globalVariables->GetVector2Value(groupName, "Sensitivity"); // 移動速度
 }

@@ -118,6 +118,9 @@
     <ClCompile Include="Charactor\Player\PlayerBullet\PlayerBullet.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
     <ClCompile Include="config\GlobalVariables.cpp" />
+    <ClCompile Include="Effect\BaseEffect.cpp" />
+    <ClCompile Include="Effect\EffectManager.cpp" />
+    <ClCompile Include="Effect\ExplosiveEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\MyMath.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
@@ -156,6 +159,10 @@
     <ClInclude Include="Collision\collider.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
     <ClInclude Include="config\GlobalVariables.h" />
+    <ClInclude Include="Effect\BaseEffect.h" />
+    <ClInclude Include="Effect\EffectList.h" />
+    <ClInclude Include="Effect\EffectManager.h" />
+    <ClInclude Include="Effect\ExplosiveEffect.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\MyMath.h" />

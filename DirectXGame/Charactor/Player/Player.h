@@ -13,6 +13,14 @@
 /// プレイヤークラス
 /// </summary>
 class Player : public BaseCharacter{
+private: // サブクラス
+	// UI構造体
+	struct UI {
+		uint32_t textureHandle_; // テクスチャ
+		Vector2 position_; // 位置座標 
+		Vector2 size_; // 大きさ
+	};
+
 public: // メンバ関数
 
 	/// <summary>
@@ -20,9 +28,11 @@ public: // メンバ関数
 	/// </summary>
 	/// <param name="modelsPlayer">プレイヤーモデル</param>
 	/// <param name="modelsBullet">弾モデル</param>
+	/// <param name="textureHandles">テクスチャ達</param>
 	void Initialize(
 	    const std::vector<Model*>& modelsPlayer,
-	    const std::vector<Model*>& modelsBullet);
+	    const std::vector<Model*>& modelsBullet, 
+		const std::vector<uint32_t>& textureHandles);
 
 	/// <summary>
 	/// 更新関数
@@ -130,15 +140,23 @@ private: // メンバ関数
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
 
-	// 1x1テクスチャ
-	uint32_t textureHandle1x1_ = 0u;
-	// レティクル用テクスチャ
-	uint32_t textureHandleReticle_ = 0u;
+	// テクスチャリスト
+	std::vector<uint32_t> textureHandles_;
 
 	// 照準スプライト
 	std::unique_ptr<Sprite> spriteReticle_;
 	// 3Dレティクル用座標
 	WorldTransform worldTransform3DReticle_;
+
+	// 十字ボタンUI
+	UI spriteDpadUI_;
+	std::unique_ptr<Sprite> spriteDpad_;
+	// 十字ボタン矢印UI
+	std::unique_ptr<Sprite> spriteDpadArrow_;
+	// 十字ボタンUI
+	std::unique_ptr<Sprite> spriteDpadUP_; // 上
+	std::unique_ptr<Sprite> spriteDpadLeft_; // 左
+	std::unique_ptr<Sprite> spriteDpadRight_; // 右
 
 	// プレイヤー身長
 	float height_;
@@ -213,6 +231,8 @@ private: // メンバ関数
 	bool canSpecialShot_;
 	// 変換するオーブの種類
 	PlayerBullet::BulletType selectedChangeType_;
+	// 変換するオーブを示すスプライト
+	std::unique_ptr<Sprite> spriteSelectedOrbs_;
 	// 変換するオーブ
 	int32_t selectedChangeOrb_;
 	// 変換クールタイム

@@ -50,6 +50,9 @@
     <Filter Include="Charactor\Player\PlayerBullet">
       <UniqueIdentifier>{b46d4972-3627-4568-8065-58e4a633a7c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{bd1854fb-70c9-40ab-9403-95f0faeec5ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXCommon.cpp">
@@ -94,6 +97,15 @@
     </ClCompile>
     <ClCompile Include="Charactor\Player\PlayerBullet\PlayerBullet.cpp">
       <Filter>Charactor\Player\PlayerBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\ExplosiveEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\EffectManager.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\BaseEffect.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +228,18 @@
     </ClInclude>
     <ClInclude Include="Charactor\Player\PlayerBullet\PlayerBullet.h">
       <Filter>Charactor\Player\PlayerBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\ExplosiveEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\EffectManager.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\EffectList.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\BaseEffect.h">
+      <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
