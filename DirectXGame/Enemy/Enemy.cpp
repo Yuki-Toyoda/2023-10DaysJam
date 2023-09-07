@@ -153,13 +153,8 @@ void Enemy::MoveToPlayer() {
 	toPlayer = MyMath::Normalize(toPlayer);
 	//速度
 	Vector3 velocity = toPlayer * moveToPlayerSpeed_;
-	// 進行方向に見た目の回転を合わせる
-	//  Y軸周りの角度(Θy)
-	worldTransform_.rotation_.y = std::atan2f(velocity.x, velocity.z);
-	// 横軸方向の長さを求める
-	float length = MyMath::Length(Vector3{velocity.x, 0.0f, velocity.z});
-	// X軸周りの角度(Θx)
-	worldTransform_.rotation_.x = std::atan2f(-velocity.y, length);
+	//回転
+	MoveRotation(toPlayer);
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
@@ -195,13 +190,8 @@ void Enemy::RushStart() {
 	toPlayer = MyMath::Normalize(toPlayer);
 	// 速度
 	velocity_ = toPlayer * rushSpeed_;
-	// 進行方向に見た目の回転を合わせる
-	//  Y軸周りの角度(Θy)
-	worldTransform_.rotation_.y = std::atan2f(velocity_.x, velocity_.z);
-	// 横軸方向の長さを求める
-	float length = MyMath::Length(Vector3{velocity_.x, 0.0f, velocity_.z});
-	// X軸周りの角度(Θx)
-	worldTransform_.rotation_.x = std::atan2f(-velocity_.y, length);
+	// 回転
+	MoveRotation(toPlayer);
 
 }
 
@@ -245,13 +235,79 @@ void Enemy::Following() {
 	    MyMath::Linear(t, pos.z, shortestPos.z)
 	};
 
-
+		// 回転
+	MoveRotation(shortestPos - pos);
 
 }
 
 void Enemy::Join() {
 
 	enemyState_ = Follow;
+
+}
+
+void Enemy::MoveRotation(Vector3 toPosition) {
+
+	Vector3 rotate = worldTransform_.rotation_;
+	Vector3 target = worldTransform_.rotation_;
+	float pi = float(std::numbers::pi);
+
+	//  Y軸周りの角度(Θy)
+	target.y = std::atan2f(toPosition.x, toPosition.z);
+	// 横軸方向の長さを求める
+	float length = MyMath::Length(Vector3{toPosition.x, 0.0f, toPosition.z});
+	// X軸周りの角度(Θx)
+	target.x = std::atan2f(-toPosition.y, length);
+
+	// ターゲット
+	while (target.x > pi) {
+		target.x -= pi;
+	}
+	while (target.x < -pi) {
+		target.x += pi;
+	}
+
+	while (target.y > pi) {
+		target.y -= pi;
+	}
+	while (target.y < -pi) {
+		target.y += pi;
+	}
+
+	while (target.z > pi) {
+		target.z -= pi;
+	}
+	while (target.z < -pi) {
+		target.z += pi;
+	}
+
+	// rotate
+	while (rotate.x > pi) {
+		rotate.x -= pi;
+	}
+	while (rotate.x < -pi) {
+		rotate.x += pi;
+	}
+
+	while (rotate.y > pi) {
+		rotate.y -= pi;
+	}
+	while (rotate.y < -pi) {
+		rotate.y += pi;
+	}
+
+	while (rotate.z > pi) {
+		rotate.z -= pi;
+	}
+	while (rotate.z < -pi) {
+		rotate.z += pi;
+	}
+
+	// 回転割合
+	float t = 0.05f;
+	worldTransform_.rotation_ = {
+	    MyMath::Linear(t, rotate.x, target.x), MyMath::Linear(t, rotate.y, target.y), rotate.z};
+
 
 }
 

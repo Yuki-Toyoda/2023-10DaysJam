@@ -12,7 +12,8 @@
 /// 初期化
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
-void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies) {
+void BossEnemy::Initialize(
+    const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies, Vector3 colliderSize) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -48,14 +49,8 @@ void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHa
 
 	// コライダーの形
 	OBB* obb = new OBB();
-	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, colliderSize);
 	colliderShape_ = obb;
-	
-	// 移動通過地点
-	movePoint[0] = {-300, 10, -300};
-	movePoint[1] = {-300, 10,  300};
-	movePoint[2] = { 300, 10,  300};
-	movePoint[3] = { 300, 10, -300};
 
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -64,15 +59,10 @@ void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHa
 	// 指定した名前でグループ追加
 	globalVariables->CreateGroup(groupName);
 
-	// メンバ変数の調整したい項目をグローバル変数に追加
-	globalVariables->AddItem(groupName, "MovePointMax", int(movePointMax));
-	for (size_t i = 0; i < movePointMax; i++) {
-		char str[32];
-		sprintf_s(str, "movePoint%d", int(i));
-		globalVariables->AddItem(groupName, str, movePoint[i]);
-	}
-	globalVariables->AddItem(groupName, "MoveTime", moveTime);
+	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
+	globalVariables->AddItem(groupName, "MoveRotateSpeed", moveRotateSpeed_);
 
+	// メンバ変数の調整したい項目をグローバル変数に追加
 	colliderShape_->AddToGlobalVariables(groupName);
 
 }
@@ -83,13 +73,12 @@ void BossEnemy::Initialize(const std::vector<Model*>& models, uint32_t textureHa
 void BossEnemy::Update(std::list<Enemy*>* enemies) {
 
 	enemies_ = enemies;
-
-	//Move();
-
+	
+	//エネミーの収集
 	CollectEnemies();
 
 	// ワールド行列更新
-	worldTransform_.UpdateMatrix();
+	BaseCharacter::Update();
 
 	// コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
@@ -122,7 +111,17 @@ void BossEnemy::OnCollision(Tag collisionTag) {
 
 void BossEnemy::Move() {
 
-	
+	// 回転
+	// 回転速度
+	Vector3 velocity(0.0f, moveRotateSpeed_, 0.0f);
+	worldTransform_.rotation_ = worldTransform_.rotation_ + velocity;
+
+	// 移動
+	//  速度ベクトルを自機の向きに合わせて回転させる
+	velocity = {0.0f, 0.0f, moveSpeed_};
+
+	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
 
 }
 
@@ -160,9 +159,78 @@ void BossEnemy::CollectEnemies() {
 		worldTransform_.translation_ = {
 		    MyMath::Linear(t, pos.x, shortestPos.x), MyMath::Linear(t, pos.y, shortestPos.y),
 		    MyMath::Linear(t, pos.z, shortestPos.z)};
+		//回転
+		MoveRotation(shortestPos - pos);
 	} else {
 		//通常移動
+		Move();
 	}
+
+}
+
+void BossEnemy::MoveRotation(Vector3 toPosition) {
+
+	Vector3 rotate = worldTransform_.rotation_;
+	Vector3 target = worldTransform_.rotation_;
+	float pi = float(std::numbers::pi);
+
+	//  Y軸周りの角度(Θy)
+	target.y = std::atan2f(toPosition.x, toPosition.z);
+	// 横軸方向の長さを求める
+	float length = MyMath::Length(Vector3{toPosition.x, 0.0f, toPosition.z});
+	// X軸周りの角度(Θx)
+	target.x = std::atan2f(-toPosition.y, length);
+
+	//ターゲット
+	while (target.x > pi) {
+		target.x -= pi;
+	}
+	while (target.x < -pi) {
+		target.x += pi;
+	}
+
+	while (target.y > pi) {
+		target.y -= pi;
+	}
+	while (target.y < -pi) {
+		target.y += pi;
+	}
+
+	while (target.z > pi) {
+		target.z -= pi;
+	}
+	while (target.z < -pi) {
+		target.z += pi;
+	}
+
+	
+	// rotate
+	while (rotate.x > pi) {
+		rotate.x -= pi;
+	}
+	while (rotate.x < -pi) {
+		rotate.x += pi;
+	}
+
+	while (rotate.y > pi) {
+		rotate.y -= pi;
+	}
+	while (rotate.y < -pi) {
+		rotate.y += pi;
+	}
+
+	while (rotate.z > pi) {
+		rotate.z -= pi;
+	}
+	while (rotate.z < -pi) {
+		rotate.z += pi;
+	}
+
+	// 回転割合
+	float t = 0.05f;
+	worldTransform_.rotation_ = {
+	    MyMath::Linear(t, rotate.x, target.x), MyMath::Linear(t, rotate.y, target.y), rotate.z
+	};
 
 }
 
@@ -174,13 +242,8 @@ void BossEnemy::ApplyGlobalVariables() {
 	const char* groupName = "BossEnemy";
 
 	// メンバ変数の調整項目をグローバル変数に追加
-	movePointMax = int(globalVariables->GetIntValue(groupName, "MovePointMax"));
-	for (size_t i = 0; i < movePointMax; i++) {
-		char str[32];
-		sprintf_s(str, "movePoint%d", int(i));
-		movePoint[i] = globalVariables->GetVector3Value(groupName, str);
-	}
-	moveTime = globalVariables->GetFloatValue(groupName, "MoveTime");
+	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed");
+	moveRotateSpeed_ = globalVariables->GetFloatValue(groupName, "MoveRotateSpeed");
 
 	colliderShape_->ApplyGlobalVariables(groupName);
 

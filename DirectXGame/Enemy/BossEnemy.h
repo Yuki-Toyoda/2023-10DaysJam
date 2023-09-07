@@ -24,7 +24,7 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies);
+	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies, Vector3 colliderSize);
 
 	/// <summary>
 	/// 更新
@@ -52,6 +52,11 @@ public: // メンバ関数
 	/// エネミーを回収する
 	/// </summary>
 	void CollectEnemies();
+
+	/// <summary>
+	/// 移動中の回転
+	/// </summary>
+	void MoveRotation(Vector3 toPosition);
 
 	/// <summary>
 	/// プレイヤーセッター
@@ -82,19 +87,8 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 
 	// 移動
-
-	// 移動通過地点数
-	uint32_t movePointMax = 4;
-	// 移動通過地点番号
-	uint32_t movePointNum = 0;
-	
-	// 移動通過地点
-	Vector3 movePoint[4];
-
-	// 移動用T
-	float moveT = 0.0f;
-	// 移動時間
-	float moveTime = 10.0f;
+	float moveSpeed_ = 1.0f;
+	float moveRotateSpeed_ = 0.01f;
 
 	// エネミー
 	std::list<Enemy*>* enemies_;

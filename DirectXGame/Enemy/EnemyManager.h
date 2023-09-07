@@ -154,4 +154,7 @@ private: // メンバ変数
 	// エネミースポナー
 	EnemySpawner enemySpawner_;
 
+	//ボスエネミーのコライダーサイズ
+	Vector3 bossEnemyColliderSize;
+
 };

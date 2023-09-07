@@ -12,6 +12,8 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	models_ = models;
 	// エネミーのテクスチャハンドル
 	textureHandles_ = textureHandles; 
+
+	bossEnemyColliderSize = Vector3(1.2f, 1.2f, 6.0f);
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -21,7 +23,8 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	globalVariables->CreateGroup(groupName);
 
 	// メンバ変数の調整したい項目をグローバル変数に追加
-	globalVariables->AddItem(groupName, "EnemyMax",  int(enemyMax));
+	globalVariables->AddItem(groupName, "EnemyMax", int(enemyMax));
+	globalVariables->AddItem(groupName, "BossEnemyColliderSize", bossEnemyColliderSize);
 	
 	//エネミーの数
 	enemyCount_ = enemyMax;
@@ -40,6 +43,8 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 
 	//ボスエネミーの追加
 	AddBossEnemy();
+
+	ApplyGlobalVariables();
 
 
 }
@@ -61,6 +66,8 @@ void EnemyManager::Update() {
 	for (BossEnemy* bossEnemy : bossEnemies_) {
 		bossEnemy->Update(&enemies_);
 	}
+
+	ApplyGlobalVariables();
 
 }
 
@@ -146,7 +153,7 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_);
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_,bossEnemyColliderSize);
 	bossEnemies_.push_back(bossEnemy);
 
 }
@@ -187,5 +194,6 @@ void EnemyManager::ApplyGlobalVariables() {
 
 	// メンバ変数の調整項目をグローバル変数に追加
 	enemyMax = uint32_t(globalVariables->GetIntValue(groupName, "EnemyMax"));
+	bossEnemyColliderSize = globalVariables->GetVector3Value(groupName, "BossEnemyColliderSize");
 
 }

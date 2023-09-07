@@ -99,6 +99,11 @@ public: //メンバ関数
 	void Join();
 
 	/// <summary>
+	/// 移動中の回転
+	/// </summary>
+	void MoveRotation(Vector3 toPosition);
+
+	/// <summary>
 	/// エネミーマネージャーセッター
 	/// </summary>
 	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
