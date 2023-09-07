@@ -115,11 +115,9 @@ void GameScene::Update() {
 	for (Enemy* enemy : enemyManager_->GetEnemies()) {
 		collisionManager->ListRegister(enemy);
 	}
-
 	// 自弾全てについて
 	for (PlayerBullet* playerBullet : player_->GetBullets()) {
-		//collisionManager->ListRegister(playerBullet);
-		playerBullet;
+		collisionManager->ListRegister(playerBullet);
 	}
 	// 当たり判定
 	collisionManager->CheakAllCollision();

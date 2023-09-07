@@ -32,7 +32,7 @@ void OBB::Update(Vector3 position, Vector3 rotate, Vector3 size) {
 
     center_ = position;
 
-	 Matrix4x4 rotateMatirx = MyMath::MakeRotateXYZMatrix(Vector3(rotate.x, -rotate.y, rotate.z));
+	 Matrix4x4 rotateMatirx = MyMath::MakeRotateXYZMatrix(rotate);
 
 	otientatuons_[0].x = rotateMatirx.m[0][0];
 	otientatuons_[0].y = rotateMatirx.m[0][1];
@@ -57,68 +57,68 @@ void OBB::Draw() {
 	Vector3 vertex[8];
 
 	vertex[0] = {
-	    center_.x + (-size_.x * otientatuons_[0].x + size_.y * otientatuons_[0].y +
-	                 -size_.z * otientatuons_[0].z),
-	    center_.y + (-size_.x * otientatuons_[1].x + size_.y * otientatuons_[1].y +
-	                 -size_.z * otientatuons_[1].z),
-	    center_.z + (-size_.x * otientatuons_[2].x + size_.y * otientatuons_[2].y +
+	    center_.x + (-size_.x * otientatuons_[0].x + size_.y * otientatuons_[1].x +
+	                 -size_.z * otientatuons_[2].x),
+	    center_.y + (-size_.x * otientatuons_[0].y + size_.y * otientatuons_[1].y +
+	                 -size_.z * otientatuons_[2].y),
+	    center_.z + (-size_.x * otientatuons_[0].z + size_.y * otientatuons_[1].z +
 	                 -size_.z * otientatuons_[2].z)};
 
 	vertex[1] = {
-	    center_.x + (-size_.x * otientatuons_[0].x + size_.y * otientatuons_[0].y +
-	                    size_.z * otientatuons_[0].z),
-	    center_.y + (-size_.x * otientatuons_[1].x + size_.y * otientatuons_[1].y +
-	                    size_.z * otientatuons_[1].z),
-	    center_.z + (-size_.x * otientatuons_[2].x + size_.y * otientatuons_[2].y +
-	                    size_.z * otientatuons_[2].z)};
+	    center_.x + (-size_.x * otientatuons_[0].x + size_.y * otientatuons_[1].x +
+	                  size_.z * otientatuons_[2].x),
+	    center_.y + (-size_.x * otientatuons_[0].y + size_.y * otientatuons_[1].y +
+	                  size_.z * otientatuons_[2].y),
+	    center_.z + (-size_.x * otientatuons_[0].z + size_.y * otientatuons_[1].z +
+	                  size_.z * otientatuons_[2].z)};
 
 	vertex[2] = {
-	    center_.x + (size_.x * otientatuons_[0].x + size_.y * otientatuons_[0].y +
-	                    -size_.z * otientatuons_[0].z),
-	    center_.y + (size_.x * otientatuons_[1].x + size_.y * otientatuons_[1].y +
-	                    -size_.z * otientatuons_[1].z),
-	    center_.z + (size_.x * otientatuons_[2].x + size_.y * otientatuons_[2].y +
-	                    -size_.z * otientatuons_[2].z)};
+	    center_.x + ( size_.x * otientatuons_[0].x + size_.y * otientatuons_[1].x +
+	                 -size_.z * otientatuons_[2].x),
+	    center_.y + ( size_.x * otientatuons_[0].y + size_.y * otientatuons_[1].y +
+	                 -size_.z * otientatuons_[2].y),
+	    center_.z + ( size_.x * otientatuons_[0].z + size_.y * otientatuons_[1].z +
+	                 -size_.z * otientatuons_[2].z)};
 
 	vertex[3] = {
-	    center_.x + (size_.x * otientatuons_[0].x + size_.y * otientatuons_[0].y +
-	                    size_.z * otientatuons_[0].z),
-	    center_.y + (size_.x * otientatuons_[1].x + size_.y * otientatuons_[1].y +
-	                    size_.z * otientatuons_[1].z),
-	    center_.z + (size_.x * otientatuons_[2].x + size_.y * otientatuons_[2].y +
-	                    size_.z * otientatuons_[2].z)};
+	    center_.x + ( size_.x * otientatuons_[0].x + size_.y * otientatuons_[1].x +
+	                  size_.z * otientatuons_[2].x),
+	    center_.y + ( size_.x * otientatuons_[0].y + size_.y * otientatuons_[1].y +
+	                  size_.z * otientatuons_[2].y),
+	    center_.z + ( size_.x * otientatuons_[0].z + size_.y * otientatuons_[1].z +
+	                  size_.z * otientatuons_[2].z)};
 
 	vertex[4] = {
-	    center_.x + (-size_.x * otientatuons_[0].x + -size_.y * otientatuons_[0].y +
-	                    -size_.z * otientatuons_[0].z),
-	    center_.y + (-size_.x * otientatuons_[1].x + -size_.y * otientatuons_[1].y +
-	                    -size_.z * otientatuons_[1].z),
-	    center_.z + (-size_.x * otientatuons_[2].x + -size_.y * otientatuons_[2].y +
-	                    -size_.z * otientatuons_[2].z)};
+	    center_.x + (-size_.x * otientatuons_[0].x + -size_.y * otientatuons_[1].x +
+	                 -size_.z * otientatuons_[2].x),
+	    center_.y + (-size_.x * otientatuons_[0].y + -size_.y * otientatuons_[1].y +
+	                 -size_.z * otientatuons_[2].y),
+	    center_.z + (-size_.x * otientatuons_[0].z + -size_.y * otientatuons_[1].z +
+	                 -size_.z * otientatuons_[2].z)};
 
 	vertex[5] = {
-	    center_.x + (-size_.x * otientatuons_[0].x + -size_.y * otientatuons_[0].y +
-	                    size_.z * otientatuons_[0].z),
-	    center_.y + (-size_.x * otientatuons_[1].x + -size_.y * otientatuons_[1].y +
-	                    size_.z * otientatuons_[1].z),
-	    center_.z + (-size_.x * otientatuons_[2].x + -size_.y * otientatuons_[2].y +
-	                    size_.z * otientatuons_[2].z)};
+	    center_.x + (-size_.x * otientatuons_[0].x + -size_.y * otientatuons_[1].x +
+	                  size_.z * otientatuons_[2].x),
+	    center_.y + (-size_.x * otientatuons_[0].y + -size_.y * otientatuons_[1].y +
+	                  size_.z * otientatuons_[2].y),
+	    center_.z + (-size_.x * otientatuons_[0].z + -size_.y * otientatuons_[1].z +
+	                  size_.z * otientatuons_[2].z)};
 
 	vertex[6] = {
-	    center_.x + (size_.x * otientatuons_[0].x + -size_.y * otientatuons_[0].y +
-	                    -size_.z * otientatuons_[0].z),
-	    center_.y + (size_.x * otientatuons_[1].x + -size_.y * otientatuons_[1].y +
-	                    -size_.z * otientatuons_[1].z),
-	    center_.z + (size_.x * otientatuons_[2].x + -size_.y * otientatuons_[2].y +
-	                    -size_.z * otientatuons_[2].z)};
+	    center_.x + ( size_.x * otientatuons_[0].x + -size_.y * otientatuons_[1].x +
+	                 -size_.z * otientatuons_[2].x),
+	    center_.y + ( size_.x * otientatuons_[0].y + -size_.y * otientatuons_[1].y +
+	                 -size_.z * otientatuons_[2].y),
+	    center_.z + ( size_.x * otientatuons_[0].z + -size_.y * otientatuons_[1].z +
+	                 -size_.z * otientatuons_[2].z)};
 
 	vertex[7] = {
-	    center_.x + (size_.x * otientatuons_[0].x + -size_.y * otientatuons_[0].y +
-	                    size_.z * otientatuons_[0].z),
-	    center_.y + (size_.x * otientatuons_[1].x + -size_.y * otientatuons_[1].y +
-	                    size_.z * otientatuons_[1].z),
-	    center_.z + (size_.x * otientatuons_[2].x + -size_.y * otientatuons_[2].y +
-	                    size_.z * otientatuons_[2].z)};
+	    center_.x + ( size_.x * otientatuons_[0].x + -size_.y * otientatuons_[1].x +
+	                  size_.z * otientatuons_[2].x),
+	    center_.y + ( size_.x * otientatuons_[0].y + -size_.y * otientatuons_[1].y +
+	                  size_.z * otientatuons_[2].y),
+	    center_.z + ( size_.x * otientatuons_[0].z + -size_.y * otientatuons_[1].z +
+	                  size_.z * otientatuons_[2].z)};
 
 	PrimitiveDrawer* primitiveDrawer = PrimitiveDrawer::GetInstance();
 

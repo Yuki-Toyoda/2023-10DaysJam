@@ -490,7 +490,7 @@ void PlayerBullet::ColliderUpdate() {
 
 void PlayerBullet::OnCollision(Tag collisionTag) {
 
-	if (collisionTag == TagEnemy) {
+	if (collisionTag == TagEnemy && bulletType_ == None) {
 		isDead_ = true;
 	}
 }
