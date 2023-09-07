@@ -27,6 +27,8 @@ void PlayerBullet::Initialize(
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000001);
+	// タグ
+	tag_ = TagPlayerBulletNone;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -77,6 +79,8 @@ void PlayerBullet::Initialize(
 		    50.0f * (1.0f + 0.45f * (bulletStrength - 1))};
 		// 爆破演出時間
 		explosiveTime_ = 0.25f;
+		// タグ
+		tag_ = TagPlayerBulletFire;
 		break;
 	case PlayerBullet::Ice:
 		// 回転角をリセット
@@ -92,6 +96,8 @@ void PlayerBullet::Initialize(
 		deploymentWallTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
 		// 終了演出時間設定
 		deployWallEndStagingTime_ = 0.15f;
+		// タグ
+		tag_ = TagPlayerBulletIce;
 		break;
 	case PlayerBullet::Thunder:
 		// 回転角をリセット
@@ -110,6 +116,8 @@ void PlayerBullet::Initialize(
 		deploymentAreaTime_ = 7.0f * (1.0f + 0.35f * (bulletStrength - 1));
 		// 終了演出時間
 		deployAreaEndStagingTime_ = 0.15f;
+		// タグ
+		tag_ = TagPlayerBulletThunder;
 		break;
 	}
 
@@ -447,6 +455,9 @@ void PlayerBullet::ThunderBulletUpdate() {
 	}
 }
 
-void PlayerBullet::OnCollision() {
+void PlayerBullet::OnCollision(Tag collisionTag) {
 
+	if (collisionTag == TagEnemy) {
+		isDead_ = true;
+	}
 }

@@ -9,6 +9,18 @@
 /// </summary>
 class Collider {
 
+public: //サブクラス
+	enum Tag {
+		TagPlayer, //プレイヤー
+		TagPlayerBulletNone, // 通常弾
+		TagPlayerBulletFire, // 炎弾
+		TagPlayerBulletIce,  // 氷弾
+		TagPlayerBulletThunder, // 雷弾
+		TagEnemy,               // 敵
+		TagEnemyBullet          // 敵弾
+	};
+
+
 public: //デストラクタ
 	
 	/// <summary>
@@ -47,14 +59,30 @@ public: // アクセッサ等
 	/// <param name="collisionMask">衝突マスク(相手)</param>
 	void SetCollisionMask(uint32_t collisionMask) { collisionMask_ = collisionMask; }
 
+	/// <summary>
+	/// コライダーの形のゲッター
+	/// </summary>
+	/// <returns></returns>
 	ColliderShape* GetColliderShape() { return colliderShape_; }
+
+	/// <summary>
+	/// タグセッター
+	/// </summary>
+	/// <param name="tag"></param>
+	void SetTag(Tag tag) { tag_ = tag; }
+
+	/// <summary>
+	/// タグゲッター
+	/// </summary>
+	Tag GetTag() { return tag_; }
 
 public: // その他関数
 
 	/// <summary>
 	/// 衝突時コールバック関数
 	/// </summary>
-	virtual void OnCollision() = 0;
+	virtual void OnCollision(Tag CollisionTag) = 0;
+	
 
 protected: // 継承先メンバ変数
 
@@ -66,5 +94,8 @@ protected: // 継承先メンバ変数
 
 	//形
 	ColliderShape* colliderShape_;
+
+	//タグ
+	Tag tag_;
 
 };

@@ -33,6 +33,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000002);
+	// タグ
+	tag_ = TagEnemy;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -85,9 +87,15 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 }
 
 // 衝突時に呼ばれる関数
-void Enemy::OnCollision() {
+void Enemy::OnCollision(Tag collisionTag) {
 
-	isDead_ = true;
+	if (collisionTag == TagPlayer ||
+		collisionTag == TagPlayerBulletFire ||
+	    collisionTag == TagPlayerBulletIce ||
+		collisionTag == TagPlayerBulletThunder ||
+	    collisionTag == TagPlayerBulletNone) {
+		isDead_ = true;
+	}
 
 }
 

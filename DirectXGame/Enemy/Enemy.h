@@ -40,7 +40,7 @@ public: //メンバ関数
 	void Draw(const ViewProjection& viewProjection) override;
 
 	// 衝突時に呼ばれる関数
-	void OnCollision() override;
+	void OnCollision(Tag collisionTag) override;
 
 	// 死んでいるか
 	bool GetIsDead() { return isDead_; }

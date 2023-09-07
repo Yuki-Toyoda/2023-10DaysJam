@@ -29,6 +29,8 @@ void EnemyBullet::Initialize(
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000002);
+	// タグ
+	tag_ = TagEnemyBullet;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -64,8 +66,10 @@ void EnemyBullet::Draw(const ViewProjection& viewProjection) {
 
 }
 
-void EnemyBullet::OnCollision() {
+void EnemyBullet::OnCollision(Tag collisionTag) {
 
-	isDead_ = true;
+	if (collisionTag == TagPlayer) {
+		isDead_ = true; 
+	}
 
 }

@@ -144,6 +144,8 @@ void Player::Initialize(const std::vector<Model*>& modelsPlayer,
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000001);
+	//タグ
+	tag_ = TagPlayer;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -352,8 +354,8 @@ void Player::ColliderDraw(bool enableDebugCamera) {
 	}
 }
 
-void Player::OnCollision() {
-
+void Player::OnCollision(Tag collisionTag) { 
+	collisionTag;
 }
 
 void Player::AddOrbs(PlayerBullet::BulletType orbType) {

@@ -48,8 +48,10 @@ public: // アクセッサ等
 	/// <returns></returns>
 	Vector3 GetWorldPosition() override;
 
-	// 衝突時に呼ばれる関数
-	virtual void OnCollision() override = 0;
+	/// <summary>
+	/// 衝突時コールバック関数
+	/// </summary>
+	virtual void OnCollision(Tag CollisionTag) { CollisionTag; };
 
 public: // その他関数
 

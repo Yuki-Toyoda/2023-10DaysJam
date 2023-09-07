@@ -86,7 +86,17 @@ void BossEnemy::Draw(const ViewProjection& viewProjection) {
 }
 
 // 衝突時に呼ばれる関数
-void BossEnemy::OnCollision() { isDead_ = true; }
+void BossEnemy::OnCollision(Tag collisionTag) { 
+	
+	if (collisionTag == TagPlayer ||
+		collisionTag == TagPlayerBulletFire ||
+		collisionTag == TagPlayerBulletIce ||
+		collisionTag == TagPlayerBulletThunder ||
+	    collisionTag == TagPlayerBulletNone	) {
+		isDead_ = true; 
+	}
+
+}
 
 void BossEnemy::Move() {
 

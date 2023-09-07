@@ -106,7 +106,7 @@ private: // 弾ごとの行動関数
 public: // その他関数
 
 	// 衝突時に呼ばれる関数
-	void OnCollision() override;
+	void OnCollision(Tag collisionTag) override;
 
 private: // メンバ変数
 

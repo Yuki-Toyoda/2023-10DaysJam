@@ -70,7 +70,7 @@ public: // アクセッサ等
 	/// <summary>
 	/// 衝突時呼び出し関数
 	/// </summary>
-	void OnCollision() override;
+	void OnCollision(Tag collisionTag) override;
 
 	/// <summary>
 	/// オーブ追加関数

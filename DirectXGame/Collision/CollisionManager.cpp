@@ -88,8 +88,8 @@ void CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) 
 
 	//衝突時の動作
 	if (isCollision) {
-		colliderA->OnCollision();
-		colliderB->OnCollision();
+		colliderA->OnCollision(colliderB->GetTag());
+		colliderB->OnCollision(colliderA->GetTag());
 	}
 
 }
