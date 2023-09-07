@@ -354,9 +354,8 @@ void Player::ColliderDraw(bool enableDebugCamera) {
 	}
 }
 
-void Player::OnCollision(Tag collisionTag) { 
-	collisionTag;
-}
+void Player::OnCollision(Collider* collision) { 
+	collision; }
 
 void Player::AddOrbs(PlayerBullet::BulletType orbType) {
 	// 所持しているオーブ数を確認

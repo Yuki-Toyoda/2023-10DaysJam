@@ -53,7 +53,7 @@ public: //メンバ関数
 	void Draw(const ViewProjection& viewProjection) override;
 
 	// 衝突時に呼ばれる関数
-	void OnCollision(Tag collisionTag) override;
+	void OnCollision(Collider* collision) override;
 
 	// 死んでいるか
 	bool GetIsDead() { return isDead_; }
@@ -96,7 +96,7 @@ public: //メンバ関数
 	/// <summary>
 	/// 部隊に加わる
 	/// </summary>
-	void Join();
+	void Join(BossEnemy* bossEnemy);
 
 	/// <summary>
 	/// 移動中の回転
@@ -118,6 +118,14 @@ public: //メンバ関数
 	/// </summary>
 	/// <returns></returns>
 	EnemyState GetEnemyState() { return enemyState_; }
+
+public: // 自分の情報
+	
+	/// <summary>
+	/// 自分の情報取得
+	/// </summary>
+	/// <returns></returns>
+	Enemy* GetEnemy() override { return this; }
 
 private: // その他関数
 	/// <summary>
@@ -157,5 +165,17 @@ private: //メンバ変数
 
 	//エネミーの状態
 	EnemyState enemyState_;
+
+	// ボスエネミーに追従するときに使う変数
+	
+	//追従するボス
+	BossEnemy* JoiningBossEnemy_ = nullptr;
+	// ボスとの距離
+	float distanceToBoss_;
+	// ボスとの回転角
+	Vector3 rotationToBoss_;
+	// 目指すワールドトランスフォーム
+	WorldTransform targetWorldTransform;
+
 
 };

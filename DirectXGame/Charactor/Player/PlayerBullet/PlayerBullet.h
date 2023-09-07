@@ -113,7 +113,7 @@ private: //コライダー更新
 public: // その他関数
 
 	// 衝突時に呼ばれる関数
-	void OnCollision(Tag collisionTag) override;
+	void OnCollision(Collider* collision) override;
 
 private: // メンバ変数
 

@@ -36,6 +36,11 @@ void BossEnemy::Initialize(
 	    0.0f,
 	};
 
+	// エネミーの数
+	enemiesJoiningNum = 0;
+	// エネミーの最大数
+	enemiesJoiningNumMax = 8;
+
 	//エネミー
 	enemies_ = enemies;
 
@@ -74,8 +79,18 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 
 	enemies_ = enemies;
 	
-	//エネミーの収集
-	CollectEnemies();
+	switch (bossEnemyState_) {
+	case BossEnemy::Collect:
+		// エネミーの収集
+		CollectEnemies();
+		break;
+	case BossEnemy::AttackCommand:
+		break;
+	case BossEnemy::Down:
+		break;
+	default:
+		break;
+	}
 
 	// ワールド行列更新
 	BaseCharacter::Update();
@@ -97,14 +112,19 @@ void BossEnemy::Draw(const ViewProjection& viewProjection) {
 }
 
 // 衝突時に呼ばれる関数
-void BossEnemy::OnCollision(Tag collisionTag) { 
+void BossEnemy::OnCollision(Collider* collision) { 
 	
-	if (collisionTag == TagPlayer ||
-		collisionTag == TagPlayerBulletFire ||
-		collisionTag == TagPlayerBulletIce ||
-		collisionTag == TagPlayerBulletThunder ||
-	    collisionTag == TagPlayerBulletNone	) {
+	if (collision->GetTag() == TagPlayer || collision->GetTag() == TagPlayerBulletFire ||
+	    collision->GetTag() == TagPlayerBulletIce ||
+	    collision->GetTag() == TagPlayerBulletThunder ||
+	    collision->GetTag() == TagPlayerBulletNone) {
 		//isDead_ = true; 
+	}
+	if (collision->GetTag() == TagEnemy) {
+		enemiesJoiningNum++;
+		if (enemiesJoiningNum == enemiesJoiningNumMax) {
+			bossEnemyState_ = AttackCommand; 
+		}
 	}
 
 }
@@ -155,12 +175,13 @@ void BossEnemy::CollectEnemies() {
 
 	if (enemyFound) {
 		//移動割合
-		float t = 0.025f;
-		worldTransform_.translation_ = {
-		    MyMath::Linear(t, pos.x, shortestPos.x), MyMath::Linear(t, pos.y, shortestPos.y),
-		    MyMath::Linear(t, pos.z, shortestPos.z)};
+		Vector3 toEnemy = MyMath::Normalize(shortestPos - pos);
+		// 速度
+		velocity_ = toEnemy * moveSpeed_;
+		// 座標を移動させる(1フレーム分の移動量を足しこむ)
+		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 		//回転
-		MoveRotation(shortestPos - pos);
+		MoveRotation(toEnemy);
 	} else {
 		//通常移動
 		Move();

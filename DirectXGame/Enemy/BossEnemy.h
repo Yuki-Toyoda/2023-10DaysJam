@@ -38,7 +38,7 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewProjection) override;
 
 	// 衝突時に呼ばれる関数
-	void OnCollision(Tag collisionTag) override;
+	void OnCollision(Collider* collision) override;
 
 	// 死んでいるか
 	bool GetIsDead() { return isDead_; }
@@ -62,6 +62,25 @@ public: // メンバ関数
 	/// プレイヤーセッター
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
+
+	/// <summary>
+	/// エネミーの数ゲッター
+	/// </summary>
+	/// <returns></returns>
+	uint32_t GetEnemiesJoiningNum() { return enemiesJoiningNum; }
+
+	/// <summary>
+	/// エネミーの最大数ゲッター
+	/// </summary>
+	/// <returns></returns>
+	uint32_t GetEnemiesJoiningNumMax() { return enemiesJoiningNumMax; }
+
+public: // 自分の情報
+	/// <summary>
+	/// 自分の情報取得
+	/// </summary>
+	/// <returns></returns>
+	BossEnemy* GetBossEnemy() override { return this; }
 
 private: // その他関数
 	/// <summary>
@@ -95,5 +114,11 @@ private: // メンバ変数
 
 	//ボスエネミー状態
 	BossEnemyState bossEnemyState_;
+
+	//エネミーの数
+	uint32_t enemiesJoiningNum;
+
+	//エネミーの最大数
+	uint32_t enemiesJoiningNumMax;
 
 };

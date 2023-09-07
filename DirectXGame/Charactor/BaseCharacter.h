@@ -51,7 +51,12 @@ public: // アクセッサ等
 	/// <summary>
 	/// 衝突時コールバック関数
 	/// </summary>
-	virtual void OnCollision(Tag CollisionTag) { CollisionTag; };
+	virtual void OnCollision(Collider* collision) { collision; };
+
+public: // 自分の情報
+	virtual Enemy* GetEnemy() override { return nullptr; }
+	
+	virtual BossEnemy* GetBossEnemy() override { return nullptr; }
 
 public: // その他関数
 

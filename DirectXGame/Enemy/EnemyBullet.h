@@ -25,7 +25,7 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewProjection);
 
 	// 衝突時に呼ばれる関数
-	void OnCollision(Tag collisionTag) override;
+	void OnCollision(Collider* collision) override;
 
 	// 死んでいるか
 	bool IsDead() const { return isDead_; }

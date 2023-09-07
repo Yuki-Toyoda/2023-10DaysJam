@@ -4,6 +4,11 @@
 #include "Vector3.h"
 #include "ColliderShape/ColliderShape.h"
 
+//エネミークラスの前方宣言
+class Enemy;
+// エネミークラスの前方宣言
+class BossEnemy;
+
 /// <summary>
 /// 衝突判定クラス
 /// </summary>
@@ -82,9 +87,14 @@ public: // その他関数
 	/// <summary>
 	/// 衝突時コールバック関数
 	/// </summary>
-	virtual void OnCollision(Tag CollisionTag) = 0;
-	
+	virtual void OnCollision(Collider* collision) = 0;
 
+public: //自分の情報
+
+	virtual Enemy* GetEnemy() { return nullptr; }
+
+	virtual BossEnemy* GetBossEnemy() { return nullptr; }
+	
 protected: // 継承先メンバ変数
 
 	// 衝突属性(自分)

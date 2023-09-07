@@ -488,9 +488,9 @@ void PlayerBullet::ColliderUpdate() {
 
 }
 
-void PlayerBullet::OnCollision(Tag collisionTag) {
+void PlayerBullet::OnCollision(Collider* collision) {
 
-	if (collisionTag == TagEnemy && bulletType_ == None) {
+	if (collision->GetTag() == TagEnemy && bulletType_ == None) {
 		isDead_ = true;
 	}
 }

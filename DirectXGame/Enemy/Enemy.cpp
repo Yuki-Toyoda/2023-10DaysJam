@@ -28,9 +28,17 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	// デスフラグ
 	isDead_ = false;
 
+	//タイプ
 	enemyType_ = enemyType;
 
+	//状態
 	enemyState_ = Wait;
+
+	// ボスとの距離
+	distanceToBoss_ = 0.0f;
+	// ボスとの回転角
+	rotationToBoss_ = {0.0f,0.0f,0.0f};
+	targetWorldTransform.Initialize();
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
@@ -111,16 +119,15 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 }
 
 // 衝突時に呼ばれる関数
-void Enemy::OnCollision(Tag collisionTag) {
+void Enemy::OnCollision(Collider* collision) {
 
-	if (collisionTag == TagPlayer ||
-		collisionTag == TagPlayerBulletFire ||
-	    collisionTag == TagPlayerBulletIce ||
-		collisionTag == TagPlayerBulletThunder ||
-	    collisionTag == TagPlayerBulletNone) {
+	if (collision->GetTag() == TagPlayer || collision->GetTag() == TagPlayerBulletFire ||
+	    collision->GetTag() == TagPlayerBulletIce ||
+	    collision->GetTag() == TagPlayerBulletThunder ||
+	    collision->GetTag() == TagPlayerBulletNone) {
 		isDead_ = true;
-	} else if (collisionTag == TagBossEnemy && enemyState_ == Wait) {
-		Join();
+	} else if (collision->GetTag() == TagBossEnemy && enemyState_ == Wait) {
+		Join(collision->GetBossEnemy());
 	}
 
 }
@@ -210,39 +217,45 @@ void Enemy::Waiting() {
 
 void Enemy::Following() {
 
-	//最短距離
-	Vector3 shortestPos = {0.0f, 0.0f, 0.0f};
-	float shortest = 0.0f;
 	// ワールド座標を取得する
 	Vector3 pos = GetWorldPosition();
-	for (BossEnemy* bossEnemy : *bossEnemies_) {
-		// ボスのワールド座標を取得する
-		Vector3 bossPos = bossEnemy->GetWorldPosition();
-		// 敵弾->自キャラの差分ベクトルを求める
-		Vector3 toBoss = pos - bossPos;
-		//距離
-		float distance = MyMath::Length(toBoss);
-		if (shortest == 0.0f || shortest >= distance) {
-			shortest = distance;	
-			shortestPos = bossPos;
-		}
-	}
+	// 目指すワールド座標を取得する
+	targetWorldTransform.UpdateMatrix();
+	Vector3 bossPos = Vector3(
+	    targetWorldTransform.matWorld_.m[3][0], targetWorldTransform.matWorld_.m[3][1],
+	    targetWorldTransform.matWorld_.m[3][2]);
 
 	float t = 0.025f;
 	worldTransform_.translation_ = {
-	    MyMath::Linear(t, pos.x, shortestPos.x),
-		MyMath::Linear(t, pos.y, shortestPos.y),
-	    MyMath::Linear(t, pos.z, shortestPos.z)
+	    MyMath::Linear(t, pos.x, bossPos.x), MyMath::Linear(t, pos.y, bossPos.y),
+	    MyMath::Linear(t, pos.z, bossPos.z)
 	};
 
-		// 回転
-	MoveRotation(shortestPos - pos);
+	// 回転
+	MoveRotation(bossPos - pos);
 
 }
 
-void Enemy::Join() {
+void Enemy::Join(BossEnemy* bossEnemy) {
 
 	enemyState_ = Follow;
+
+	// 衝突属性を設定
+	SetCollisionAttribute(0xfffffff9);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(0x00000006);
+
+	JoiningBossEnemy_ = bossEnemy;
+	
+	targetWorldTransform.parent_ = &JoiningBossEnemy_->GetWorldTransform();
+	distanceToBoss_ = 30.0f;
+
+	rotationToBoss_.z = float(std::numbers::pi) * 2.0f *
+	                float(JoiningBossEnemy_->GetEnemiesJoiningNum()) /
+	                float(JoiningBossEnemy_->GetEnemiesJoiningNumMax());
+
+	targetWorldTransform.translation_.x = distanceToBoss_ * cosf(rotationToBoss_.z);
+	targetWorldTransform.translation_.y = distanceToBoss_ * sinf(rotationToBoss_.z);
 
 }
 
