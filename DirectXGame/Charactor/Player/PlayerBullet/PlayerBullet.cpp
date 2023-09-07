@@ -475,13 +475,11 @@ void PlayerBullet::ColliderUpdate() {
 	case PlayerBullet::Ice:
 		// 水弾更新
 		pos.y += worldTransform_.scale_.y;
-		rotate.y = -rotate.y;
 		scale.z *= 0.35f;
 		colliderShape_->Update(pos, rotate, scale);
 		break;
 	case PlayerBullet::Thunder:
 		// 雷弾更新
-		rotate.y = -rotate.y;
 		colliderShape_->Update(pos, rotate, scale);
 		break;
 	default:

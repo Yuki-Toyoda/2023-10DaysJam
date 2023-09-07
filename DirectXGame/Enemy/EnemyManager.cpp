@@ -96,9 +96,8 @@ void EnemyManager::AddEnemy(Vector3 position) {
 	
 	Enemy* enemy = new Enemy();
 
-	enemy->Initialize(models_, textureHandles_[enemyTypeNext], enemyTypeNext, position);
-	enemy->SetEnemyManager(this);
-	enemy->SetPlayer(player_);
+	enemy->Initialize(
+	    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position, this, player_);
 	enemies_.push_back(enemy);
 
 }

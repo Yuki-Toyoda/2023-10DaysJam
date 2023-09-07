@@ -11,7 +11,8 @@
 /// 初期化
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
-void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType, Vector3 posioton) {
+void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
+	Vector3 posioton, EnemyManager* enemyManager, Player* player) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -35,6 +36,11 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	SetCollisionMask(0x00000002);
 	// タグ
 	tag_ = TagEnemy;
+
+	// エネミーマネージャー
+	enemyManager_ = enemyManager;
+	// プレイヤー
+	player_ = player;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -98,7 +104,7 @@ void Enemy::OnCollision(Tag collisionTag) {
 	    collisionTag == TagPlayerBulletIce ||
 		collisionTag == TagPlayerBulletThunder ||
 	    collisionTag == TagPlayerBulletNone) {
-		//isDead_ = true;
+		isDead_ = true;
 	}
 
 }

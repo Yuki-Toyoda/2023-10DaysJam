@@ -32,7 +32,7 @@ void OBB::Update(Vector3 position, Vector3 rotate, Vector3 size) {
 
     center_ = position;
 
-	 Matrix4x4 rotateMatirx = MyMath::MakeRotateXYZMatrix(rotate);
+	 Matrix4x4 rotateMatirx = MyMath::MakeRotateXYZMatrix(Vector3(rotate.x, -rotate.y, rotate.z));
 
 	otientatuons_[0].x = rotateMatirx.m[0][0];
 	otientatuons_[0].y = rotateMatirx.m[0][1];

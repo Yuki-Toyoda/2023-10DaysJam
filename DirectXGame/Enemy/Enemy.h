@@ -28,7 +28,7 @@ public: //メンバ関数
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
-	    Vector3 posioton);
+	    Vector3 posioton, EnemyManager* enemyManager, Player* player);
 
 	/// <summary>
 	/// 更新
