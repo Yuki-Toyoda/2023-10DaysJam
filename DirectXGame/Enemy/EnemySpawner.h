@@ -36,6 +36,13 @@ public: //メンバ関数
 	/// </summary>
 	void Move();
 
+private: // その他関数
+
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables();
+
 
 private: //メンバ変数
 

@@ -73,6 +73,11 @@ public: //メンバ関数
 	void Rush();
 
 	/// <summary>
+	/// 待ち
+	/// </summary>
+	void Waiting();
+
+	/// <summary>
 	/// 追従(ボス)
 	/// </summary>
 	void Follow();

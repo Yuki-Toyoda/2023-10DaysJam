@@ -196,6 +196,12 @@ void Enemy::Rush() {
 
 }
 
+void Enemy::Waiting() {
+
+	Move();
+
+}
+
 void Enemy::Follow() {
 
 }
