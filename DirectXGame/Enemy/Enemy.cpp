@@ -11,7 +11,7 @@
 /// 初期化
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
-void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType) {
+void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType, Vector3 posioton) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -21,7 +21,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	textureHandle_ = textureHandle;
 
 	// 初期座標
-	worldTransform_.translation_ = {10.0f, 10.0f, 10.0f};
+	worldTransform_.translation_ = posioton;
 	worldTransform_.UpdateMatrix();
 
 	// デスフラグ
@@ -63,6 +63,9 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 /// 更新
 /// </summary>
 void Enemy::Update() {
+
+	//移動
+	Move();
 
 	//グローバル変数適用
 	ApplyGlobalVariables();

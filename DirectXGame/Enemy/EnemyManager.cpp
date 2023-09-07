@@ -35,10 +35,8 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	//エネミータイプ
 	enemyTypeNext = Enemy::EnemyType::Thunder;
 
-	//初期のエネミー配置
-	for (size_t i = 0; i < enemyMax; i++) {
-		AddEnemy();
-	}
+	// エネミースポナー
+	enemySpawner.Initialize(Vector3(0.0f,10.0f,30.0f), this);
 
 	//ボス
 	//bossEnemy_ = std::make_unique<BossEnemy>();
@@ -49,7 +47,11 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 void EnemyManager::Update() {
 
 	//ボスエネミー更新
-	//bossEnemy_->Update();
+	//bossEnemy_->Update()
+	
+	//スポナー更新
+	enemySpawner.Update();
+	
 	//エネミー更新
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
@@ -90,11 +92,11 @@ void EnemyManager::ColliderDraw() {
 
 }
 
-void EnemyManager::AddEnemy() {
+void EnemyManager::AddEnemy(Vector3 position) {
 	
 	Enemy* enemy = new Enemy();
 
-	enemy->Initialize(models_, textureHandles_[enemyTypeNext], enemyTypeNext);
+	enemy->Initialize(models_, textureHandles_[enemyTypeNext], enemyTypeNext, position);
 	enemy->SetEnemyManager(this);
 	enemy->SetPlayer(player_);
 	enemies_.push_back(enemy);
@@ -154,9 +156,6 @@ void EnemyManager::Reset() {
 		Delete();
 		enemyCount_ = enemyMax;
 
-		for (size_t i = 0; i < enemyMax; i++) {
-			AddEnemy();
-		}
 	}
 
 }

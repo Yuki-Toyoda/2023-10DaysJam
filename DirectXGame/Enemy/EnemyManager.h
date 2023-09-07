@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "EnemyBullet.h"
 #include "BossEnemy.h"
+#include "EnemySpawner.h"
 
 // プレイヤー
 class Player;
@@ -46,7 +47,7 @@ public: // メンバ変数
 	/// <summary>
 	/// エネミー追加
 	/// </summary>
-	void AddEnemy();
+	void AddEnemy(Vector3 position);
 
 	/// <summary>
 	/// エネミー削除
@@ -136,5 +137,8 @@ private: // メンバ変数
 
 	//次のエネミータイプ
 	Enemy::EnemyType enemyTypeNext;
+
+	// エネミースポナー
+	EnemySpawner enemySpawner;
 
 };

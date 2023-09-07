@@ -26,7 +26,9 @@ public: //メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType);
+	void Initialize(
+	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
+	    Vector3 posioton);
 
 	/// <summary>
 	/// 更新
