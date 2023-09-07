@@ -36,7 +36,7 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	enemyTypeNext = Enemy::EnemyType::Thunder;
 
 	// エネミースポナー
-	enemySpawner.Initialize(Vector3(0.0f,10.0f,30.0f), this);
+	enemySpawner.Initialize(this);
 
 	//ボス
 	//bossEnemy_ = std::make_unique<BossEnemy>();
