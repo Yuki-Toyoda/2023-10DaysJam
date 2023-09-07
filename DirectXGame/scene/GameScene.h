@@ -77,6 +77,9 @@ private: // メンバ変数
 	// 雷弾モデル
 	std::unique_ptr<Model> modelThunderBullet_;
 
+	// 破片モデル
+	std::unique_ptr<Model> modelDebris_;
+
 	// ボタン用テクスチャ達
 	uint32_t texturehandleDpad_ = 0u; // 十字ボタン
 	uint32_t texturehandleDpadArrow_N_ = 0u; // 十字ボタン矢印

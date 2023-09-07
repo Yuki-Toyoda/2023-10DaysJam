@@ -38,11 +38,12 @@ void EffectManager::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
-void EffectManager::PlayExplosiveEffect(std::vector<Model*> models, Vector3 translation) {
+void EffectManager::PlayExplosiveEffect(
+    std::vector<Model*> models, Vector3 translation, float strength) {
 	// 新しいエフェクトのインスタンスを生成
 	ExplosiveEffect* explosiveEffect = new ExplosiveEffect();
 	// 生成したエフェクトの初期化
-	explosiveEffect->initialize(models, translation);
+	explosiveEffect->initialize(models, translation, strength);
 	// 生成したエフェクトをリストに追加
 	effets_.push_back(explosiveEffect);
 }

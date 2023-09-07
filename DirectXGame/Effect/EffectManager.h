@@ -49,11 +49,12 @@ public: // メンバ関数
 public: // エフェクトの再生関数
 
 	/// <summary>
-	/// 爆発エフェクトの再生関数
+	/// 爆発エフェクト再生関数
 	/// </summary>
-	/// <param name="models"></param>
-	/// <param name="translation"></param>
-	void PlayExplosiveEffect(std::vector<Model*> models, Vector3 translation);
+	/// <param name="models">破片モデル</param>
+	/// <param name="translation">初期座標</param>
+	/// <param name="strength">爆発強さ</param>
+	void PlayExplosiveEffect(std::vector<Model*> models, Vector3 translation, float strength);
 
 private: // メンバ変数
 

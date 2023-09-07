@@ -26,11 +26,13 @@ void GameScene::Initialize() {
 	modelFireBullet_.reset(Model::CreateFromOBJ("Bomb", true)); // 炎弾
 	modelIceBullet_.reset(Model::CreateFromOBJ("Wall", true));    // 氷弾
 	modelThunderBullet_.reset(Model::CreateFromOBJ("Area", true)); // 雷弾
+	modelDebris_.reset(Model::CreateFromOBJ("Debris", true));      // 破片
 	std::vector<Model*> playerBulletModels = { 
 		modelBullet_.get(), // 通常弾
 	    modelFireBullet_.get(), // 炎弾
 	    modelIceBullet_.get(), // 水弾
 	    modelThunderBullet_.get(), // 雷弾
+	    modelDebris_.get(), // 破片エフェクト用
 	}; // プレイヤー弾用モデルリストの生成
 
 	// テクスチャ読み込み

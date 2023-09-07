@@ -1,4 +1,5 @@
 #include "PlayerBullet.h"
+#include "../Effect/EffectManager.h"
 
 void PlayerBullet::Initialize(
     const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity) {
@@ -183,6 +184,18 @@ void PlayerBullet::FireBulletUpdate() {
 			fallSpeed_ = 0.0f;
 			// 床と衝突
 			isHit_ = true;
+
+			std::vector<Model*> EffectModels = {
+				models_[4]
+			};                             // エフェクト用モデルリストの生成
+			// 破片エフェクト再生を指示
+			EffectManager::GetInstance()->PlayExplosiveEffect(
+			    EffectModels, {
+			                      worldTransform_.translation_.x,
+			                      worldTransform_.translation_.y + 2.0f,
+			                      worldTransform_.translation_.z,
+			                  }, 5.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
+
 		} else {
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
