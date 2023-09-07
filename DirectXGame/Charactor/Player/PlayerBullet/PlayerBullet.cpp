@@ -350,7 +350,8 @@ void PlayerBullet::ThunderBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployAreaStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
-				    animT_, {2.0f, 2.0f, 2.0f}, deployAreaSize_, deployAreaStagingTime_);
+				    animT_, {2.0f, deployAreaSize_.y, 2.0f}, deployAreaSize_,
+				    deployAreaStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
@@ -369,7 +370,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 				float RandomRadius =
 				    deployAreaSize_.x + MyMath::RandomF(-shakeRange_, shakeRange_, 2);
 				// サイズ変更
-				worldTransform_.scale_ = {RandomRadius, 1.0f, RandomRadius};
+				worldTransform_.scale_ = {RandomRadius, deployAreaSize_.y, RandomRadius};
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
