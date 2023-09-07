@@ -25,8 +25,8 @@ void GameScene::Initialize() {
 	modelBullet_.reset(Model::CreateFromOBJ("Bullet", true)); // 通常弾
 	modelFireBullet_.reset(Model::CreateFromOBJ("Bomb", true)); // 炎弾
 	modelIceBullet_.reset(Model::CreateFromOBJ("Wall", true));    // 氷弾
-	modelThunderBullet_.reset(Model::CreateFromOBJ("Wall", true)); // 雷弾
-	std::vector<Model*> playerBulletModels = {
+	modelThunderBullet_.reset(Model::CreateFromOBJ("Area", true)); // 雷弾
+	std::vector<Model*> playerBulletModels = { 
 		modelBullet_.get(), // 通常弾
 		modelFireBullet_.get(), // 炎弾
 		modelIceBullet_.get(), // 水弾

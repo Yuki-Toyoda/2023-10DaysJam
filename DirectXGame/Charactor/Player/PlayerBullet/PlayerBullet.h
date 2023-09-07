@@ -153,13 +153,25 @@ private: // メンバ変数
 	// 展開する壁のサイズ
 	Vector3 deployWallSize_;
 	// 展開演出時間
-	float deployStagingTime_;
+	float deployWallStagingTime_;
 	// 展開時間
-	float deploymentTime_;
+	float deploymentWallTime_;
 	// 終了演出時間
-	float deployEndStagingTime_;
+	float deployWallEndStagingTime_;
 #pragma endregion
 
+	#pragma region 雷弾用変数
+	// 展開するダメージエリアのサイズ
+	Vector3 deployAreaSize_;
+	// 振動させる範囲
+	float shakeRange_;
+	// 展開演出時間
+	float deployAreaStagingTime_;
+	// 展開時間
+	float deploymentAreaTime_;
+	// 終了演出時間
+	float deployAreaEndStagingTime_;
+#pragma endregion
 
 
 };
