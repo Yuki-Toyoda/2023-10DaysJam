@@ -64,13 +64,14 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 /// </summary>
 void Enemy::Update() {
 
-	MoveToPlayer();
+	//グローバル変数適用
+	ApplyGlobalVariables();
 
 	// 基底クラス更新
 	BaseCharacter::Update();
 
 	//コライダー更新
-	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
 }
 
@@ -94,7 +95,7 @@ void Enemy::OnCollision(Tag collisionTag) {
 	    collisionTag == TagPlayerBulletIce ||
 		collisionTag == TagPlayerBulletThunder ||
 	    collisionTag == TagPlayerBulletNone) {
-		isDead_ = true;
+		//isDead_ = true;
 	}
 
 }
@@ -203,5 +204,7 @@ void Enemy::ApplyGlobalVariables() {
 	moveToPlayerSpeed_ = globalVariables->GetFloatValue(groupName, "MoveToPlayerSpeed");
 	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed");
 	rushSpeed_ = globalVariables->GetFloatValue(groupName, "RushSpeed");
+
+	colliderShape_->ApplyGlobalVariables(groupName);
 
 }

@@ -3,6 +3,12 @@
         "BulletSpeed": 0.5,
         "MoveRotateSpeed": 0.009999999776482582,
         "MoveSpeed": 1.0,
-        "MoveToPlayerSpeed": 0.5
+        "MoveToPlayerSpeed": 0.5,
+        "OBBSize": [
+            1.2000000476837158,
+            1.2000000476837158,
+            6.0
+        ],
+        "RushSpeed": 5.0
     }
 }
