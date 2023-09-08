@@ -56,7 +56,7 @@ void GlobalVariables::Update() {
 				// float型の値を取得
 				float* ptr = std::get_if<float>(&item.value);
 				// ImGuiのUIを出す
-				ImGui::DragFloat(itemName.c_str(), ptr, 1.0f);
+				ImGui::DragFloat(itemName.c_str(), ptr, 0.01f);
 			}
 			// Vector2型の値を保持している場合
 			else if (std::holds_alternative<Vector2>(item.value)) {

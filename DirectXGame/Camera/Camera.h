@@ -33,6 +33,13 @@ public: // アクセッサ等
 	/// <param name="target">追従対象ワールド座標</param>
 	void SetTarget(const WorldTransform* target) { target_ = target; }
 
+private: // メンバ関数
+
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables();
+
 private: // メンバ変数
 
 	// 入力検知用
@@ -44,6 +51,8 @@ private: // メンバ変数
 	// 追従対象のワールド座標
 	const WorldTransform* target_ = nullptr;
 
+	// カメラFOV
+	float fov_;
 	// カメラ感度
 	Vector2 cameraSensitivity_;
 };

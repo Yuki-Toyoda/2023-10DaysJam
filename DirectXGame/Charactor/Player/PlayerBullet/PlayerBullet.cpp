@@ -1,4 +1,5 @@
 #include "PlayerBullet.h"
+#include "../Effect/EffectManager.h"
 #include "Collision/ColliderShape/OBB.h"
 
 void PlayerBullet::Initialize(
@@ -218,6 +219,18 @@ void PlayerBullet::FireBulletUpdate() {
 			fallSpeed_ = 0.0f;
 			// 床と衝突
 			isHit_ = true;
+
+			std::vector<Model*> EffectModels = {
+				models_[4]
+			};                             // エフェクト用モデルリストの生成
+			// 破片エフェクト再生を指示
+			EffectManager::GetInstance()->PlayExplosiveEffect(
+			    EffectModels, {
+			                      worldTransform_.translation_.x,
+			                      worldTransform_.translation_.y + 2.0f,
+			                      worldTransform_.translation_.z,
+			                  }, 5.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
+
 		} else {
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
@@ -385,7 +398,8 @@ void PlayerBullet::ThunderBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployAreaStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
-				    animT_, {2.0f, 2.0f, 2.0f}, deployAreaSize_, deployAreaStagingTime_);
+				    animT_, {2.0f, deployAreaSize_.y, 2.0f}, deployAreaSize_,
+				    deployAreaStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
@@ -404,7 +418,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 				float RandomRadius =
 				    deployAreaSize_.x + MyMath::RandomF(-shakeRange_, shakeRange_, 2);
 				// サイズ変更
-				worldTransform_.scale_ = {RandomRadius, 1.0f, RandomRadius};
+				worldTransform_.scale_ = {RandomRadius, deployAreaSize_.y, RandomRadius};
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {

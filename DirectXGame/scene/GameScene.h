@@ -20,6 +20,8 @@
 #include <imgui.h>
 #endif // _DEBUG
 
+// クラスの前方宣言
+class EffectManager;
 
 /// <summary>
 /// ゲームシーン
@@ -81,6 +83,37 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelThunderBullet_;
 	// エネミーモデル
 	std::unique_ptr<Model> modelEnemy_;
+
+	// 破片モデル
+	std::unique_ptr<Model> modelDebris_;
+
+	// ボタン用テクスチャ達
+	uint32_t texturehandleDpad_ = 0u; // 十字ボタン
+	uint32_t texturehandleDpadArrow_N_ = 0u; // 十字ボタン矢印
+	uint32_t texturehandleDpadArrow_P_ = 0u; // 十字ボタン矢印押下時
+
+	// 1x1テクスチャ
+	uint32_t textureHandle1x1_ = 0u;
+	// レティクル用テクスチャ
+	uint32_t textureHandleReticle_ = 0u;
+	// オーブテクスチャ
+	uint32_t texturehandleOrb_ = 0u;
+	// 選択しているオーブを示すテクスチャ
+	uint32_t textureHandleSelectedOrb_ = 0u;
+
+	// 特殊弾テクスチャ
+	uint32_t texturehandleFireBullet_ = 0u; // 炎弾
+	uint32_t texturehandleIceBullet_ = 0u; // 炎弾
+	uint32_t texturehandleThunderBullet_ = 0u; // 雷弾
+
+	// 選択不可テクスチャ
+	uint32_t textureHandleX_ = 0u;
+	// 選択テクスチャ
+	uint32_t textureHandleSelectArrow_L_ = 0u;
+	uint32_t textureHandleSelectArrow_R_ = 0u;
+
+	// エフェクトマネージャー
+	EffectManager* effectManager_ = nullptr;
 
 	// デバックカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;

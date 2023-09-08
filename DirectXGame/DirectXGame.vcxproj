@@ -130,6 +130,9 @@
     <ClCompile Include="Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Enemy\EnemyManager.cpp" />
     <ClCompile Include="Enemy\EnemySpawner.cpp" />
+    <ClCompile Include="Effect\BaseEffect.cpp" />
+    <ClCompile Include="Effect\EffectManager.cpp" />
+    <ClCompile Include="Effect\ExplosiveEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\MyMath.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
@@ -179,6 +182,10 @@
     <ClInclude Include="Enemy\EnemyBullet.h" />
     <ClInclude Include="Enemy\EnemyManager.h" />
     <ClInclude Include="Enemy\EnemySpawner.h" />
+    <ClInclude Include="Effect\BaseEffect.h" />
+    <ClInclude Include="Effect\EffectList.h" />
+    <ClInclude Include="Effect\EffectManager.h" />
+    <ClInclude Include="Effect\ExplosiveEffect.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\MyMath.h" />

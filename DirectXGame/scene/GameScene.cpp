@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "TextureManager.h"
+#include "Effect/EffectManager.h"
 #include <cassert>
 #include <PrimitiveDrawer.h>
 
@@ -30,13 +31,49 @@ void GameScene::Initialize() {
 	modelFireBullet_.reset(Model::CreateFromOBJ("Bomb", true)); // 炎弾
 	modelIceBullet_.reset(Model::CreateFromOBJ("Wall", true));    // 氷弾
 	modelThunderBullet_.reset(Model::CreateFromOBJ("Area", true)); // 雷弾
+	modelDebris_.reset(Model::CreateFromOBJ("Debris", true));      // 破片
 	std::vector<Model*> playerBulletModels = { 
 		modelBullet_.get(), // 通常弾
-		modelFireBullet_.get(), // 炎弾
-		modelIceBullet_.get(), // 水弾
-		modelThunderBullet_.get(), // 雷弾
+	    modelFireBullet_.get(), // 炎弾
+	    modelIceBullet_.get(), // 水弾
+	    modelThunderBullet_.get(), // 雷弾
+	    modelDebris_.get(), // 破片エフェクト用
 	}; // プレイヤー弾用モデルリストの生成
 
+	// テクスチャ読み込み
+	textureHandle1x1_ = TextureManager::Load("white1x1.png");
+	textureHandleReticle_ = TextureManager::Load("/Image/Player/reticle.png");
+	texturehandleOrb_ = TextureManager::Load("/Image/Player/OrbUI.png");
+	texturehandleDpad_ = TextureManager::Load("/Image/Button/Dpad.png");
+	texturehandleDpadArrow_N_ = TextureManager::Load("/Image/Button/DpadArrow_P.png");
+	texturehandleDpadArrow_P_ = TextureManager::Load("/Image/Button/DpadArrow_N.png");
+	texturehandleFireBullet_ = TextureManager::Load("/Image/Player/FireBulletUI.png");
+	texturehandleIceBullet_ = TextureManager::Load("/Image/Player/IceBulletUI.png");
+	texturehandleThunderBullet_ = TextureManager::Load("/Image/Player/ThunderBulletUI.png");
+	textureHandleSelectedOrb_ = TextureManager::Load("/Image/Player/SelectedOrbUI.png");
+	textureHandleX_ = TextureManager::Load("/Image/Player/X.png");
+	textureHandleSelectArrow_L_ = TextureManager::Load("/Image/Player/selectArrowUI_L.png");
+	textureHandleSelectArrow_R_ = TextureManager::Load("/Image/Player/selectArrowUI_R.png");
+	std::vector<uint32_t> playerTextureHandles = {
+		textureHandle1x1_, // 1x1
+	    textureHandleReticle_, // 照準
+	    texturehandleOrb_, // オーブ
+	    texturehandleDpad_,  // 十字ボタン
+		texturehandleDpadArrow_N_, 
+		texturehandleDpadArrow_P_, 
+		texturehandleFireBullet_,
+		texturehandleIceBullet_,   
+		texturehandleThunderBullet_,
+	    textureHandleSelectedOrb_,
+	    textureHandleX_,           
+		textureHandleSelectArrow_L_,
+		textureHandleSelectArrow_R_
+	};
+
+	// エフェクトマネージャーの取得
+	effectManager_ = EffectManager::GetInstance();
+	// 取得したエフェクトマネージャーの初期化
+	effectManager_->Initialize();
 
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 
@@ -58,7 +95,7 @@ void GameScene::Initialize() {
 	camera_->Intialize(); // カメラ
 	skyDome_->Intialize(modelSkyDome_.get()); // 天球
 	ground_->Intialize(modelGround_.get()); // 地面
-	player_->Initialize(playerModels, playerBulletModels); // プレイヤー
+	player_->Initialize(playerModels, playerBulletModels, playerTextureHandles); // プレイヤー
 
 	// カメラの追従対象
 	camera_->SetTarget(player_->GetWorldTransform());
@@ -92,7 +129,9 @@ void GameScene::Update() {
 	skyDome_->Update(); // 天球
 	ground_->Update(); // 地面
 	player_->Update(); // プレイヤー
+	effectManager_->Update(); // エフェクトマネージャー
 	enemyManager_->Update();// エネミー
+
 	// デバックカメラ有効時
 	if (enableDebugCamera_) {
 		debugCamera_->Update(); // デバックカメラ
@@ -174,6 +213,7 @@ void GameScene::Draw() {
 	skyDome_->Draw(*viewProjection_); // 天球
 	ground_->Draw(*viewProjection_); // 地面
 	player_->Draw(*viewProjection_); // プレイヤー
+	effectManager_->Draw(*viewProjection_); // エフェクトマネージャー
 	enemyManager_->Draw(*viewProjection_);// エネミー
 
 	// 3Dオブジェクト描画後処理
