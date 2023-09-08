@@ -6,6 +6,7 @@
 #include "Charactor/CharactorList.h"
 #include "../config/GlobalVariables.h"
 #include "Collision/ColliderShape/OBB.h"
+#include "Ambient/Field.h"
 
 /// <summary>
 /// 初期化
@@ -108,6 +109,18 @@ void Enemy::Update() {
 
 	//グローバル変数適用
 	ApplyGlobalVariables();
+
+	//トランスフォームの制限確認
+	Field* field = Field::GetInstance();
+	if (worldTransform_.translation_.x <= field->GetMin().x ||
+	    worldTransform_.translation_.y <= field->GetMin().y ||
+	    worldTransform_.translation_.z <= field->GetMin().z ||
+	    worldTransform_.translation_.x >= field->GetMax().x ||
+	    worldTransform_.translation_.y >= field->GetMax().y ||
+	    worldTransform_.translation_.z >= field->GetMax().z ) {
+		//死ぬ
+		isDead_ = true;
+	}
 
 	// 基底クラス更新
 	BaseCharacter::Update();
