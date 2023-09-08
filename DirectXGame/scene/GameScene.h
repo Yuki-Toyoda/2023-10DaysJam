@@ -14,6 +14,7 @@
 #include "Ambient/Ground.h"
 #include "Charactor/CharactorList.h"
 #include "Collision/CollisionManager.h"
+#include "Ambient/Field.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -59,7 +60,10 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	
+
+	//フィールド
+	Field* field_ = nullptr;
+
 	// ビュープロジェクション
 	ViewProjection* viewProjection_;
 

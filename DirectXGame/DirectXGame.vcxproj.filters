@@ -90,6 +90,14 @@
     <ClCompile Include="3d\WorldTransformEX.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Collision\collider.cpp" />
+    <ClCompile Include="Collision\ColliderShape\AABB.cpp" />
+    <ClCompile Include="Collision\ColliderShape\ColliderShape.cpp" />
+    <ClCompile Include="Collision\ColliderShape\OBB.cpp" />
+    <ClCompile Include="Collision\ColliderShape\Sphere.cpp" />
+    <ClCompile Include="Collision\Collision.cpp" />
+    <ClCompile Include="Enemy\EnemySpawner.cpp" />
+    <ClCompile Include="Ambient\Field.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="audio\Audio.h">
@@ -224,6 +232,13 @@
     <ClInclude Include="3d\WorldTransform.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Collision\ColliderShape\AABB.h" />
+    <ClInclude Include="Collision\ColliderShape\ColliderShape.h" />
+    <ClInclude Include="Collision\ColliderShape\OBB.h" />
+    <ClInclude Include="Collision\ColliderShape\Sphere.h" />
+    <ClInclude Include="Collision\Collision.h" />
+    <ClInclude Include="Enemy\EnemySpawner.h" />
+    <ClInclude Include="Ambient\Field.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Obj.hlsli">

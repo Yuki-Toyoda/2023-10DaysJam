@@ -13,6 +13,10 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//フィールド初期化
+	field_ = Field::GetInstance();
+	field_->Initialize();
+
 	// ビュープロジェクション初期化
 	viewProjection_ = new ViewProjection;
 	viewProjection_->farZ = 2000.0f;
@@ -71,7 +75,6 @@ void GameScene::Initialize() {
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()}, textureHandles);
-	//enemyManager_->SetBossEnemyPlayer(player_.get());
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
@@ -127,6 +130,9 @@ void GameScene::Update() {
 	collisionManager->CheakAllCollision();
 
 	#ifdef _DEBUG
+
+	//フィールドの更新
+	field_->Update();
 
 	ImGui::Begin("Debug");
 	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);

@@ -108,6 +108,7 @@
   <ItemGroup>
     <ClCompile Include="2d\ImGuiManager.cpp" />
     <ClCompile Include="3d\WorldTransformEX.cpp" />
+    <ClCompile Include="Ambient\Field.cpp" />
     <ClCompile Include="Ambient\Ground.cpp" />
     <ClCompile Include="Ambient\SkyDome.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="3d\TerrainCommon.h" />
     <ClInclude Include="3d\ViewProjection.h" />
     <ClInclude Include="3d\WorldTransform.h" />
+    <ClInclude Include="Ambient\Field.h" />
     <ClInclude Include="Ambient\Ground.h" />
     <ClInclude Include="Ambient\SkyDome.h" />
     <ClInclude Include="audio\Audio.h" />
