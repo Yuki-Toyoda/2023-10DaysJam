@@ -47,7 +47,7 @@ public: // メンバ変数
 	/// <summary>
 	/// エネミー追加
 	/// </summary>
-	void AddEnemy(Vector3 position);
+	void AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext);
 
 	/// <summary>
 	/// エネミー削除
@@ -146,9 +146,6 @@ private: // メンバ変数
 
 	// プレイヤー
 	Player* player_ = nullptr;
-
-	//次のエネミータイプ
-	Enemy::EnemyType enemyTypeNext_;
 
 	// エネミースポナー
 	std::list<EnemySpawner*> enemySpawneres_;

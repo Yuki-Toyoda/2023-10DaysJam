@@ -27,7 +27,6 @@ void CollisionManager::CheakAllCollision() {
 
 			// ペアの当たり判定
 			if (CheckCollisionPair(colliderA, colliderB)) {
-			
 				colliders_.remove(colliderB);
 				break;
 			}

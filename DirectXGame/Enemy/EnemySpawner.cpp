@@ -18,6 +18,10 @@ void EnemySpawner::Initialize(EnemyManager* enemyManager, uint32_t num) {
 	
 	num_ = num;
 
+	enemyTypeNext_ = Enemy::EnemyType::None;
+	
+	specialTypeRatio = 0.1f;
+
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名の設定
@@ -58,18 +62,30 @@ void EnemySpawner::Update() {
 		Move();
 	}
 
-
 }
 
 void EnemySpawner::Spawn() {
 
+	//位置
 	Vector3 pos = {
 	    MyMath::RandomF(position_.x - size_.x, position_.x + size_.x, 2),
 	    MyMath::RandomF(position_.y - size_.y, position_.y + size_.y, 2),
 	    MyMath::RandomF(position_.z - size_.z, position_.z + size_.z, 2),
 	};
 
-	enemyManager_->AddEnemy(pos);
+	//属性
+	float type = MyMath::RandomF(0.0f, 1.0f, 2);
+	if (type <= specialTypeRatio) {
+		enemyTypeNext_ = Enemy::Fire;
+	} else if (type <= specialTypeRatio * 2.0f) {
+		enemyTypeNext_ = Enemy::Ice;
+	} else if (type <= specialTypeRatio * 3.0f) {
+		enemyTypeNext_ = Enemy::Thunder;
+	} else {
+		enemyTypeNext_ = Enemy::None;
+	}
+
+	enemyManager_->AddEnemy(pos,enemyTypeNext_);
 	// 生成クールタイム
 	generateCooltime_ = generateCooltimeMax_;
 

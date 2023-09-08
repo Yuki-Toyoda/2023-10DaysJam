@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include <stdint.h>
+#include "Enemy.h"
 
 // エネミーマネージャー前方宣言
 class EnemyManager;
@@ -70,8 +71,13 @@ private: //メンバ変数
 	// 移動回数情報
 	uint32_t posChangeNum;
 
+	// 次のエネミータイプ
+	Enemy::EnemyType enemyTypeNext_;
+
 	// 番号
 	uint32_t num_ = 0;
 
+	// 属性割合
+	float specialTypeRatio;
 
 };

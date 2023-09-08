@@ -35,9 +35,6 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	//ボスエネミーモデル
 	bossModels_ = models;
 
-	//エネミータイプ
-	enemyTypeNext_ = Enemy::EnemyType::Thunder;
-
 	// エネミースポナーの追加
 	spawnerNumber = 0;
 	AddEnemySpawner();
@@ -109,12 +106,12 @@ void EnemyManager::ColliderDraw() {
 
 }
 
-void EnemyManager::AddEnemy(Vector3 position) {
+void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext) {
 	
 	Enemy* enemy = new Enemy();
 
 	enemy->Initialize(
-	    models_, textureHandles_[enemyTypeNext_], enemyTypeNext_, position, this, player_,&bossEnemies_);
+	    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position, this, player_,&bossEnemies_);
 	enemies_.push_back(enemy);
 
 }
