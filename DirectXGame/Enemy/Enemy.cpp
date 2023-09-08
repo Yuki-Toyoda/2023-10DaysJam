@@ -339,6 +339,7 @@ void Enemy::Join(BossEnemy* bossEnemy) {
 	JoiningBossEnemy_ = bossEnemy;
 	
 	targetWorldTransform.parent_ = &JoiningBossEnemy_->GetWorldTransform();
+	/*
 	distanceToBoss_ = 30.0f;
 
 	rotationToBoss_.z = float(std::numbers::pi) * 2.0f *
@@ -347,6 +348,10 @@ void Enemy::Join(BossEnemy* bossEnemy) {
 
 	targetWorldTransform.translation_.x = distanceToBoss_ * cosf(rotationToBoss_.z);
 	targetWorldTransform.translation_.y = distanceToBoss_ * sinf(rotationToBoss_.z);
+	*/
+
+	Vector3* transform = JoiningBossEnemy_->GetUnitTtransform();
+	targetWorldTransform.translation_ = transform[JoiningBossEnemy_->GetEnemiesJoiningNum()];
 
 }
 

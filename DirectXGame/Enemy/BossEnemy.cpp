@@ -39,12 +39,24 @@ void BossEnemy::Initialize(
 
 	// エネミーの数
 	enemiesJoiningNum = 0;
-	// エネミーの最大数
-	enemiesJoiningNumMax = 8;
 
+	// 攻撃準備
+	// クールタイム
 	preAttackT_ = 0.0f;
 
+	//	回転用のT
 	preAttackCooltime_ = preAttackCooltimeMax_;
+
+
+	// 部隊
+	for (size_t i = 0; i < kUnitPattern; i++) {
+		// その部隊パターンのエネミーの数
+		unitTransformNum_[i] = 1;
+		// 座標
+		for (size_t j = 0; j < kUnitTransformnumMax; j++) {
+			unitTtransformData_[i][j] = Vector3(0.0f, 0.0f, 0.0f);
+		}
+	}
 
 	//エネミー
 	enemies_ = enemies;
@@ -74,8 +86,32 @@ void BossEnemy::Initialize(
 	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
 	globalVariables->AddItem(groupName, "MoveRotateSpeed", moveRotateSpeed_);
 
+	// グループ名設定
+	const char* groupName2 = "BossEnemyUnit";
+	for (size_t i = 0; i < kUnitPattern; i++) {
+		// その部隊パターンのエネミーの数
+		char str[32];
+		sprintf_s(str, "UnitTransformNum%d", int(i));
+		globalVariables->AddItem(groupName2, str, int(unitTransformNum_[i]));
+		// 座標
+		for (size_t j = 0; j < kUnitTransformnumMax; j++) {
+			sprintf_s(str, "UnitTtransformData%d_%d", int(i),int(j));
+			globalVariables->AddItem(groupName2, str, unitTtransformData_[i][j]);
+		}
+	}
+
 	// メンバ変数の調整したい項目をグローバル変数に追加
 	colliderShape_->AddToGlobalVariables(groupName);
+
+	ApplyGlobalVariables();
+
+	// どのパターンか
+	unitPattern_ = 0;
+	// エネミーの最大数
+	enemiesJoiningNumMax = unitTransformNum_[unitPattern_];
+	for (size_t j = 0; j < kUnitTransformnumMax; j++) {
+		unitTtransform_[j] = unitTtransformData_[unitPattern_][j];
+	}
 
 }
 
@@ -83,6 +119,8 @@ void BossEnemy::Initialize(
 /// 更新
 /// </summary>
 void BossEnemy::Update(std::list<Enemy*>* enemies) {
+
+	ApplyGlobalVariables();
 
 	enemies_ = enemies;
 	
@@ -319,6 +357,14 @@ void BossEnemy::UnderAttack() {
 	if (--attackCooltime_ == 0) {
 		bossEnemyState_ = Collect;
 		enemiesJoiningNum = 0;
+		//ユニットパターン選択
+		unitPattern_ = 0;
+		//追従エネミー数の指定
+		enemiesJoiningNumMax = unitTransformNum_[unitPattern_];
+		//トランスフォーム設定
+		for (size_t j = 0; j < kUnitTransformnumMax; j++) {
+			unitTtransform_[j] = unitTtransformData_[unitPattern_][j];
+		}
 	}
 
 }
@@ -399,6 +445,20 @@ void BossEnemy::ApplyGlobalVariables() {
 	// メンバ変数の調整項目をグローバル変数に追加
 	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed");
 	moveRotateSpeed_ = globalVariables->GetFloatValue(groupName, "MoveRotateSpeed");
+
+	// グループ名設定
+	const char* groupName2 = "BossEnemyUnit";
+	for (size_t i = 0; i < kUnitPattern; i++) {
+		// その部隊パターンのエネミーの数
+		char str[32];
+		sprintf_s(str, "UnitTransformNum%d", int(i));
+		unitTransformNum_[i] = uint32_t(globalVariables->GetIntValue(groupName2, str));
+		// 座標
+		for (size_t j = 0; j < kUnitTransformnumMax; j++) {
+			sprintf_s(str, "UnitTtransformData%d_%d", int(i), int(j));
+			unitTtransformData_[i][j] = globalVariables->GetVector3Value(groupName2, str);	
+		}
+	}
 
 	colliderShape_->ApplyGlobalVariables(groupName);
 

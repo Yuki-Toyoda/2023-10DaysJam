@@ -97,6 +97,11 @@ public: // メンバ関数
 	/// <returns></returns>
 	BossEnemyState GetBossEnemyState() { return bossEnemyState_; }
 
+	/// <summary>
+	/// 追従エネミートランスフォーム取得
+	/// </summary>
+	Vector3* GetUnitTtransform() { return unitTtransform_; }
+
 public: // 自分の情報
 	/// <summary>
 	/// 自分の情報取得
@@ -158,5 +163,19 @@ private: // メンバ変数
 	uint32_t attackCooltime_;
 	// クールタイム最大
 	uint32_t attackCooltimeMax_ = 60 * 2;
+
+	//部隊
+	static const uint32_t kUnitPattern = 1;
+	static const uint32_t kUnitTransformnumMax = 20;
+
+	//その部隊パターンのエネミーの数
+	uint32_t unitTransformNum_[kUnitPattern];
+	//座標
+	Vector3 unitTtransformData_[kUnitPattern][kUnitTransformnumMax];
+
+	//どのパターンか
+	uint32_t unitPattern_;
+	// 座標
+	Vector3 unitTtransform_[kUnitTransformnumMax];
 
 };
