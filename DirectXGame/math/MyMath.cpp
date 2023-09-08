@@ -43,7 +43,7 @@ Vector3 MyMath::EaseIn(float t, Vector3 start, Vector3 end, float time) {
 	// 結果格納用
 	Vector3 result;
 
-	float easeT = (t / time) * (t / time);
+	float easeT = (t / time * t / time);
 
 	result.x = (float)((1.0 - easeT) * start.x + easeT * end.x);
 	result.y = (float)((1.0 - easeT) * start.y + easeT * end.y);

@@ -60,7 +60,7 @@ void EffectManager::PlaySparkEffect(
 	// 新しいエフェクトのインスタンスを生成
 	SparkEffect* newEffect = new SparkEffect();
 	// 生成したエフェクトの初期化
-	newEffect->initialize(models, translation, time, occurrenceRange);
+	newEffect->initialize(models, translation, time, occurrenceRange, viewProjection_);
 	// 生成したエフェクトをリストに追加
 	effets_.push_back(newEffect);
 }

@@ -46,6 +46,16 @@ public: // メンバ関数
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Draw(const ViewProjection& viewProjection);
 
+public: // アクセッサ等
+
+	/// <summary>
+	///	ビルボード時のビュープロジェクションのセッター
+	/// </summary>
+	/// <param name="viewProjection">ビュープロジェクション</param>
+	void SetViewProjection(const ViewProjection* viewProjection) {
+		viewProjection_ = viewProjection;
+	}
+
 public: // エフェクトの再生関数
 
 	/// <summary>
@@ -70,5 +80,8 @@ private: // メンバ変数
 
 	// エフェクトリスト
 	std::list<BaseEffect*> effets_;
+
+	// カメラのビュープロジェクション
+	const ViewProjection* viewProjection_ = nullptr;
 
 };

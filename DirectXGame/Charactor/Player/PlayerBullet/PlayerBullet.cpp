@@ -388,6 +388,20 @@ void PlayerBullet::ThunderBulletUpdate() {
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
+
+				std::vector<Model*> EffectModels = {models_[6]}; // エフェクト用モデルリストの生成
+				// 破片エフェクト再生を指示
+				EffectManager::GetInstance()->PlaySparkEffect(
+				    EffectModels,
+				    {
+				        worldTransform_.translation_.x,
+				        worldTransform_.translation_.y + 2.0f,
+				        worldTransform_.translation_.z,
+				    },
+				    deploymentAreaTime_ - 1.0f,
+				    {	deployAreaSize_.x,
+				        deployAreaSize_.z});
+
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 次の演出へ

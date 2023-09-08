@@ -95,6 +95,8 @@ void GameScene::Initialize() {
 	camera_->SetTarget(player_->GetWorldTransform());
 	// プレイヤーにカメラのビュープロジェクション
 	player_->SetViewProjection(camera_->GetViewProjection());
+	// エフェクトマネージャーにもカメラのビュープロジェクションをセット
+	effectManager_->SetViewProjection(camera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -125,13 +127,7 @@ void GameScene::Update() {
 
 	ImGui::Begin("Debug");
 	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);
-	if (ImGui::Button("PlayTestEffect")) {
-		std::vector<Model*> TestEffect = {
-		    modelSpark_.get(),  
-			modelFireBullet_.get()
-		};                             // エフェクトテスト用モデルリストの生成
-		EffectManager::GetInstance()->PlaySparkEffect(TestEffect, {0.0f, 0.0f, 0.0f}, 10.0f, {50.0f, 50.0f});
-	}
+	
 	ImGui::End();
 
 #endif // _DEBUG

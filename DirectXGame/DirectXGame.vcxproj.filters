@@ -53,6 +53,9 @@
     <Filter Include="Effect">
       <UniqueIdentifier>{bd1854fb-70c9-40ab-9403-95f0faeec5ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect\Fuck">
+      <UniqueIdentifier>{1d35cf52-993e-4304-8448-2d0bcf57be61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXCommon.cpp">
@@ -86,9 +89,6 @@
     <ClCompile Include="Ambient\SkyDome.cpp">
       <Filter>Ambient</Filter>
     </ClCompile>
-    <ClCompile Include="3d\WorldTransformEX.cpp">
-      <Filter>3d</Filter>
-    </ClCompile>
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
@@ -105,6 +105,12 @@
       <Filter>Effect</Filter>
     </ClCompile>
     <ClCompile Include="Effect\BaseEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\FuckEffect.cpp">
+      <Filter>Effect\Fuck</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\WorldTransformEX.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
     <ClCompile Include="Effect\SparkEffect.cpp">
@@ -243,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="Effect\BaseEffect.h">
       <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\FuckEffect.h">
+      <Filter>Effect\Fuck</Filter>
     </ClInclude>
     <ClInclude Include="Effect\SparkEffect.h">
       <Filter>Effect</Filter>
