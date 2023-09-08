@@ -63,9 +63,13 @@ void EnemySpawner::Update() {
 
 void EnemySpawner::Spawn() {
 
+	Vector3 pos = {
+	    MyMath::RandomF(position_.x - size_.x, position_.x + size_.x, 2),
+	    MyMath::RandomF(position_.y - size_.y, position_.y + size_.y, 2),
+	    MyMath::RandomF(position_.z - size_.z, position_.z + size_.z, 2),
+	};
 
-
-	enemyManager_->AddEnemy(position_);
+	enemyManager_->AddEnemy(pos);
 	// 生成クールタイム
 	generateCooltime_ = generateCooltimeMax_;
 
