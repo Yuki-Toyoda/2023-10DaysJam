@@ -7,6 +7,7 @@
 #include "TextureManager.h"
 #include "WinApp.h"
 #include "config/GlobalVariables.h"
+#include "MyMath.h"
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -60,6 +61,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// グローバル変数の読み込み
 	GlobalVariables::GetInstance()->LoadFiles();
+
+	//ランダムセット
+	MyMath::SetSrand();
 
 	// ゲームシーンの初期化
 	gameScene = new GameScene();

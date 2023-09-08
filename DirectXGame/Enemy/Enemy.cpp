@@ -147,14 +147,19 @@ void Enemy::OnCollision(Collider* collision) {
 
 	if (collision->GetTag() == TagPlayer || collision->GetTag() == TagPlayerBulletFire ||
 	    collision->GetTag() == TagPlayerBulletIce ||
-	    collision->GetTag() == TagPlayerBulletThunder ||
-	    collision->GetTag() == TagPlayerBulletNone) {
-		Dead();
-	} else if (
+	    collision->GetTag() == TagPlayerBulletThunder) {
+		// 死亡フラグをたてる
+		isDead_ = true;
+	} 
+	else if (
 	    collision->GetTag() == TagBossEnemy && enemyState_ == Wait &&
 	    collision->GetBossEnemy()->GetBossEnemyState() == BossEnemy::Collect) {
 		Join(collision->GetBossEnemy());
+	} 
+	else if (collision->GetTag() == TagPlayerBulletNone) {
+		Dead();
 	}
+
 
 }
 
