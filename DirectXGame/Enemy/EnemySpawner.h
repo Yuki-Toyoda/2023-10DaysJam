@@ -19,7 +19,7 @@ public: //メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="enemyManager"></param>
-	void Initialize(EnemyManager* enemyManager);
+	void Initialize(EnemyManager* enemyManager, uint32_t num);
 
 	/// <summary>
 	/// 更新
@@ -51,7 +51,7 @@ private: //メンバ変数
 	// 生成クールタイム
 	uint32_t generateCooltime_;
 	// 最大生成クールタイム
-	const uint32_t kGenerateCooltime_ = 60 * 2;
+	uint32_t generateCooltimeMax_ = 60 * 2;
 	//エネミーマネージャー
 	EnemyManager* enemyManager_;
 
@@ -69,6 +69,9 @@ private: //メンバ変数
 
 	// 移動回数情報
 	uint32_t posChangeNum;
+
+	// 番号
+	uint32_t num_ = 0;
 
 
 };

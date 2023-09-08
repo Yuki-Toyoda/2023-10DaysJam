@@ -70,6 +70,11 @@ public: // メンバ変数
 	void AddBossEnemy();
 
 	/// <summary>
+	/// エネミースポナー追加
+	/// </summary>
+	void AddEnemySpawner();
+
+	/// <summary>
 	///	削除
 	/// </summary>
 	void Delete();
@@ -100,12 +105,6 @@ public: // メンバ変数
 	/// プレイヤーセッター
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
-
-	/// <summary>
-	/// ボスエネミープレイヤーセッター
-	/// </summary>
-	/// <returns></returns>
-	//void SetBossEnemyPlayer(Player* player) { bossEnemy_->SetPlayer(player); }
 
 private: // その他関数
 	/// <summary>
@@ -152,9 +151,12 @@ private: // メンバ変数
 	Enemy::EnemyType enemyTypeNext_;
 
 	// エネミースポナー
-	EnemySpawner enemySpawner_;
+	std::list<EnemySpawner*> enemySpawneres_;
 
 	//ボスエネミーのコライダーサイズ
 	Vector3 bossEnemyColliderSize;
+
+	//スポナーナンバー
+	uint32_t spawnerNumber;
 
 };

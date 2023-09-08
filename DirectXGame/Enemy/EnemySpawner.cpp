@@ -2,9 +2,9 @@
 #include "EnemyManager.h"
 #include <config/GlobalVariables.h>
 
-void EnemySpawner::Initialize(EnemyManager* enemyManager) {
+void EnemySpawner::Initialize(EnemyManager* enemyManager, uint32_t num) {
 
-	generateCooltime_ = kGenerateCooltime_;
+	generateCooltime_ = generateCooltimeMax_;
 
 	enemyManager_ = enemyManager;
 
@@ -16,10 +16,13 @@ void EnemySpawner::Initialize(EnemyManager* enemyManager) {
 
 	posChangeNum = 1; 
 	
+	num_ = num;
+
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名の設定
-	const char* groupName = "EnemySpawner";
+	char groupName[32];
+	sprintf_s(groupName, "EnemySpawner%d", int(num_));
 
 	for (size_t i = 0; i < MoveNumberofTimes; i++) {
 		char str[32];
@@ -31,6 +34,10 @@ void EnemySpawner::Initialize(EnemyManager* enemyManager) {
 		sprintf_s(str, "posChangeCooltime%d", int(i));
 		globalVariables->AddItem(groupName, str, int(posChange[i].posChangeCooltime));
 	}
+
+	globalVariables->AddItem(groupName, "GenerateCooltimeMax", int(generateCooltimeMax_));
+
+	globalVariables->AddItem(groupName, "Size", size_);
 
 	//移動位置
 	ApplyGlobalVariables();
@@ -56,9 +63,11 @@ void EnemySpawner::Update() {
 
 void EnemySpawner::Spawn() {
 
+
+
 	enemyManager_->AddEnemy(position_);
 	// 生成クールタイム
-	generateCooltime_ = kGenerateCooltime_;
+	generateCooltime_ = generateCooltimeMax_;
 
 }
 
@@ -81,7 +90,8 @@ void EnemySpawner::ApplyGlobalVariables() {
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名の設定
-	const char* groupName = "EnemySpawner";
+	char groupName[32];
+	sprintf_s(groupName, "EnemySpawner%d", int(num_));
 
 	// メンバ変数の調整項目をグローバル変数に追加
 	for (size_t i = 0; i < MoveNumberofTimes; i++) {
@@ -94,5 +104,9 @@ void EnemySpawner::ApplyGlobalVariables() {
 		sprintf_s(str, "posChangeCooltime%d", int(i));
 		posChange[i].posChangeCooltime = globalVariables->GetIntValue(groupName, str);
 	}
+
+	generateCooltimeMax_ = uint32_t(globalVariables->GetIntValue(groupName, "GenerateCooltimeMax"));
+
+	size_ = globalVariables->GetVector3Value(groupName, "Size");
 
 }

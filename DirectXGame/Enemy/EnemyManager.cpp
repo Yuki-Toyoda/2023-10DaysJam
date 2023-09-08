@@ -38,8 +38,10 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	//エネミータイプ
 	enemyTypeNext_ = Enemy::EnemyType::Thunder;
 
-	// エネミースポナー
-	enemySpawner_.Initialize(this);
+	// エネミースポナーの追加
+	spawnerNumber = 0;
+	AddEnemySpawner();
+	AddEnemySpawner();
 
 	//ボスエネミーの追加
 	AddBossEnemy();
@@ -52,7 +54,9 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 void EnemyManager::Update() {
 	
 	//スポナー更新
-	enemySpawner_.Update();
+	for (EnemySpawner* enemySponer : enemySpawneres_) {
+		enemySponer->Update();
+	}
 	
 	//エネミー更新
 	for (Enemy* enemy : enemies_) {
@@ -158,6 +162,15 @@ void EnemyManager::AddBossEnemy() {
 
 }
 
+void EnemyManager::AddEnemySpawner() {
+
+	EnemySpawner* enemySpawner = new EnemySpawner();
+	enemySpawner->Initialize(this, spawnerNumber);
+	spawnerNumber++;
+	enemySpawneres_.push_back(enemySpawner);
+
+}
+
 void EnemyManager::Delete() {
 
 	enemies_.remove_if([](Enemy* enemy) {
@@ -172,6 +185,10 @@ void EnemyManager::Delete() {
 		delete bossEnemy;
 		return true;
 	});
+	enemySpawneres_.remove_if([](EnemySpawner* enemySpawner) { 
+		delete enemySpawner;
+		return true;
+		});
 
 }
 
