@@ -56,6 +56,16 @@ public: // エフェクトの再生関数
 	/// <param name="strength">爆発強さ</param>
 	void PlayExplosiveEffect(std::vector<Model*> models, Vector3 translation, float strength);
 
+	/// <summary>
+	/// 火花エフェクト
+	/// </summary>
+	/// <param name="models">描画モデル</param>
+	/// <param name="translation">初期座標</param>
+	/// <param name="time">継続時間</param>
+	/// <param name="occurrenceRange">発生範囲</param>
+	void PlaySparkEffect(
+	    std::vector<Model*> models, Vector3 translation, float time, Vector2 occurrenceRange);
+
 private: // メンバ変数
 
 	// エフェクトリスト

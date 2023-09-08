@@ -27,12 +27,16 @@ void GameScene::Initialize() {
 	modelIceBullet_.reset(Model::CreateFromOBJ("Wall", true));    // 氷弾
 	modelThunderBullet_.reset(Model::CreateFromOBJ("Area", true)); // 雷弾
 	modelDebris_.reset(Model::CreateFromOBJ("Debris", true));      // 破片
+	modelIceDebris_.reset(Model::CreateFromOBJ("IceDebris", true));   // 氷破片
+	modelSpark_.reset(Model::CreateFromOBJ("Spark", true)); // 火花
 	std::vector<Model*> playerBulletModels = { 
 		modelBullet_.get(), // 通常弾
 	    modelFireBullet_.get(), // 炎弾
 	    modelIceBullet_.get(), // 水弾
 	    modelThunderBullet_.get(), // 雷弾
 	    modelDebris_.get(), // 破片エフェクト用
+	    modelIceDebris_.get(), // 氷エフェクト用
+	    modelSpark_.get() // 火花エフェクト用
 	}; // プレイヤー弾用モデルリストの生成
 
 	// テクスチャ読み込み
@@ -62,7 +66,7 @@ void GameScene::Initialize() {
 	    textureHandleSelectedOrb_,
 	    textureHandleX_,           
 		textureHandleSelectArrow_L_,
-		textureHandleSelectArrow_R_
+		textureHandleSelectArrow_R_,
 	};
 
 	// エフェクトマネージャーの取得
@@ -121,6 +125,13 @@ void GameScene::Update() {
 
 	ImGui::Begin("Debug");
 	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);
+	if (ImGui::Button("PlayTestEffect")) {
+		std::vector<Model*> TestEffect = {
+		    modelSpark_.get(),  
+			modelFireBullet_.get()
+		};                             // エフェクトテスト用モデルリストの生成
+		EffectManager::GetInstance()->PlaySparkEffect(TestEffect, {0.0f, 0.0f, 0.0f}, 10.0f, {50.0f, 50.0f});
+	}
 	ImGui::End();
 
 #endif // _DEBUG

@@ -79,6 +79,10 @@ private: // メンバ変数
 
 	// 破片モデル
 	std::unique_ptr<Model> modelDebris_;
+	// 氷破片モデル
+	std::unique_ptr<Model> modelIceDebris_;
+	// 火花モデル
+	std::unique_ptr<Model> modelSpark_;
 
 	// ボタン用テクスチャ達
 	uint32_t texturehandleDpad_ = 0u; // 十字ボタン

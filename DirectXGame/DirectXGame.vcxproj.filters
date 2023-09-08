@@ -107,6 +107,9 @@
     <ClCompile Include="Effect\BaseEffect.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="Effect\SparkEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">
@@ -239,6 +242,9 @@
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="Effect\BaseEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\SparkEffect.h">
       <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>

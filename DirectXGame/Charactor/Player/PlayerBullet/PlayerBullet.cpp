@@ -257,6 +257,26 @@ void PlayerBullet::WaterBulletUpdate() {
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
+				std::vector<Model*> EffectModels = {models_[5]}; // エフェクト用モデルリストの生成
+				// 破片エフェクト再生を指示
+				EffectManager::GetInstance()->PlayExplosiveEffect(
+				    EffectModels,
+				    {
+				        worldTransform_.translation_.x,
+				        worldTransform_.translation_.y + 2.0f,
+				        worldTransform_.translation_.z,
+				    },
+				    1.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
+				// 破片エフェクト再生を指示
+				EffectManager::GetInstance()->PlayExplosiveEffect(
+				    EffectModels,
+				    {
+				        worldTransform_.translation_.x,
+				        worldTransform_.translation_.y + 2.0f,
+				        worldTransform_.translation_.z,
+				    },
+				    1.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
+
 				// 次の演出時間を設定
 				deployWallStagingTime_ = 0.25f;
 				// 演出tをリセット
