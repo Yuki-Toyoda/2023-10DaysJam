@@ -26,6 +26,7 @@ public: //サブクラス
 	enum EnemyState {
 		Wait,
 		Follow,
+		PreRush,
 		Rush
 	};
 
@@ -72,6 +73,16 @@ public: //メンバ関数
 	/// 攻撃
 	/// </summary>
 	void Attack();
+
+	/// <summary>
+	/// 突進準備
+	/// </summary>
+	void PreRushStart();
+
+	/// <summary>
+	/// 突進準備
+	/// </summary>
+	void PreRushing();
 
 	/// <summary>
 	/// 突進開始
@@ -176,6 +187,18 @@ private: //メンバ変数
 	Vector3 rotationToBoss_;
 	// 目指すワールドトランスフォーム
 	WorldTransform targetWorldTransform;
+
+	//突進準備用
+	//スタート位置
+	Vector3 preRushStartPos_;
+	//ゴール位置
+	Vector3 preRushEndPos_;
+	//T
+	float preRushT_;
+	// Tの速度
+	float preRushTSpeed_ = 0.05f;
+	//下がる距離
+	float preRushDistance_ = 100.0f;
 
 
 };

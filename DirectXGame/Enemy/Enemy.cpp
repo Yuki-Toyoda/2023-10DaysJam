@@ -40,6 +40,14 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	rotationToBoss_ = {0.0f,0.0f,0.0f};
 	targetWorldTransform.Initialize();
 
+	// 突進準備用
+	// スタート位置
+	preRushStartPos_ = {0.0f,0.0f,0.0f};
+	// ゴール位置
+	preRushEndPos_ = {0.0f, 0.0f, 0.0f};
+	// T
+	preRushT_ = 0.0f;
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
@@ -88,6 +96,9 @@ void Enemy::Update() {
 		break;
 	case Enemy::Follow:
 		Following();
+		break;
+	case Enemy::PreRush:
+		PreRushing();
 		break;
 	case Enemy::Rush:
 		Rushing();
@@ -187,6 +198,50 @@ void Enemy::Attack() {
 
 }
 
+void Enemy::PreRushStart() {
+
+	enemyState_ = PreRush;
+	//位置設定
+	preRushStartPos_ = worldTransform_.translation_;
+	preRushEndPos_ = worldTransform_.translation_;
+	// 自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵弾のワールド座標を取得する
+	Vector3 enemyrPos = GetWorldPosition();
+	// 敵弾->自キャラの差分ベクトルを求める
+	Vector3 toPlayer = playerPos - enemyrPos;
+	// ベクトルの正規化
+	toPlayer = MyMath::Normalize(toPlayer);
+	// 速度
+	preRushEndPos_ = preRushEndPos_ - (toPlayer * preRushDistance_);
+
+	preRushT_ = 0.0f;
+
+}
+
+void Enemy::PreRushing() {
+
+
+	//イージングで後ろに下がる
+	if (preRushT_ < 1.0f) {
+		
+		preRushT_ += preRushTSpeed_;
+		if (preRushT_ >= 1.0f) {
+			preRushT_ = 1.0f;
+		}
+
+		worldTransform_.translation_ = {
+			MyMath::Linear(preRushT_, preRushStartPos_.x, preRushEndPos_.x),
+			MyMath::Linear(preRushT_, preRushStartPos_.y, preRushEndPos_.y),
+			MyMath::Linear(preRushT_, preRushStartPos_.z, preRushEndPos_.z)
+		};
+	} else {
+		// イージング終了で突進開始
+		RushStart();
+	}
+
+}
+
 void Enemy::RushStart() {
 
 	// 自キャラのワールド座標を取得する
@@ -244,8 +299,12 @@ void Enemy::Following() {
 	// 回転
 	MoveRotation(bossPos - pos);
 
+	if (JoiningBossEnemy_->GetBossEnemyState() == BossEnemy::PreAttackCommand) {
+		// 回転
+		worldTransform_.rotation_ = JoiningBossEnemy_->GetWorldTransform().rotation_;
+	}
 	if (JoiningBossEnemy_->GetBossEnemyState() == BossEnemy::AttackCommand) {
-		RushStart();
+		PreRushStart();
 	}
 
 }
