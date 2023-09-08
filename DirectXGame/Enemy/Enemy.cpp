@@ -149,7 +149,7 @@ void Enemy::OnCollision(Collider* collision) {
 	    collision->GetTag() == TagPlayerBulletIce ||
 	    collision->GetTag() == TagPlayerBulletThunder ||
 	    collision->GetTag() == TagPlayerBulletNone) {
-		isDead_ = true;
+		Dead();
 	} else if (
 	    collision->GetTag() == TagBossEnemy && enemyState_ == Wait &&
 	    collision->GetBossEnemy()->GetBossEnemyState() == BossEnemy::Collect) {
@@ -407,6 +407,21 @@ void Enemy::MoveRotation(Vector3 toPosition) {
 	worldTransform_.rotation_ = {
 	    MyMath::Linear(t, rotate.x, target.x), MyMath::Linear(t, rotate.y, target.y), rotate.z};
 
+
+}
+
+void Enemy::Dead() {
+
+	//死亡フラグをたてる
+	isDead_ = true;
+	//オーブ取得
+	if (enemyType_ == EnemyType::Fire) {
+		player_->AddOrbs(PlayerBullet::BulletType::Fire);
+	} else if (enemyType_ == EnemyType::Ice) {
+		player_->AddOrbs(PlayerBullet::BulletType::Ice);
+	} else if (enemyType_ == EnemyType::Thunder) {
+		player_->AddOrbs(PlayerBullet::BulletType::Thunder);
+	}
 
 }
 

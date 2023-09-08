@@ -115,6 +115,11 @@ public: //メンバ関数
 	void MoveRotation(Vector3 toPosition);
 
 	/// <summary>
+	/// 死んだ
+	/// </summary>
+	void Dead();
+
+	/// <summary>
 	/// エネミーマネージャーセッター
 	/// </summary>
 	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }

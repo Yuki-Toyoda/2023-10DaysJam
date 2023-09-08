@@ -26,26 +26,33 @@ void CollisionManager::CheakAllCollision() {
 			Collider* colliderB = *itrB;
 
 			// ペアの当たり判定
-			CheckCollisionPair(colliderA, colliderB);
+			if (CheckCollisionPair(colliderA, colliderB)) {
+			
+				colliders_.remove(colliderB);
+				break;
+			}
+
 		}
 	}
 }
 
 // コライダー2つの衝突判定と応答
-void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
+bool CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
 
 	// 衝突フィルタリング
 	if (!(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()) ||
 	    !(colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask())) {
-		return;
+		return false;
 	}
 
 	//あたり判定タイプ確認
-	WhichCollision(colliderA, colliderB);
+	return WhichCollision(colliderA, colliderB);
+
+	
 
 }
 
-void CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) {
+bool CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) {
 
 	//あたったか
 	bool isCollision = false;
@@ -90,6 +97,9 @@ void CollisionManager::WhichCollision(Collider* colliderA, Collider* colliderB) 
 	if (isCollision) {
 		colliderA->OnCollision(colliderB);
 		colliderB->OnCollision(colliderA);
+		return true;
 	}
+
+	return false;
 
 }

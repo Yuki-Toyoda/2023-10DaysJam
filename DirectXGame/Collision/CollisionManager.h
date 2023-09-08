@@ -27,11 +27,11 @@ public: // メンバ関数
 
 private: // メンバ関数
 	/// <summary>
-	/// 球同士の当たり判定を検証する関数
+	/// 当たり判定を検証する関数
 	/// </summary>
 	/// <param name="colliderA">球A</param>
 	/// <param name="colliderB">球B</param>
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+	bool CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
 private: // 衝突判定
 
@@ -40,7 +40,7 @@ private: // 衝突判定
 	/// </summary>
 	/// <param name="ShapeA">コライダーA</param>
 	/// <param name="ShapeB">コライダーB</param>
-	void WhichCollision(Collider* colliderA, Collider* colliderB);
+	bool WhichCollision(Collider* colliderA, Collider* colliderB);
 
 private: // メンバ変数
 	// コライダーリスト
