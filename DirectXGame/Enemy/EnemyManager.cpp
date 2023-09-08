@@ -153,7 +153,7 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_,bossEnemyColliderSize);
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_, player_,bossEnemyColliderSize);
 	bossEnemies_.push_back(bossEnemy);
 
 }

@@ -13,7 +13,8 @@
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
 void BossEnemy::Initialize(
-    const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies, Vector3 colliderSize) {
+    const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies,
+    Player* player, Vector3 colliderSize) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -41,8 +42,14 @@ void BossEnemy::Initialize(
 	// エネミーの最大数
 	enemiesJoiningNumMax = 8;
 
+	preAttackT_ = 0.0f;
+
+	preAttackCooltime_ = preAttackCooltimeMax_;
+
 	//エネミー
 	enemies_ = enemies;
+	//プレイヤー
+	player_ = player;
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffb);
@@ -83,6 +90,9 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 	case BossEnemy::Collect:
 		// エネミーの収集
 		CollectEnemies();
+		break;
+	case BossEnemy::PreAttackCommand:
+		PreAttack();
 		break;
 	case BossEnemy::AttackCommand:
 		//攻撃中
@@ -125,7 +135,7 @@ void BossEnemy::OnCollision(Collider* collision) {
 	if (collision->GetTag() == TagEnemy) {
 		enemiesJoiningNum++;
 		if (enemiesJoiningNum == enemiesJoiningNumMax) {
-			BeginAttack();
+			bossEnemyState_ = PreAttackCommand; 
 		}
 	}
 
@@ -191,12 +201,116 @@ void BossEnemy::CollectEnemies() {
 
 }
 
+void BossEnemy::PreAttack() {
+
+	//イージング回転
+	if (preAttackT_ < 1.0f) {
+		Vector3 rotate = worldTransform_.rotation_;
+		Vector3 target = worldTransform_.rotation_;
+		float pi = float(std::numbers::pi);
+
+		// 回転
+		// 自キャラのワールド座標を取得する
+		Vector3 playerPos = player_->GetWorldPosition();
+		// 敵弾のワールド座標を取得する
+		Vector3 bossEnemyrPos = GetWorldPosition();
+		// 敵弾->自キャラの差分ベクトルを求める
+		Vector3 toPlayer = playerPos - bossEnemyrPos;
+
+		//  Y軸周りの角度(Θy)
+		target.y = std::atan2f(toPlayer.x, toPlayer.z);
+		// 横軸方向の長さを求める
+		float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
+		// X軸周りの角度(Θx)
+		target.x = std::atan2f(-toPlayer.y, length);
+
+		// ターゲット
+		while (target.x > pi) {
+			target.x -= pi;
+		}
+		while (target.x < -pi) {
+			target.x += pi;
+		}
+
+		while (target.y > pi) {
+			target.y -= pi;
+		}
+		while (target.y < -pi) {
+			target.y += pi;
+		}
+
+		while (target.z > pi) {
+			target.z -= pi;
+		}
+		while (target.z < -pi) {
+			target.z += pi;
+		}
+
+		// rotate
+		while (rotate.x > pi) {
+			rotate.x -= pi;
+		}
+		while (rotate.x < -pi) {
+			rotate.x += pi;
+		}
+
+		while (rotate.y > pi) {
+			rotate.y -= pi;
+		}
+		while (rotate.y < -pi) {
+			rotate.y += pi;
+		}
+
+		while (rotate.z > pi) {
+			rotate.z -= pi;
+		}
+		while (rotate.z < -pi) {
+			rotate.z += pi;
+		}
+
+		// 回転割合
+		preAttackT_ += preAttackTSpeed_;
+		if (preAttackT_ >= 1.0f) {
+			preAttackT_ = 1.0f;
+		}
+		worldTransform_.rotation_ = {
+		    MyMath::Linear(preAttackT_, rotate.x, target.x),
+		    MyMath::Linear(preAttackT_, rotate.y, target.y),
+		    rotate.z
+		};
+	}
+	//イージング終了したら待機
+	else {
+		if (--preAttackCooltime_ == 0) {
+			// 攻撃開始
+			BeginAttack();
+			preAttackCooltime_ = preAttackCooltimeMax_;
+			preAttackT_ = 0.0f;
+		}
+	}
+
+}
+
 void BossEnemy::BeginAttack() {
 
 	bossEnemyState_ = AttackCommand; 
 
 	//クールタイム
 	attackCooltime_ = attackCooltimeMax_;
+
+	// 回転
+	// 自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵弾のワールド座標を取得する
+	Vector3 bossEnemyrPos = GetWorldPosition();
+	// 敵弾->自キャラの差分ベクトルを求める
+	Vector3 toPlayer = playerPos - bossEnemyrPos;
+	//  Y軸周りの角度(Θy)
+	worldTransform_.rotation_.y = std::atan2f(toPlayer.x, toPlayer.z);
+	// 横軸方向の長さを求める
+	float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
+	// X軸周りの角度(Θx)
+	worldTransform_.rotation_.x = std::atan2f(-toPlayer.y, length);
 
 }
 

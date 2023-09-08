@@ -14,7 +14,8 @@ class BossEnemy : public BaseCharacter {
 
 public: // サブクラス
 	enum BossEnemyState { 
-		Collect,
+		Collect, 
+		PreAttackCommand, 
 		AttackCommand, 
 		Down
 	};
@@ -24,7 +25,7 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies, Vector3 colliderSize);
+	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies, Player* player, Vector3 colliderSize);
 
 	/// <summary>
 	/// 更新
@@ -52,6 +53,11 @@ public: // メンバ関数
 	/// エネミーを回収する
 	/// </summary>
 	void CollectEnemies();
+	
+	/// <summary>
+	/// 攻撃準備
+	/// </summary>
+	void PreAttack();
 
 	/// <summary>
 	/// 攻撃開始
@@ -137,11 +143,19 @@ private: // メンバ変数
 	//エネミーの最大数
 	uint32_t enemiesJoiningNumMax;
 
+	//攻撃準備
+	//	回転用のT
+	float preAttackT_;
+	//	回転用のT
+	float preAttackTSpeed_ = 0.05f;
+	// クールタイム
+	uint32_t preAttackCooltime_;
+	// クールタイム最大
+	uint32_t preAttackCooltimeMax_ = 60 * 2;
+
 	//攻撃指示
-	
 	//クールタイム
 	uint32_t attackCooltime_;
-
 	// クールタイム最大
 	uint32_t attackCooltimeMax_ = 60 * 2;
 

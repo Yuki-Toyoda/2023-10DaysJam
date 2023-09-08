@@ -126,7 +126,9 @@ void Enemy::OnCollision(Collider* collision) {
 	    collision->GetTag() == TagPlayerBulletThunder ||
 	    collision->GetTag() == TagPlayerBulletNone) {
 		isDead_ = true;
-	} else if (collision->GetTag() == TagBossEnemy && enemyState_ == Wait) {
+	} else if (
+	    collision->GetTag() == TagBossEnemy && enemyState_ == Wait &&
+	    collision->GetBossEnemy()->GetBossEnemyState() == BossEnemy::Collect) {
 		Join(collision->GetBossEnemy());
 	}
 
