@@ -85,6 +85,8 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 		CollectEnemies();
 		break;
 	case BossEnemy::AttackCommand:
+		//攻撃中
+		UnderAttack();
 		break;
 	case BossEnemy::Down:
 		break;
@@ -123,7 +125,7 @@ void BossEnemy::OnCollision(Collider* collision) {
 	if (collision->GetTag() == TagEnemy) {
 		enemiesJoiningNum++;
 		if (enemiesJoiningNum == enemiesJoiningNumMax) {
-			bossEnemyState_ = AttackCommand; 
+			BeginAttack();
 		}
 	}
 
@@ -185,6 +187,24 @@ void BossEnemy::CollectEnemies() {
 	} else {
 		//通常移動
 		Move();
+	}
+
+}
+
+void BossEnemy::BeginAttack() {
+
+	bossEnemyState_ = AttackCommand; 
+
+	//クールタイム
+	attackCooltime_ = attackCooltimeMax_;
+
+}
+
+void BossEnemy::UnderAttack() {
+
+	if (--attackCooltime_ == 0) {
+		bossEnemyState_ = Collect;
+		enemiesJoiningNum = 0;
 	}
 
 }

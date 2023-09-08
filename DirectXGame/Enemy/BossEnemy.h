@@ -54,6 +54,16 @@ public: // メンバ関数
 	void CollectEnemies();
 
 	/// <summary>
+	/// 攻撃開始
+	/// </summary>
+	void BeginAttack();
+
+	/// <summary>
+	/// 攻撃中
+	/// </summary>
+	void UnderAttack();
+
+	/// <summary>
 	/// 移動中の回転
 	/// </summary>
 	void MoveRotation(Vector3 toPosition);
@@ -74,6 +84,12 @@ public: // メンバ関数
 	/// </summary>
 	/// <returns></returns>
 	uint32_t GetEnemiesJoiningNumMax() { return enemiesJoiningNumMax; }
+
+	/// <summary>
+	/// 状態取得
+	/// </summary>
+	/// <returns></returns>
+	BossEnemyState GetBossEnemyState() { return bossEnemyState_; }
 
 public: // 自分の情報
 	/// <summary>
@@ -120,5 +136,13 @@ private: // メンバ変数
 
 	//エネミーの最大数
 	uint32_t enemiesJoiningNumMax;
+
+	//攻撃指示
+	
+	//クールタイム
+	uint32_t attackCooltime_;
+
+	// クールタイム最大
+	uint32_t attackCooltimeMax_ = 60 * 2;
 
 };

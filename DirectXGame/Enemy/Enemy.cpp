@@ -197,8 +197,16 @@ void Enemy::RushStart() {
 	toPlayer = MyMath::Normalize(toPlayer);
 	// 速度
 	velocity_ = toPlayer * rushSpeed_;
-	// 回転
-	MoveRotation(toPlayer);
+
+	//回転
+	//  Y軸周りの角度(Θy)
+	worldTransform_.rotation_.y = std::atan2f(toPlayer.x, toPlayer.z);
+	// 横軸方向の長さを求める
+	float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
+	// X軸周りの角度(Θx)
+	worldTransform_.rotation_.x = std::atan2f(-toPlayer.y, length);
+
+	enemyState_ = Rush;
 
 }
 
@@ -233,6 +241,10 @@ void Enemy::Following() {
 
 	// 回転
 	MoveRotation(bossPos - pos);
+
+	if (JoiningBossEnemy_->GetBossEnemyState() == BossEnemy::AttackCommand) {
+		RushStart();
+	}
 
 }
 
