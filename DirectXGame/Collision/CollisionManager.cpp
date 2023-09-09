@@ -26,10 +26,7 @@ void CollisionManager::CheakAllCollision() {
 			Collider* colliderB = *itrB;
 
 			// ペアの当たり判定
-			if (CheckCollisionPair(colliderA, colliderB)) {
-				colliders_.remove(colliderB);
-				break;
-			}
+			CheckCollisionPair(colliderA, colliderB);
 
 		}
 	}

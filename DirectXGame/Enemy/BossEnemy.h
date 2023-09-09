@@ -148,6 +148,12 @@ public: //アクセッサ
 	/// </summary>
 	Vector3* GetUnitTtransform() { return unitTtransform_; }
 
+	/// <summary>
+	/// 無敵かゲッター
+	/// </summary>
+	/// <returns></returns>
+	bool GetIsInvincible() { return isInvincible_; }
+
 public: // 自分の情報
 	/// <summary>
 	/// 自分の情報取得

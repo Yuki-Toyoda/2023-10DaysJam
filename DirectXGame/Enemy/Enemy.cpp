@@ -459,6 +459,10 @@ void Enemy::Dead() {
 
 void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
+	if (isInvincible_) {
+		return;
+	}
+
 	hp_ -= damage;
 	if (hp_ <= 0) {
 		Dead();
