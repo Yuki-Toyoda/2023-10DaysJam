@@ -9,6 +9,17 @@
 /// 雷エフェクト
 /// </summary>
 class SparkEffect: public BaseEffect{
+private: // サブクラス
+
+	// 行動中間地点
+	enum ActionWayPoint {
+		WayPoint1, // 行動中間地点1 ~
+		WayPoint2,
+		WayPoint3,
+		WayPoint4,
+		WayPoint5,
+	};
+
 public: // メンバ関数
 	/// <summary>
 	/// 初期化関数
@@ -45,13 +56,16 @@ private: // メンバ変数
 	WorldTransform worldTransformParticle_[kMaxParticleCount_];
 	// 粒子ごとの終了フラグ
 	bool isEndParticle_[kMaxParticleCount_];
-	// 粒子ごとの速度
+	// 粒子ごとの最終座標
 	Vector3 endTransformParticle_[kMaxParticleCount_];
+	// 粒子ごとの最終サイズ
+	Vector3 endSizeParticle_[kMaxParticleCount_];
 	// 粒子演出用t
 	float particleT_[kMaxParticleCount_];
 	// 粒子ごとの演出時間
 	float particleTime_[kMaxParticleCount_];
-	
+	// 粒子ごとの行動中間地点
+	int actionWayPointParticle_[kMaxParticleCount_];
 	// 演出用t
 	float t_;
 	// 継続秒数

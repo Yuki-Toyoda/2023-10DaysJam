@@ -31,12 +31,12 @@ int MyMath::Linear(float t, int start, int end) {
 
 float MyMath::EaseIn(float t, float start, float end, float time) {
 	float easeT = (t / time) * (t / time);
-	return (float)((1.0 - easeT / time) * start + easeT / time * end);
+	return (float)((1.0 - easeT) * start + easeT * end);
 }
 
 int MyMath::EaseIn(float t, int start, int end, float time) {
 	float easeT = (t / time) * (t / time);
-	return (int)((1.0 - easeT / time) * (float)start + easeT / time * (float)end);
+	return (int)((1.0 - easeT) * (float)start + easeT * (float)end);
 }
 
 Vector3 MyMath::EaseIn(float t, Vector3 start, Vector3 end, float time) {

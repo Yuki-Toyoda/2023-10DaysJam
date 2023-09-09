@@ -24,6 +24,8 @@ void SparkEffect::initialize(
 		particleT_[i] = 0.0f;
 		// 粒子ごとの最終座標をリセット
 		endTransformParticle_[i] = {0.0f, 0.0f, 0.0f};
+		// 粒子ごとの行動中間地点リセット
+		actionWayPointParticle_[i] = WayPoint1;
 	}
 
 	// 発生間隔
@@ -56,17 +58,25 @@ void SparkEffect::Update() {
 					endTransformParticle_[i] = worldTransformParticle_[i].translation_;
 					endTransformParticle_[i] =
 					    endTransformParticle_[i] + (Velocity * MyMath::RandomF(10.0f, 17.0f, 2));
+					// 最終サイズを設定する
+					endSizeParticle_[i] = {
+						MyMath::Linear(t_, 1.0f, 0.5f, time_),
+					    MyMath::Linear(t_, 1.0f, 0.5f, time_),
+					    MyMath::Linear(t_, 1.0f, 0.5f, time_)
+					};
 
 					// 粒子演出用t
 					particleT_[i] = 0.0f;
 					// 粒子ごとの演出時間
 					particleTime_[i] = 1.0f;
+					// 演出中間地点リセット
+					actionWayPointParticle_[i] = WayPoint1;
 
 					// 親粒子を表示
 					isEndParticle_[i] = false;
 
 					// 生成間隔を現在の秒数によって調整
-					occurrenceInterval_ = MyMath::EaseIn(t_, 0.1f, 3.0f, time_);
+					occurrenceInterval_ = MyMath::EaseIn(t_, 0.1f, 1.0f, time_);
 
 					// 生成出来たらループを抜ける
 					break;
@@ -100,24 +110,46 @@ void SparkEffect::Update() {
 	for (int i = 0; i < kMaxParticleCount_; i++) {
 		// パーティクルが終了していない時
 		if (!isEndParticle_[i]) {
-			if (particleT_[i] <= particleTime_[i]) {
-				    
-				worldTransformParticle_[i].translation_ = MyMath::EaseIn(
-				        particleT_[i], worldTransformParticle_[i].translation_,
-				        endTransformParticle_[i],
-				        particleTime_[i]);
+			switch (actionWayPointParticle_[i]) {
+			case SparkEffect::WayPoint1:
+				if (particleT_[i] <= particleTime_[i]) {
+					// 粒子座標をイージングで調整
+					worldTransformParticle_[i].translation_ = MyMath::EaseIn(
+					    particleT_[i], worldTransformParticle_[i].translation_,
+					    endTransformParticle_[i], particleTime_[i]);
+					// 粒子サイズをイージングで調整
+					worldTransformParticle_[i].scale_ = MyMath::EaseIn(
+					    particleT_[i], {0.0f, 0.0f, 0.0f}, endSizeParticle_[i], particleTime_[i]);
 
-				worldTransformParticle_[i].scale_ = MyMath::EaseIn(
-					particleT_[i], 
-					{0.0f, 0.0f, 0.0f}, 
-					{1.0f, 1.0f, 1.0f}, 
-					particleTime_[i]);
+					// パーティクルの演出tを加算
+					particleT_[i] += 1.0f / 60.0f;
+				} else {
+					// 粒子演出用tをリセット
+					particleT_[i] = 0.0f;
+					// 粒子演出時間を再設定
+					particleTime_[i] = 0.5f;
+					// 次の演出へ
+					actionWayPointParticle_[i]++;
+				}	    
+				break;
+			case SparkEffect::WayPoint2:
+				if (particleT_[i] <= particleTime_[i]) {
+					// 粒子サイズをイージングで調整
+					worldTransformParticle_[i].scale_ = MyMath::EaseIn(
+					    particleT_[i], endSizeParticle_[i], {0.0f, 0.0f, 0.0f}, particleTime_[i]);
 
-				// パーティクルの演出tを加算
-				particleT_[i] += 1.0f / 60.0f;
-			} else {
-				// 粒子の終了
-				isEndParticle_[i] = true;
+					// パーティクルの演出tを加算
+					particleT_[i] += 1.0f / 60.0f;
+				} else {
+					// 一応スケールをリセット
+					worldTransformParticle_[i].scale_ = {0.0f, 0.0f, 0.0f};
+					// 粒子を非表示
+					isEndParticle_[i] = true;
+				}	  
+				break;
+			case SparkEffect::WayPoint3:
+
+				break;
 			}
 		}
 		// ビルボード処理

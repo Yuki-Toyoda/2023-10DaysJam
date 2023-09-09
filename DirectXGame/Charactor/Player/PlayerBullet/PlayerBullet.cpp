@@ -398,7 +398,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 				        worldTransform_.translation_.y + 2.0f,
 				        worldTransform_.translation_.z,
 				    },
-				    deploymentAreaTime_ - 1.0f,
+				    deploymentAreaTime_,
 				    {	deployAreaSize_.x,
 				        deployAreaSize_.z});
 
