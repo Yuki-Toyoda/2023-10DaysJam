@@ -108,6 +108,7 @@ private: // メンバ変数
 	// 選択テクスチャ
 	uint32_t textureHandleSelectArrow_L_ = 0u;
 	uint32_t textureHandleSelectArrow_R_ = 0u;
+	// 
 
 	// 氷壁用テクスチャ
 	uint32_t textureHandleIceWallTex[3] = {0u};

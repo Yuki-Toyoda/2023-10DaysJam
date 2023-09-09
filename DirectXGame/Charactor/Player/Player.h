@@ -230,7 +230,7 @@ private: // メンバ関数
 	// 特殊射撃できるか
 	bool canSpecialShot_;
 	// 変換するオーブの種類
-	PlayerBullet::BulletType selectedChangeType_;
+	int selectedChangeType_;
 	// 変換するオーブを示すスプライト
 	std::unique_ptr<Sprite> spriteSelectedOrbs_;
 	// 変換するオーブ

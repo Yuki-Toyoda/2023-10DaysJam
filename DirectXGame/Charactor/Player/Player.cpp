@@ -358,12 +358,18 @@ void Player::SpriteDraw() {
 	// 照準描画
 	spriteReticle_->Draw(); 
 
-	// 十字ボタンUI描画
-	spriteDpad_->Draw();
-	spriteDpadArrow_->Draw();
-	spriteDpadUP_->Draw();
-	spriteDpadLeft_->Draw();
-	spriteDpadRight_->Draw();
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+			// 十字ボタンUI描画
+			spriteDpad_->Draw();
+			spriteDpadArrow_->Draw();
+			spriteDpadUP_->Draw();
+			spriteDpadLeft_->Draw();
+			spriteDpadRight_->Draw();
+		}
+	}
 
 	// 所持オーブが1個でもあったら
 	if ((int)havingOrbs_.size() > 0) {
@@ -741,6 +747,41 @@ void Player::SpecialShot() {
 
 		// 変換するオーブの選択処理
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {	
+
+			// 変換するオーブの種類を選択
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && !pressDpadUp_) {
+				if (selectedChangeType_ < PlayerBullet::Thunder) {
+					// 変換タイプを次のに設定
+					selectedChangeType_++;
+				} else {
+					// 変換タイプをリセット
+					selectedChangeType_ = PlayerBullet::Fire;
+				}
+
+				// 矢印UIの角度を設定
+				spriteDpadArrow_->SetRotation(0.0f);
+			}
+
+			switch (selectedChangeType_) {
+			case PlayerBullet::Fire:
+				// 炎弾UIを選択状態に
+				spriteDpadUP_->SetTextureHandle(textureHandles_[6]);
+				spriteDpadUP_->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
+				break;
+			case PlayerBullet::Ice:
+				spriteDpadUP_->SetTextureHandle(textureHandles_[7]);
+				// 炎弾UIを選択状態に
+				spriteDpadUP_->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
+				break;
+			case PlayerBullet::Thunder:
+				spriteDpadUP_->SetTextureHandle(textureHandles_[8]);
+				// 炎弾UIを選択状態に
+				spriteDpadUP_->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
+				break;
+			default:
+				break;
+			}
+
 			// 十字右
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
 				// 選択しているオーブが最大値を上回っていたら
@@ -764,96 +805,42 @@ void Player::SpecialShot() {
 				}
 			}
 
-			// 全てのUIを非選択状態に
-			spriteDpadUP_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-			spriteDpadLeft_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-			spriteDpadRight_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
+			// オーブの数が1以上なら
+			if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
+				// 選択したオーブを別のオーブに変換する
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+					// 所持しているオーブリストの指定された位置に新しいオーブを挿入
+					havingOrbs_.insert(
+					    havingOrbs_.begin() + selectedChangeOrb_,
+					    (PlayerBullet::BulletType)selectedChangeType_);
+					// 変換に使用したオーブを削除
+					havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
+					// 変換クールタイムを設定
+					changeCoolTime_ = kChangeCoolTime_;
+				}
+			} else {
+				if (changeCoolTime_ > 0) {
+					// 変換クールタイムデクリメント
+					changeCoolTime_--;
+				}
+			}
 
-			// 上ボタンのスプライトを変更
-			spriteDpadUP_->SetTextureHandle(textureHandles_[6]);
+			// オーブが２つ以上ある場合矢印を
+			if (havingOrbCount >= 2) {
+				// 矢印UIを明るい状態に
+				spriteDpadLeft_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+				spriteDpadRight_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+			} else {
+				// 矢印UIを暗い状態に
+				spriteDpadLeft_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
+				spriteDpadRight_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
+			}
+
 			// 左ボタンのスプライトを変更
 			spriteDpadLeft_->SetTextureHandle(textureHandles_[11]);
 			// 右ボタンのスプライトを変更
 			spriteDpadRight_->SetTextureHandle(textureHandles_[12]);
 
-		}
-		else {
-
-			// 上ボタンのスプライトを変更
-			spriteDpadUP_->SetTextureHandle(textureHandles_[6]);
-			spriteDpadLeft_->SetTextureHandle(textureHandles_[7]);
-			spriteDpadRight_->SetTextureHandle(textureHandles_[8]);
-
-			// 変換するオーブの種類を選択
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-				// 変換タイプを炎に設定
-				selectedChangeType_ = PlayerBullet::Fire;
-
-				// 矢印UIの角度を設定
-				spriteDpadArrow_->SetRotation(0.0f);
-			}
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-				// 変換タイプを氷に設定
-				selectedChangeType_ = PlayerBullet::Ice;
-
-				// 矢印UIの角度を設定
-				spriteDpadArrow_->SetRotation(-(float)std::numbers::pi / 2.0f);
-			}
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-				// 変換タイプを雷に設定
-				selectedChangeType_ = PlayerBullet::Thunder;
-
-				// 矢印UIの角度を設定
-				spriteDpadArrow_->SetRotation((float)std::numbers::pi / 2.0f);
-			}
-
-			switch (selectedChangeType_) {
-			case PlayerBullet::Fire:
-				// 炎弾UIを選択状態に
-				spriteDpadUP_->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
-				// スプライトの色を設定
-				spriteDpadLeft_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				spriteDpadRight_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				break;
-			case PlayerBullet::Ice:
-				// 炎弾UIを選択状態に
-				spriteDpadLeft_->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
-				// スプライトの色を設定
-				spriteDpadUP_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				spriteDpadRight_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				break;
-			case PlayerBullet::Thunder:
-				// 炎弾UIを選択状態に
-				spriteDpadRight_->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
-				// スプライトの色を設定
-				spriteDpadLeft_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				spriteDpadUP_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				break;
-			default:
-				break;
-
-		}
-
-		}
-
-	}
-
-	// オーブの数が1以上なら
-	if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
-		// 選択したオーブを別のオーブに変換する
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
-			// 所持しているオーブリストの指定された位置に新しいオーブを挿入
-			havingOrbs_.insert(havingOrbs_.begin() + selectedChangeOrb_, selectedChangeType_);
-			// 変換に使用したオーブを削除
-			havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
-			// 変換クールタイムを設定
-			changeCoolTime_ = kChangeCoolTime_;
-		}
-	} 
-	else {
-		if (changeCoolTime_ > 0) {
-			// 変換クールタイムデクリメント
-			changeCoolTime_--;
 		}
 	}
 }
