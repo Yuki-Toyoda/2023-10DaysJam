@@ -79,12 +79,16 @@ void PlayerBullet::Initialize(
 		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
 			1.0f * (1.0f + 0.15f * (bulletStrength - 1)), 
 			1.0f * (1.0f + 0.15f * (bulletStrength - 1))};
+		deployWallSizeParticle_ = {
+		    50.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+		    20.0f * (1.0f + 0.15f * (bulletStrength - 1)),
+		    20.0f * (1.0f + 0.15f * (bulletStrength - 1))};
 		// 展開演出時間設定
 		deployWallStagingTime_ = 0.35f;
 		// 展開時間設定
 		deploymentWallTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
 		// 終了演出時間設定
-		deployWallEndStagingTime_ = 0.15f;
+		deployWallEndStagingTime_ = 0.5f;
 		break;
 	case PlayerBullet::Thunder:
 		// 大きさを設定
@@ -243,6 +247,7 @@ void PlayerBullet::IceBulletUpdate() {
 			fallSpeed_ = 0.0f;
 			// 床と衝突
 			isHit_ = true;
+
 		} else {
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
@@ -263,28 +268,30 @@ void PlayerBullet::IceBulletUpdate() {
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
-				std::vector<Model*> EffectModels = {models_[5]}; // エフェクト用モデルリストの生成
-				// 破片エフェクト再生を指示
-				EffectManager::GetInstance()->PlayExplosiveEffect(
-				    EffectModels,
-				    {
-				        worldTransform_.translation_.x,
-				        worldTransform_.translation_.y + 2.0f,
-				        worldTransform_.translation_.z,
-				    },
-				    1.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
-				// 破片エフェクト再生を指示
-				EffectManager::GetInstance()->PlayExplosiveEffect(
-				    EffectModels,
-				    {
-				        worldTransform_.translation_.x,
-				        worldTransform_.translation_.y + 2.0f,
-				        worldTransform_.translation_.z,
-				    },
-				    1.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
 
 				// 次の演出時間を設定
-				deployWallStagingTime_ = 0.25f;
+				deployWallStagingTime_ = 1.0f;
+
+				deployWallSizeParticle_ = {
+				    50.0f * (1.0f + 0.35f * (bulletStrength_ - 1)),
+				    0.01f,
+				    20.0f * (1.0f + 0.15f * (bulletStrength_ - 1))};
+
+				std::vector<Model*> EffectModels = {models_[5]}; // エフェクト用モデルリストの生成
+				// 破片エフェクト再生を指示
+				EffectManager::GetInstance()->PlayDebrisEffect(
+				    EffectModels,
+				    {
+				        worldTransform_.translation_.x,
+				        worldTransform_.translation_.y + 2.0f,
+				        worldTransform_.translation_.z,
+				    },
+				    (Vector3*)&deployWallSizeParticle_, 
+					(Vector3*)&worldTransform_.rotation_,
+					deployWallStagingTime_ - 0.1f,
+				    {50.0f * (1.0f + 0.35f * (bulletStrength_ - 1)),
+				     20.0f * (1.0f + 0.15f * (bulletStrength_ - 1))});
+
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 次の演出へ
@@ -297,6 +304,16 @@ void PlayerBullet::IceBulletUpdate() {
 				worldTransform_.scale_ = MyMath::EaseOut(
 				    animT_, {deployWallSize_.x, 0.01f, deployWallSize_.z}, deployWallSize_,
 				    deployWallStagingTime_);
+				deployWallSizeParticle_ = MyMath::EaseOut(
+				    animT_,
+				    {50.0f * (1.0f + 0.35f * (bulletStrength_ - 1)),
+				     0.2f,
+				     20.0f * (1.0f + 0.15f * (bulletStrength_ - 1))},
+				    {50.0f * (1.0f + 0.35f * (bulletStrength_ - 1)),
+				     40.0f * (1.0f + 0.15f * (bulletStrength_ - 1)),
+				     20.0f * (1.0f + 0.15f * (bulletStrength_ - 1))},
+				    deployWallStagingTime_);
+
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
@@ -321,9 +338,11 @@ void PlayerBullet::IceBulletUpdate() {
 		case PlayerBullet::WayPoint4:
 			// 展開演出をイージングで行う
 			if (animT_ <= deployWallEndStagingTime_) {
-				worldTransform_.scale_ =
-				    MyMath::EaseOut(animT_, deployWallSize_, {deployWallSize_.x, 0.0f, deployWallSize_.z},
-				    deployWallStagingTime_);
+				worldTransform_.scale_ = MyMath::EaseOut(
+				    animT_, deployWallSize_,
+				    {1.0f * (1.0f + 0.35f * (bulletStrength_ - 1)), 0.0f,
+				     1.0f * (1.0f + 0.35f * (bulletStrength_ - 1))},
+				    deployWallEndStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {

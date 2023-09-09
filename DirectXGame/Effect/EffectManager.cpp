@@ -64,3 +64,16 @@ void EffectManager::PlaySparkEffect(
 	// 生成したエフェクトをリストに追加
 	effets_.push_back(newEffect);
 }
+
+void EffectManager::PlayDebrisEffect(
+    std::vector<Model*> models, Vector3 translation, const Vector3* occurrenceTranslate,
+    const Vector3* occurrenceRotation, float time,
+    Vector2 occurrenceRange) {
+	// 新しいエフェクトのインスタンスを生成
+	DebrisEffect* newEffect = new DebrisEffect();
+	// 生成したエフェクトの初期化
+	newEffect->initialize(
+	    models, translation, occurrenceTranslate, occurrenceRotation, time, occurrenceRange);
+	// 生成したエフェクトをリストに追加
+	effets_.push_back(newEffect);
+}

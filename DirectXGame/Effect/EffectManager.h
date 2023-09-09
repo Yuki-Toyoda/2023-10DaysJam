@@ -67,7 +67,7 @@ public: // エフェクトの再生関数
 	void PlayExplosiveEffect(std::vector<Model*> models, Vector3 translation, float strength);
 
 	/// <summary>
-	/// 火花エフェクト
+	/// 火花エフェクト再生関数
 	/// </summary>
 	/// <param name="models">描画モデル</param>
 	/// <param name="translation">初期座標</param>
@@ -75,6 +75,19 @@ public: // エフェクトの再生関数
 	/// <param name="occurrenceRange">発生範囲</param>
 	void PlaySparkEffect(
 	    std::vector<Model*> models, Vector3 translation, float time, Vector2 occurrenceRange);
+
+	/// <summary>
+	/// 破片エフェクト再生関数
+	/// </summary>
+	/// <param name="models">描画モデル</param>
+	/// <param name="translate">初期座標</param>
+	/// <param name="occurrenceTranslate">発生位置ポインタ</param>
+	/// <param name="occurrenceRotation">発生角度</param>
+	/// <param name="time">継続時間</param>
+	/// <param name="occurrenceRange">発生範囲</param>
+	void PlayDebrisEffect(
+	    std::vector<Model*> models, Vector3 translation, const Vector3* occurrenceTranslate,
+	    const Vector3* occurrenceRotation, float time, Vector2 occurrenceRange);
 
 private: // メンバ変数
 

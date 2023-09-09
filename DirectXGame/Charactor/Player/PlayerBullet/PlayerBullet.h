@@ -76,7 +76,7 @@ public: // アクセッサ等
 	BulletType GetBulletType() { return bulletType_; }
 
 	/// <summary>
-	/// 炎弾が衝突した状態セッター
+	/// 特殊弾が衝突した状態セッター
 	/// </summary>
 	/// <param name="isHit">衝突したか</param>
 	void SetIsHit(bool isHit) { isHit_ = isHit; }
@@ -152,6 +152,8 @@ private: // メンバ変数
 	#pragma region 氷弾用変数
 	// 展開する壁のサイズ
 	Vector3 deployWallSize_;
+	// エフェクトに渡す用のサイズ
+	Vector3 deployWallSizeParticle_;
 	// 展開演出時間
 	float deployWallStagingTime_;
 	// 展開時間

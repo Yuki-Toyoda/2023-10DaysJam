@@ -176,7 +176,6 @@ void SparkEffect::Update() {
 
 void SparkEffect::Draw(const ViewProjection& viewProjection) { 
 	// モデル描画
-	models_[0]->Draw(worldTransformParticle_[0], viewProjection);
 	for (int i = 0; i < kMaxParticleCount_; i++) {
 		// パーティクルが終了していない時
 		if (!isEndParticle_[i]) {

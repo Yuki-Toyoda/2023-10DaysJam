@@ -110,11 +110,14 @@
     <ClCompile Include="Effect\FuckEffect.cpp">
       <Filter>Effect\Fuck</Filter>
     </ClCompile>
-    <ClCompile Include="3d\WorldTransformEX.cpp">
-      <Filter>Effect</Filter>
-    </ClCompile>
     <ClCompile Include="Effect\SparkEffect.cpp">
       <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\DebrisEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\WorldTransformEX.cpp">
+      <Filter>3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +257,9 @@
       <Filter>Effect\Fuck</Filter>
     </ClInclude>
     <ClInclude Include="Effect\SparkEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\DebrisEffect.h">
       <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>
