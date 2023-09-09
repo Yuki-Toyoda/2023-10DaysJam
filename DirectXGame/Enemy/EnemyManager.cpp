@@ -79,8 +79,7 @@ void EnemyManager::Update() {
 	}
 	// ボスエネミー更新
 	for (BossEnemy* bossEnemy : bossEnemies_) {
-		//bossEnemy->Update(&enemies_);
-		bossEnemy;
+		bossEnemy->Update(&enemies_);
 	}
 
 	ApplyGlobalVariables();

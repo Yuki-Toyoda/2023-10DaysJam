@@ -1,5 +1,15 @@
 {
     "EnemyManager": {
-        "EnemyMax": 1
+        "BossEnemyColliderSize": [
+            1.2000000476837158,
+            1.2000000476837158,
+            6.0
+        ],
+        "BossInitialHp": 10,
+        "EnemyMax": 20,
+        "InitialHpFire": 3,
+        "InitialHpIce": 3,
+        "InitialHpNone": 3,
+        "InitialHpThunder": 3
     }
 }

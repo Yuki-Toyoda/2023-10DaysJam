@@ -140,7 +140,7 @@ void Enemy::Update() {
 	    worldTransform_.translation_.y >= field->GetMax().y ||
 	    worldTransform_.translation_.z >= field->GetMax().z ) {
 		//死ぬ
-		isDead_ = true;
+		Dead();
 	}
 
 	// 基底クラス更新
@@ -212,9 +212,9 @@ void Enemy::MoveToPlayer() {
 
 	// 自キャラのワールド座標を取得する
 	Vector3 playerPos = player_->GetWorldPosition();
-	// 敵弾のワールド座標を取得する
+	// 敵のワールド座標を取得する
 	Vector3 enemyrPos = GetWorldPosition();
-	// 敵弾->自キャラの差分ベクトルを求める
+	// 敵->自キャラの差分ベクトルを求める
 	Vector3 toPlayer = playerPos - enemyrPos;
 	// ベクトルの正規化
 	toPlayer = MyMath::Normalize(toPlayer);
@@ -323,7 +323,21 @@ void Enemy::Rushing() {
 
 void Enemy::Waiting() {
 
-	//Move();
+	//  自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵のワールド座標を取得する
+	Vector3 enemyrPos = GetWorldPosition();
+	// 敵->自キャラの差分ベクトルを求める
+	Vector3 toPlayer = playerPos - enemyrPos;
+	//距離を求める
+	float length = MyMath::Length(toPlayer);
+	//近いならプレイヤーに近づく
+	if (closeToThePlayer_ >= length) {
+		MoveToPlayer();
+	} else {
+		Move();
+	}
+
 
 }
 

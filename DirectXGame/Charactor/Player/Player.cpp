@@ -371,6 +371,8 @@ void Player::Update() {
 	ImGui::DragInt("ChangeCoolTime", &changeCoolTime_, 1.0f);
 	ImGui::DragInt("DefaultChangeCoolTime", &kChangeCoolTime_, 1.0f);
 
+	ImGui::DragFloat3("wT", &worldTransform_.translation_.x, 1.0f);
+
 
 	ImGui::End();
 

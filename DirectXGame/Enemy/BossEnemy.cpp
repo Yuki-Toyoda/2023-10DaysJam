@@ -195,7 +195,7 @@ void BossEnemy::OnCollision(Collider* collision) {
 	case TagPlayerBulletThunder:
 		CollisionBulletThunder();
 		break;
-	case TagBossEnemy:
+	case TagEnemy:
 		CollisionEnemy();
 		break;
 	default:

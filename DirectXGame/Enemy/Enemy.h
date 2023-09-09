@@ -216,6 +216,7 @@ private: //メンバ変数
 	float moveRotateSpeed_ = 0.01f;
 	//プレイヤーへ移動
 	float moveToPlayerSpeed_ = 0.5f;
+	float closeToThePlayer_ = 100.0f;
 	//弾速度
 	float bulletSpeed_ = 0.5f;
 	//突進速度
