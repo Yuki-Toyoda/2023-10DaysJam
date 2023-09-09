@@ -2,7 +2,8 @@
 #include "../Effect/EffectManager.h"
 
 void PlayerBullet::Initialize(
-    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity) {
+    const std::vector<Model*>& models,
+    Vector3 startPos, Vector3 startotation, Vector3 velocity) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(models);
 
@@ -25,13 +26,16 @@ void PlayerBullet::Initialize(
 }
 
 void PlayerBullet::Initialize(
-    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
-    BulletType bulletType, int32_t bulletStrength) {
+    const std::vector<Model*>& models, const std::vector<uint32_t>& textureHandles,
+    Vector3 startPos, Vector3 startotation, Vector3 velocity, BulletType bulletType,
+    int32_t bulletStrength) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(models);
 
 	// モデル受け取り
 	models_ = models;
+	// テクスチャ受け取り
+	textureHandles_ = textureHandles;
 
 	// ワールド座標初期化
 	worldTransform_.Initialize();
@@ -63,22 +67,26 @@ void PlayerBullet::Initialize(
 		worldTransform_.scale_ = {0.01f, 0.01f, 0.01f};
 		// 爆破範囲設定
 		explosiveRange_ = {
-		    1.0f * (1.0f + 0.45f * (bulletStrength - 1)), 
-			1.0f * (1.0f + 0.45f * (bulletStrength - 1)),
+		    1.0f * (1.0f + 0.45f * (bulletStrength - 1)),
+		    1.0f * (1.0f + 0.45f * (bulletStrength - 1)),
 		    1.0f * (1.0f + 0.45f * (bulletStrength - 1))};
 		// 爆破演出時間
 		explosiveTime_ = 0.25f;
 		break;
 	case PlayerBullet::Ice:
+		// テクスチャ用行動中間地点
+		actionWayPointTexture_ = WayPoint1;
+		// 描画テクスチャ番号指定
+		drawTextureNumber_ = 0;
 		// 大きさを設定
 		worldTransform_.scale_ = {0.01f, 0.01f, 0.01f};
 		// 回転角をリセット
 		worldTransform_.rotation_ = {0.0f, worldTransform_.rotation_.y, 0.0f};
 		// 壁のサイズ設定
 		deployWallSize_ = {
-		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
-			1.0f * (1.0f + 0.15f * (bulletStrength - 1)), 
-			1.0f * (1.0f + 0.15f * (bulletStrength - 1))};
+		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+		    1.0f * (1.0f + 0.15f * (bulletStrength - 1)),
+		    1.0f * (1.0f + 0.15f * (bulletStrength - 1))};
 		deployWallSizeParticle_ = {
 		    50.0f * (1.0f + 0.35f * (bulletStrength - 1)),
 		    20.0f * (1.0f + 0.15f * (bulletStrength - 1)),
@@ -86,9 +94,9 @@ void PlayerBullet::Initialize(
 		// 展開演出時間設定
 		deployWallStagingTime_ = 0.35f;
 		// 展開時間設定
-		deploymentWallTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
+		deploymentWallTime_ = 5.0f * (1.0f + 0.35f * (bulletStrength - 1)),
 		// 終了演出時間設定
-		deployWallEndStagingTime_ = 0.5f;
+		    deployWallEndStagingTime_ = 0.1f;
 		break;
 	case PlayerBullet::Thunder:
 		// 大きさを設定
@@ -97,7 +105,7 @@ void PlayerBullet::Initialize(
 		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 		// 展開エリアを設定
 		deployAreaSize_ = {
-			1.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)),
 		    1.0f,
 		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)),
 		};
@@ -155,7 +163,7 @@ void PlayerBullet::Draw(const ViewProjection& viewProjection) {
 		models_[1]->Draw(worldTransform_, viewProjection);
 		break;
 	case PlayerBullet::Ice:
-		models_[2]->Draw(worldTransform_, viewProjection);
+		models_[2]->Draw(worldTransform_, viewProjection, textureHandles_[drawTextureNumber_]);
 		break;
 	case PlayerBullet::Thunder:
 		models_[3]->Draw(worldTransform_, viewProjection);
@@ -301,6 +309,7 @@ void PlayerBullet::IceBulletUpdate() {
 		case PlayerBullet::WayPoint2:
 			// 展開演出をイージングで行う
 			if (animT_ <= deployWallStagingTime_) {
+				// 壁の大きさ設定
 				worldTransform_.scale_ = MyMath::EaseOut(
 				    animT_, {deployWallSize_.x, 0.01f, deployWallSize_.z}, deployWallSize_,
 				    deployWallStagingTime_);
@@ -326,9 +335,69 @@ void PlayerBullet::IceBulletUpdate() {
 		case PlayerBullet::WayPoint3:
 			// 指定時間まで展開
 			if (animT_ <= deploymentWallTime_) {
+				switch (actionWayPointTexture_) {
+				case PlayerBullet::WayPoint1:
+					// 指定秒数以上になったらテクスチャ変更とエフェクト再生
+					if (animT_ >= deploymentWallTime_ / 3.0f) {
+						// テクスチャ変更
+						drawTextureNumber_ = 1;
+						// エフェクト再生
+						std::vector<Model*> EffectModels = {
+						    models_[5]}; // エフェクト用モデルリストの生成
+						                 // 破片エフェクト再生を指示
+						EffectManager::GetInstance()->PlayExplosiveEffect(
+						    EffectModels,
+						    {
+						        worldTransform_.translation_.x,
+						        worldTransform_.translation_.y + (deployWallSizeParticle_.y / 2.0f),
+						        worldTransform_.translation_.z,
+						    },
+						    2.0f);
+						// 次の演出へ
+						actionWayPointTexture_++;
+					}
+					break;
+				case PlayerBullet::WayPoint2:
+					// 指定秒数以上になったらテクスチャ変更とエフェクト再生
+					if (animT_ >= deploymentWallTime_ / 1.5f) {
+						// テクスチャ変更
+						drawTextureNumber_ = 2;
+						// エフェクト再生
+						std::vector<Model*> EffectModels = {
+						    models_[5]}; // エフェクト用モデルリストの生成
+						                 // 破片エフェクト再生を指示
+						EffectManager::GetInstance()->PlayExplosiveEffect(
+						    EffectModels,
+						    {
+						        worldTransform_.translation_.x,
+						        worldTransform_.translation_.y + (deployWallSizeParticle_.y / 2.0f),
+						        worldTransform_.translation_.z,
+						    },
+						    2.5f);
+						// 次の演出へ
+						actionWayPointTexture_++;
+					}
+					break;
+				case PlayerBullet::WayPoint3:
+					break;
+				}
+
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
+
+				// エフェクト再生
+				std::vector<Model*> EffectModels = {models_[5]}; // エフェクト用モデルリストの生成
+				                                                 // 破片エフェクト再生を指示
+				EffectManager::GetInstance()->PlayExplosiveEffect(
+				    EffectModels,
+				    {
+				        worldTransform_.translation_.x,
+				        worldTransform_.translation_.y + (deployWallSizeParticle_.y / 2.0f),
+				        worldTransform_.translation_.z,
+				    },
+				    3.0f);
+
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 次の演出へ
@@ -338,14 +407,16 @@ void PlayerBullet::IceBulletUpdate() {
 		case PlayerBullet::WayPoint4:
 			// 展開演出をイージングで行う
 			if (animT_ <= deployWallEndStagingTime_) {
-				worldTransform_.scale_ = MyMath::EaseOut(
+				worldTransform_.scale_ = MyMath::EaseIn(
 				    animT_, deployWallSize_,
-				    {1.0f * (1.0f + 0.35f * (bulletStrength_ - 1)), 0.0f,
-				     1.0f * (1.0f + 0.35f * (bulletStrength_ - 1))},
+				    {deployWallSize_.x + 0.25f, deployWallSize_.y + 0.25f,
+				     deployWallSize_.z + 0.25f},
 				    deployWallEndStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
+				// スケールリセット
+				worldTransform_.scale_ = {0.0f, 0.0f, 0.0f};
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 演出終了

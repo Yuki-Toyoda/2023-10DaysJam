@@ -53,6 +53,9 @@ void GameScene::Initialize() {
 	textureHandleX_ = TextureManager::Load("/Image/Player/X.png");
 	textureHandleSelectArrow_L_ = TextureManager::Load("/Image/Player/selectArrowUI_L.png");
 	textureHandleSelectArrow_R_ = TextureManager::Load("/Image/Player/selectArrowUI_R.png");
+	textureHandleIceWallTex[0] = TextureManager::Load("/Wall/WallTex.png");
+	textureHandleIceWallTex[1] = TextureManager::Load("/Wall/WallTex2.png");
+	textureHandleIceWallTex[2] = TextureManager::Load("/Wall/WallTex3.png");
 	std::vector<uint32_t> playerTextureHandles = {
 		textureHandle1x1_, // 1x1
 	    textureHandleReticle_, // 照準
@@ -67,6 +70,9 @@ void GameScene::Initialize() {
 	    textureHandleX_,           
 		textureHandleSelectArrow_L_,
 		textureHandleSelectArrow_R_,
+		textureHandleIceWallTex[0],
+		textureHandleIceWallTex[1],
+		textureHandleIceWallTex[2],
 	};
 
 	// エフェクトマネージャーの取得

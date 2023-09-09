@@ -712,10 +712,17 @@ void Player::SpecialShot() {
 				shotPos = shotPos + shotPosOffset_;
 				shotVelocity = ReticleWorldPos - shotPos;
 				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
-
+				// 壁用テクスチャ
+				std::vector<uint32_t> wallTextureHandles = {
+				    textureHandles_[13], // 1x1
+				    textureHandles_[14], // 1x1
+				    textureHandles_[15], // 1x1
+				    
+				};
 				// 生成した弾を初期化
 				newBullet->Initialize(
 				    modelBullet_,               // 3Dモデル
+				    wallTextureHandles,			// 壁用テクスチャリスト
 				    shotPos,                    // 初期位置
 				    viewProjection_->rotation_, // 初期角度
 				    shotVelocity,               // 弾速
