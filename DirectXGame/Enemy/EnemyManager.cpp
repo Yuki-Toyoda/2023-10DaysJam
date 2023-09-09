@@ -89,9 +89,9 @@ void EnemyManager::Update() {
 void EnemyManager::Draw(const ViewProjection& viewProjection) {
 	
 	//エネミーの描画
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw(viewProjection);
-	}
+	//for (Enemy* enemy : enemies_) {
+	//	enemy->Draw(viewProjection);
+	//}
 	// バレット描画
 	for (EnemyBullet* enemyBullet : enemyBullets_) {
 		enemyBullet->Draw(viewProjection);
@@ -174,7 +174,7 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_, player_,bossEnemyColliderSize_,bossInitialHp_);
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, this, player_,bossEnemyColliderSize_,bossInitialHp_);
 	bossEnemies_.push_back(bossEnemy);
 
 }

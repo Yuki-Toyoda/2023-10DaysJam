@@ -159,6 +159,10 @@ void GameScene::Update() {
 			collisionManager->ListRegister(enemy);		
 		}
 	}
+	// 敵弾全てについて
+	for (EnemyBullet* enemybullet : enemyManager_->GetEnemyBullets()) {
+		collisionManager->ListRegister(enemybullet);
+	}
 	// ボス敵全てについて
 	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
 		if (!bossEnemy->GetIsInvincible()) {

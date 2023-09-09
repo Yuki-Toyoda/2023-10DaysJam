@@ -7,6 +7,9 @@ class Player;
 // エネミークラスの宣言
 class Enemy;
 
+// エネミーマネージャークラスの宣言
+class EnemyManager;
+
 /// <summary>
 /// ボスエネミー
 /// </summary>
@@ -26,7 +29,8 @@ public: // メンバ関数
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(
-	    const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies,
+	    const std::vector<Model*>& models, uint32_t textureHandle,
+	    EnemyManager* enemyManager,
 	    Player* player, Vector3 colliderSize, uint32_t hp);
 
 	/// <summary>
@@ -75,6 +79,11 @@ public: // メンバ関数
 	/// 移動中の回転
 	/// </summary>
 	void MoveRotation(Vector3 toPosition);
+
+	/// <summary>
+	/// 射撃攻撃
+	/// </summary>
+	void ShotAttack();
 
 	/// <summary>
 	/// 死んだ
@@ -184,9 +193,15 @@ private: // メンバ変数
 	//プレイヤー
 	Player* player_ = nullptr;
 
+	//エネミーマネージャー
+	EnemyManager* enemyManager_ = nullptr;
+
 	// 移動
 	float moveSpeed_ = 1.0f;
 	float moveRotateSpeed_ = 0.01f;
+
+	// 弾速度
+	float bulletSpeed_ = 1.5f;
 
 	// エネミー
 	std::list<Enemy*>* enemies_;
@@ -241,5 +256,11 @@ private: // メンバ変数
 
 	// 衝突無敵タイマー
 	uint32_t collisionInvincibilityTimer_;
+
+	// 射撃クールタイム
+	uint32_t shotAttackCooltime_;
+
+	// 最大射撃クールタイム
+	uint32_t shotAttackCooltimeMax_;
 
 };

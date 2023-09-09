@@ -2,6 +2,7 @@
 #include <cassert>
 #include "MyMath.h"
 #include "Collision/ColliderShape/OBB.h"
+#include "../config/GlobalVariables.h"
 
 void EnemyBullet::Initialize(
     const std::vector<Model*>& models, const Vector3& position, const Vector3& velocity) {
@@ -37,6 +38,14 @@ void EnemyBullet::Initialize(
 	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
 	colliderShape_ = obb;
 
+	// 調整項目クラスのインスタンス取得
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	// グループ名設定
+	const char* groupName = "EnemyBullet";
+	// 指定した名前でグループ追加
+	globalVariables->CreateGroup(groupName);
+	
+	colliderShape_->AddToGlobalVariables(groupName);
 
 }
 
@@ -56,6 +65,9 @@ void EnemyBullet::Update() {
 		isDead_ = true;
 	}
 
+	// グローバル変数適用
+	ApplyGlobalVariables();
+
 }
 
 void EnemyBullet::Draw(const ViewProjection& viewProjection) {
@@ -71,5 +83,14 @@ void EnemyBullet::OnCollision(Collider* collision) {
 	if (collision->GetTag() == TagPlayer) {
 		isDead_ = true; 
 	}
+
+}
+
+void EnemyBullet::ApplyGlobalVariables() {
+
+	// グループ名の設定
+	const char* groupName = "EnemyBullet";
+
+	colliderShape_->ApplyGlobalVariables(groupName);
 
 }

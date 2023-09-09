@@ -30,6 +30,12 @@ public: // メンバ関数
 	// 死んでいるか
 	bool IsDead() const { return isDead_; }
 
+private: // その他関数
+	/// <summary>
+	/// 調整項目適用関数
+	/// </summary>
+	void ApplyGlobalVariables();
+
 private: // メンバ変数
 	// 速度
 	Vector3 velocity_;

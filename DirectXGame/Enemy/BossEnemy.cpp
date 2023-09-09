@@ -7,13 +7,14 @@
 #include <string>
 #include "Enemy.h"
 #include "Collision/ColliderShape/OBB.h"
+#include "EnemyManager.h"
 
 /// <summary>
 /// 初期化
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
 void BossEnemy::Initialize(
-    const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies,
+    const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
     Player* player, Vector3 colliderSize, uint32_t hp) {
 
 	// NULLポインタチェック
@@ -59,6 +60,11 @@ void BossEnemy::Initialize(
 	// 衝突無敵タイマー
 	collisionInvincibilityTimer_ = 20;
 
+	// 射撃クールタイム
+	shotAttackCooltime_ = 0;
+
+	// 最大射撃クールタイム
+	shotAttackCooltimeMax_ = 60;
 
 	// 部隊
 	for (size_t i = 0; i < kUnitPattern; i++) {
@@ -70,8 +76,10 @@ void BossEnemy::Initialize(
 		}
 	}
 
+	// エネミーマネージャー
+	enemyManager_ = enemyManager;
 	//エネミー
-	enemies_ = enemies;
+	enemies_ = enemyManager_->GetEnemiesAddress();
 	//プレイヤー
 	player_ = player;
 
@@ -97,6 +105,7 @@ void BossEnemy::Initialize(
 
 	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
 	globalVariables->AddItem(groupName, "MoveRotateSpeed", moveRotateSpeed_);
+	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 	globalVariables->AddItem(
 	    groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTimer_));
 
@@ -156,11 +165,22 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 		break;
 	}
 
+	// 無敵タイマー処理
+	if (isInvincible_) {
+		if (--invincibilityTimer_ == 0) {
+			isInvincible_ = false;
+		}
+	}
+
 	// ワールド行列更新
 	BaseCharacter::Update();
 
 	// コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
+
+	if (enemiesJoiningNum > enemiesJoiningNumMax) {
+		assert(0);
+	}
 
 }
 
@@ -262,22 +282,30 @@ void BossEnemy::CollectEnemies() {
 		Move();
 	}
 
+	//射撃
+	if (shotAttackCooltime_ > 0) {
+		--shotAttackCooltime_;
+	} else {
+		shotAttackCooltime_ = shotAttackCooltimeMax_;
+		ShotAttack();
+	}
+
 }
 
 void BossEnemy::PreAttack() {
 
+	Vector3 rotate = worldTransform_.rotation_;
+	Vector3 target = worldTransform_.rotation_;
 	//イージング回転
 	if (preAttackT_ < 1.0f) {
-		Vector3 rotate = worldTransform_.rotation_;
-		Vector3 target = worldTransform_.rotation_;
 		float pi = float(std::numbers::pi);
 
 		// 回転
 		// 自キャラのワールド座標を取得する
 		Vector3 playerPos = player_->GetWorldPosition();
-		// 敵弾のワールド座標を取得する
+		// 敵のワールド座標を取得する
 		Vector3 bossEnemyrPos = GetWorldPosition();
-		// 敵弾->自キャラの差分ベクトルを求める
+		// 敵->自キャラの差分ベクトルを求める
 		Vector3 toPlayer = playerPos - bossEnemyrPos;
 
 		//  Y軸周りの角度(Θy)
@@ -350,6 +378,25 @@ void BossEnemy::PreAttack() {
 			preAttackCooltime_ = preAttackCooltimeMax_;
 			preAttackT_ = 0.0f;
 		}
+		// 回転
+		// 自キャラのワールド座標を取得する
+		Vector3 playerPos = player_->GetWorldPosition();
+		// 敵のワールド座標を取得する
+		Vector3 bossEnemyrPos = GetWorldPosition();
+		// 敵->自キャラの差分ベクトルを求める
+		Vector3 toPlayer = playerPos - bossEnemyrPos;
+
+		//  Y軸周りの角度(Θy)
+		target.y = std::atan2f(toPlayer.x, toPlayer.z);
+		// 横軸方向の長さを求める
+		float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
+		// X軸周りの角度(Θx)
+		target.x = std::atan2f(-toPlayer.y, length);
+
+		worldTransform_.rotation_ = {
+		    MyMath::Linear(preAttackT_, rotate.x, target.x),
+		    MyMath::Linear(preAttackT_, rotate.y, target.y), rotate.z};
+
 	}
 
 }
@@ -390,6 +437,20 @@ void BossEnemy::UnderAttack() {
 		for (size_t j = 0; j < kUnitTransformnumMax; j++) {
 			unitTtransform_[j] = unitTtransformData_[unitPattern_][j];
 		}
+	} else {
+		// 回転
+		// 自キャラのワールド座標を取得する
+		Vector3 playerPos = player_->GetWorldPosition();
+		// 敵弾のワールド座標を取得する
+		Vector3 bossEnemyrPos = GetWorldPosition();
+		// 敵弾->自キャラの差分ベクトルを求める
+		Vector3 toPlayer = playerPos - bossEnemyrPos;
+		//  Y軸周りの角度(Θy)
+		worldTransform_.rotation_.y = std::atan2f(toPlayer.x, toPlayer.z);
+		// 横軸方向の長さを求める
+		float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
+		// X軸周りの角度(Θx)
+		worldTransform_.rotation_.x = std::atan2f(-toPlayer.y, length);
 	}
 
 }
@@ -460,6 +521,45 @@ void BossEnemy::MoveRotation(Vector3 toPosition) {
 
 }
 
+void BossEnemy::ShotAttack() {
+
+	// 弾の速度
+	Vector3 velocity(0, 0, bulletSpeed_);
+	// 弾の位置
+	Vector3 position = GetWorldPosition();
+
+	position.z += std::cosf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) *
+	              5.0f; // コサイン
+	position.x +=
+	    std::sinf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) * 5.0f;
+	position.y +=
+	    -std::sinf(worldTransform_.rotation_.x) * std::cosf(worldTransform_.rotation_.z) * 5.0f;
+
+
+	//回転
+	Vector3 rotate = {
+	    0.0f,
+	    0.0f,
+	    0.0f
+	};
+	// 自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵弾のワールド座標を取得する
+	Vector3 bossEnemyrPos = GetWorldPosition();
+	// 敵弾->自キャラの差分ベクトルを求める
+	Vector3 toPlayer = playerPos - bossEnemyrPos;
+	//  Y軸周りの角度(Θy)
+	rotate.y = std::atan2f(toPlayer.x, toPlayer.z);
+	// 横軸方向の長さを求める
+	float length = MyMath::Length(Vector3{toPlayer.x, 0.0f, toPlayer.z});
+	// X軸周りの角度(Θx)
+	rotate.x = std::atan2f(-toPlayer.y, length);
+	// 速度ベクトルを自機の向きに合わせて回転させる
+	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(rotate));
+	enemyManager_->AddEnemyBullet(position, velocity);
+
+}
+
 void BossEnemy::Dead() {
 
 
@@ -510,10 +610,12 @@ void BossEnemy::CollisionBulletThunder() {
 }
 
 void BossEnemy::CollisionEnemy() {
-
-	enemiesJoiningNum++;
-	if (enemiesJoiningNum == enemiesJoiningNumMax) {
-		bossEnemyState_ = PreAttackCommand;
+	
+	if (bossEnemyState_ == Collect) {
+		enemiesJoiningNum++;
+		if (enemiesJoiningNum == enemiesJoiningNumMax) {
+			bossEnemyState_ = PreAttackCommand;
+		}
 	}
 
 }
@@ -530,8 +632,10 @@ void BossEnemy::ApplyGlobalVariables() {
 	// メンバ変数の調整項目をグローバル変数に追加
 	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed");
 	moveRotateSpeed_ = globalVariables->GetFloatValue(groupName, "MoveRotateSpeed");
+	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed");
 	collisionInvincibilityTimer_ =
 	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTimer"));
+
 
 	// グループ名設定
 	const char* groupName2 = "BossEnemyUnit";

@@ -90,6 +90,17 @@ public: // メンバ変数
 	std::list<Enemy*> GetEnemies() { return enemies_; }
 
 	/// <summary>
+	/// エネミーバレットゲッター
+	/// </summary>
+	/// <returns></returns>
+	std::list<EnemyBullet*> GetEnemyBullets() { return enemyBullets_; }
+
+	/// <summary>
+	/// エネミーゲッターアドレス
+	/// </summary>
+	std::list<Enemy*>* GetEnemiesAddress() { return &enemies_; }
+
+	/// <summary>
 	/// ボスエネミーゲッター
 	/// </summary>
 	/// <returns></returns>
