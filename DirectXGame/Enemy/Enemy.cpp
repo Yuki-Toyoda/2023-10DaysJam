@@ -457,7 +457,7 @@ void Enemy::Dead() {
 
 }
 
-void Enemy::HpFluctuation(uint32_t damage, uint32_t InvincibilityTime) {
+void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
 	hp_ -= damage;
 	if (hp_ <= 0) {
@@ -531,6 +531,8 @@ void Enemy::ApplyGlobalVariables() {
 	moveToPlayerSpeed_ = globalVariables->GetFloatValue(groupName, "MoveToPlayerSpeed");
 	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed");
 	rushSpeed_ = globalVariables->GetFloatValue(groupName, "RushSpeed");
+	collisionInvincibilityTimer_ =
+	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTimer"));
 
 	colliderShape_->ApplyGlobalVariables(groupName);
 

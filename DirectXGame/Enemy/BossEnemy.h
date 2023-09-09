@@ -25,7 +25,9 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
-	void Initialize(const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies, Player* player, Vector3 colliderSize);
+	void Initialize(
+	    const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies,
+	    Player* player, Vector3 colliderSize, uint32_t hp);
 
 	/// <summary>
 	/// 更新
@@ -73,6 +75,50 @@ public: // メンバ関数
 	/// 移動中の回転
 	/// </summary>
 	void MoveRotation(Vector3 toPosition);
+
+	/// <summary>
+	/// 死んだ
+	/// </summary>
+	void Dead();
+
+	/// <summary>
+	/// HP変動
+	/// </summary>
+	void HpFluctuation(int32_t damage, uint32_t InvincibilityTime);
+
+public: // 衝突処理
+
+	/// <summary>
+	/// 通常弾
+	/// </summary>
+	void CollisionBulletNone();
+
+	/// <summary>
+	/// 炎弾
+	/// </summary>
+	void CollisionBulletFire();
+
+	/// <summary>
+	/// 氷弾
+	/// </summary>
+	void CollisionBulletIce();
+
+	/// <summary>
+	/// 雷弾
+	/// </summary>
+	void CollisionBulletThunder();
+
+	/// <summary>
+	/// エネミー
+	/// </summary>
+	void CollisionEnemy();
+
+	/// <summary>
+	/// プレイヤー
+	/// </summary>
+	void CollisionPlayer();
+
+public: //アクセッサ
 
 	/// <summary>
 	/// プレイヤーセッター
@@ -177,5 +223,17 @@ private: // メンバ変数
 	uint32_t unitPattern_;
 	// 座標
 	Vector3 unitTtransform_[kUnitTransformnumMax];
+
+	// 体力
+	int32_t hp_;
+
+	// 無敵か
+	bool isInvincible_;
+
+	// 無敵タイマー
+	uint32_t invincibilityTimer_;
+
+	// 衝突無敵タイマー
+	uint32_t collisionInvincibilityTimer_;
 
 };

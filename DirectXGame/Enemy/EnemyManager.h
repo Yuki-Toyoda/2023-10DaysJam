@@ -157,12 +157,14 @@ private: // メンバ変数
 	std::list<EnemySpawner*> enemySpawneres_;
 
 	//ボスエネミーのコライダーサイズ
-	Vector3 bossEnemyColliderSize;
+	Vector3 bossEnemyColliderSize_;
 
 	//スポナーナンバー
-	uint32_t spawnerNumber;
+	uint32_t spawnerNumber_;
 
 	//初期Hp
-	uint32_t initialHp[4];
+	uint32_t initialHp_[4];
+	//ボス初期Hp
+	uint32_t bossInitialHp_;
 
 };

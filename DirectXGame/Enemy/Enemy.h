@@ -122,7 +122,7 @@ public: //メンバ関数
 	/// <summary>
 	/// HP変動
 	/// </summary>
-	void HpFluctuation(uint32_t damage, uint32_t InvincibilityTime);
+	void HpFluctuation(int32_t damage, uint32_t InvincibilityTime);
 
 public: //衝突処理
 	

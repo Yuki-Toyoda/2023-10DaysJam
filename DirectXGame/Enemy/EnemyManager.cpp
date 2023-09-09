@@ -13,12 +13,14 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	// エネミーのテクスチャハンドル
 	textureHandles_ = textureHandles; 
 
-	bossEnemyColliderSize = Vector3(1.2f, 1.2f, 6.0f);
+	bossEnemyColliderSize_ = Vector3(1.2f, 1.2f, 6.0f);
 
-	initialHp[Enemy::EnemyType::None] = 3;
-	initialHp[Enemy::EnemyType::Fire] = 3;
-	initialHp[Enemy::EnemyType::Ice] = 3;
-	initialHp[Enemy::EnemyType::Thunder] = 3;
+	initialHp_[Enemy::EnemyType::None] = 3;
+	initialHp_[Enemy::EnemyType::Fire] = 3;
+	initialHp_[Enemy::EnemyType::Ice] = 3;
+	initialHp_[Enemy::EnemyType::Thunder] = 3;
+
+	bossInitialHp_ = 10;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -29,12 +31,14 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 
 	// メンバ変数の調整したい項目をグローバル変数に追加
 	globalVariables->AddItem(groupName, "EnemyMax", int(enemyMax));
-	globalVariables->AddItem(groupName, "BossEnemyColliderSize", bossEnemyColliderSize);
+	globalVariables->AddItem(groupName, "BossEnemyColliderSize", bossEnemyColliderSize_);
 
-	globalVariables->AddItem(groupName, "InitialHpNone", int(initialHp[Enemy::EnemyType::None]));
-	globalVariables->AddItem(groupName, "InitialHpFire", int(initialHp[Enemy::EnemyType::Fire]));
-	globalVariables->AddItem(groupName, "InitialHpIce", int(initialHp[Enemy::EnemyType::Ice]));
-	globalVariables->AddItem(groupName, "InitialHpThunder", int(initialHp[Enemy::EnemyType::Thunder]));
+	globalVariables->AddItem(groupName, "InitialHpNone", int(initialHp_[Enemy::EnemyType::None]));
+	globalVariables->AddItem(groupName, "InitialHpFire", int(initialHp_[Enemy::EnemyType::Fire]));
+	globalVariables->AddItem(groupName, "InitialHpIce", int(initialHp_[Enemy::EnemyType::Ice]));
+	globalVariables->AddItem(groupName, "InitialHpThunder", int(initialHp_[Enemy::EnemyType::Thunder]));
+	globalVariables->AddItem(groupName, "BossInitialHp", int(bossInitialHp_));
+
 	
 	//エネミーの数
 	enemyCount_ = 0;
@@ -46,7 +50,7 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	bossModels_ = models;
 
 	// エネミースポナーの追加
-	spawnerNumber = 0;
+	spawnerNumber_ = 0;
 	AddEnemySpawner();
 	AddEnemySpawner();
 
@@ -124,7 +128,7 @@ void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext) {
 
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
-		    initialHp[enemyTypeNext], this,
+		    initialHp_[enemyTypeNext], this,
 		    player_,
 		    &bossEnemies_);
 		enemies_.push_back(enemy);
@@ -171,7 +175,7 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_, player_,bossEnemyColliderSize);
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, &enemies_, player_,bossEnemyColliderSize_,bossInitialHp_);
 	bossEnemies_.push_back(bossEnemy);
 
 }
@@ -179,8 +183,8 @@ void EnemyManager::AddBossEnemy() {
 void EnemyManager::AddEnemySpawner() {
 
 	EnemySpawner* enemySpawner = new EnemySpawner();
-	enemySpawner->Initialize(this, spawnerNumber);
-	spawnerNumber++;
+	enemySpawner->Initialize(this, spawnerNumber_);
+	spawnerNumber_++;
 	enemySpawneres_.push_back(enemySpawner);
 
 }
@@ -223,15 +227,17 @@ void EnemyManager::ApplyGlobalVariables() {
 
 	// メンバ変数の調整項目をグローバル変数に追加
 	enemyMax = uint32_t(globalVariables->GetIntValue(groupName, "EnemyMax"));
-	bossEnemyColliderSize = globalVariables->GetVector3Value(groupName, "BossEnemyColliderSize");
+	bossEnemyColliderSize_ = globalVariables->GetVector3Value(groupName, "BossEnemyColliderSize");
 
-	initialHp[Enemy::EnemyType::None] =
+	initialHp_[Enemy::EnemyType::None] =
 	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpNone"));
-	initialHp[Enemy::EnemyType::Fire] =
+	initialHp_[Enemy::EnemyType::Fire] =
 	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpFire"));
-	initialHp[Enemy::EnemyType::Ice] =
+	initialHp_[Enemy::EnemyType::Ice] =
 	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpIce"));
-	initialHp[Enemy::EnemyType::Thunder] =
+	initialHp_[Enemy::EnemyType::Thunder] =
 	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpThunder"));
+	bossInitialHp_ =
+	    uint32_t(globalVariables->GetIntValue(groupName, "BossInitialHp"));
 
 }

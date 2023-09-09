@@ -14,7 +14,7 @@
 /// <param name="models">モデルデータ配列</param>
 void BossEnemy::Initialize(
     const std::vector<Model*>& models, uint32_t textureHandle, std::list<Enemy*>* enemies,
-    Player* player, Vector3 colliderSize) {
+    Player* player, Vector3 colliderSize, uint32_t hp) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -46,6 +46,18 @@ void BossEnemy::Initialize(
 
 	//	回転用のT
 	preAttackCooltime_ = preAttackCooltimeMax_;
+
+	// 体力
+	hp_ = hp;
+
+	// 無敵か
+	isInvincible_ = false;
+
+	// 無敵タイマー
+	invincibilityTimer_ = 0;
+
+	// 衝突無敵タイマー
+	collisionInvincibilityTimer_ = 20;
 
 
 	// 部隊
@@ -85,6 +97,8 @@ void BossEnemy::Initialize(
 
 	globalVariables->AddItem(groupName, "MoveSpeed", moveSpeed_);
 	globalVariables->AddItem(groupName, "MoveRotateSpeed", moveRotateSpeed_);
+	globalVariables->AddItem(
+	    groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTimer_));
 
 	// グループ名設定
 	const char* groupName2 = "BossEnemyUnit";
@@ -163,18 +177,29 @@ void BossEnemy::Draw(const ViewProjection& viewProjection) {
 
 // 衝突時に呼ばれる関数
 void BossEnemy::OnCollision(Collider* collision) { 
-	
-	if (collision->GetTag() == TagPlayer || collision->GetTag() == TagPlayerBulletFire ||
-	    collision->GetTag() == TagPlayerBulletIce ||
-	    collision->GetTag() == TagPlayerBulletThunder ||
-	    collision->GetTag() == TagPlayerBulletNone) {
-		//isDead_ = true; 
-	}
-	if (collision->GetTag() == TagEnemy) {
-		enemiesJoiningNum++;
-		if (enemiesJoiningNum == enemiesJoiningNumMax) {
-			bossEnemyState_ = PreAttackCommand; 
-		}
+
+	switch (collision->GetTag()) {
+
+	case TagPlayer:
+		CollisionPlayer();
+		break;
+	case TagPlayerBulletNone:
+		CollisionBulletNone();
+		break;
+	case TagPlayerBulletFire:
+		CollisionBulletFire();
+		break;
+	case TagPlayerBulletIce:
+		CollisionBulletIce();
+		break;
+	case TagPlayerBulletThunder:
+		CollisionBulletThunder();
+		break;
+	case TagBossEnemy:
+		CollisionEnemy();
+		break;
+	default:
+		break;
 	}
 
 }
@@ -435,6 +460,62 @@ void BossEnemy::MoveRotation(Vector3 toPosition) {
 
 }
 
+void BossEnemy::Dead() {
+
+
+}
+
+void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
+
+	hp_ -= damage;
+	if (hp_ <= 0) {
+		Dead();
+	} else {
+		isInvincible_ = true;
+		invincibilityTimer_ = InvincibilityTime;
+	}
+
+}
+
+void BossEnemy::CollisionBulletNone() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::None), collisionInvincibilityTimer_);
+
+}
+
+void BossEnemy::CollisionBulletFire() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTimer_);
+
+}
+
+void BossEnemy::CollisionBulletIce() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTimer_);
+
+}
+
+void BossEnemy::CollisionBulletThunder() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), collisionInvincibilityTimer_);
+
+}
+
+void BossEnemy::CollisionEnemy() {
+
+	enemiesJoiningNum++;
+	if (enemiesJoiningNum == enemiesJoiningNumMax) {
+		bossEnemyState_ = PreAttackCommand;
+	}
+
+}
+
+void BossEnemy::CollisionPlayer() {}
+
 void BossEnemy::ApplyGlobalVariables() {
 
 	// 調整項目クラスのインスタンス取得
@@ -445,6 +526,8 @@ void BossEnemy::ApplyGlobalVariables() {
 	// メンバ変数の調整項目をグローバル変数に追加
 	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed");
 	moveRotateSpeed_ = globalVariables->GetFloatValue(groupName, "MoveRotateSpeed");
+	collisionInvincibilityTimer_ =
+	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTimer"));
 
 	// グループ名設定
 	const char* groupName2 = "BossEnemyUnit";
