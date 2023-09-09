@@ -96,7 +96,7 @@ private: // 弾ごとの行動関数
 	/// <summary>
 	/// 水弾更新処理
 	/// </summary>
-	void WaterBulletUpdate();
+	void IceBulletUpdate();
 
 	/// <summary>
 	/// 雷弾更新処理

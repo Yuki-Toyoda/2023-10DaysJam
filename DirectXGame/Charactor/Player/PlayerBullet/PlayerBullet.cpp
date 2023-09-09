@@ -70,13 +70,15 @@ void PlayerBullet::Initialize(
 		explosiveTime_ = 0.25f;
 		break;
 	case PlayerBullet::Ice:
+		// 大きさを設定
+		worldTransform_.scale_ = {0.01f, 0.01f, 0.01f};
 		// 回転角をリセット
 		worldTransform_.rotation_ = {0.0f, worldTransform_.rotation_.y, 0.0f};
 		// 壁のサイズ設定
 		deployWallSize_ = {
-		    50.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
-			20.0f * (1.0f + 0.15f * (bulletStrength - 1)), 
-			10.0f * (1.0f + 0.15f * (bulletStrength - 1))};
+		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)), 
+			1.0f * (1.0f + 0.15f * (bulletStrength - 1)), 
+			1.0f * (1.0f + 0.15f * (bulletStrength - 1))};
 		// 展開演出時間設定
 		deployWallStagingTime_ = 0.35f;
 		// 展開時間設定
@@ -123,7 +125,7 @@ void PlayerBullet::Update() {
 		break;
 	case PlayerBullet::Ice:
 		// 水弾更新
-		WaterBulletUpdate();
+		IceBulletUpdate();
 		break;
 	case PlayerBullet::Thunder:
 		// 雷弾更新
@@ -223,7 +225,7 @@ void PlayerBullet::FireBulletUpdate() {
 	}
 }
 
-void PlayerBullet::WaterBulletUpdate() {
+void PlayerBullet::IceBulletUpdate() {
 	// 床と衝突していなければ
 	if (!isHit_) {
 		// 弾をベクトルの方向に前進させる
@@ -254,7 +256,7 @@ void PlayerBullet::WaterBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployWallStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
-				    animT_, {1.0f, 0.1f, 1.0f}, {deployWallSize_.x, 0.1f, deployWallSize_.z},
+				    animT_, {0.01f, 0.01f, 0.01f}, {deployWallSize_.x, 0.01f, deployWallSize_.z},
 				    deployWallStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
@@ -291,7 +293,7 @@ void PlayerBullet::WaterBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployWallStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
-				    animT_, {deployWallSize_.x, 0.1f, deployWallSize_.z}, deployWallSize_,
+				    animT_, {deployWallSize_.x, 0.01f, deployWallSize_.z}, deployWallSize_,
 				    deployWallStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
