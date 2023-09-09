@@ -58,6 +58,10 @@ public: // 自分の情報
 	
 	virtual BossEnemy* GetBossEnemy() override { return nullptr; }
 
+	virtual Player* GetPlayer() override { return nullptr; }
+
+	virtual PlayerBullet* GetPlayerBullet() override { return nullptr; }
+
 public: // その他関数
 
 	/// <summary>

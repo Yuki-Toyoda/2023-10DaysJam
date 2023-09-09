@@ -26,6 +26,11 @@ public: // メンバ関数
 	void Draw();
 
 	/// <summary>
+	/// 角度指定した長さ
+	/// </summary>
+	Vector3 LengthOBB(Vector3 rotation) override;
+
+	/// <summary>
 	/// グローバル変数に追加
 	/// </summary>
 	/// <param name="groupName"></param>

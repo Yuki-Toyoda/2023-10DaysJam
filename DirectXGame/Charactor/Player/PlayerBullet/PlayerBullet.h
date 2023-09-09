@@ -115,6 +115,10 @@ public: // その他関数
 	// 衝突時に呼ばれる関数
 	void OnCollision(Collider* collision) override;
 
+public: //自分取得
+
+	virtual PlayerBullet* GetPlayerBullet() override { return this; }
+
 private: // メンバ変数
 
 	// 死亡状態

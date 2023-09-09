@@ -51,20 +51,22 @@ public: // 継承メンバ関数
 	//球
 	virtual void Update(Vector3 posision, float radius);
 
-	virtual float GetRadius() { return 0.0f; };
-	virtual Vector3 GetCenter() { return Vector3(0.0f, 0.0f, 0.0f); };
+	virtual float GetRadius() { return 0.0f; }
+	virtual Vector3 GetCenter() { return Vector3(0.0f, 0.0f, 0.0f); }
 
 	//AABB
 	virtual void Update(Vector3 min, Vector3 max);
 
-	virtual Vector3 GetMin() { return Vector3(0.0f, 0.0f, 0.0f); };
-	virtual Vector3 GetMax() { return Vector3(0.0f, 0.0f, 0.0f); };
+	virtual Vector3 GetMin() { return Vector3(0.0f, 0.0f, 0.0f); }
+	virtual Vector3 GetMax() { return Vector3(0.0f, 0.0f, 0.0f); }
+	virtual Vector3 LengthSphere(Vector3 rotation) { return rotation; }
 
 	//OBB
 	virtual void Update(Vector3 posision, Vector3 rotate, Vector3 size);
 
-	virtual Vector3* GetOtientatuons() { return nullptr; };
-	virtual Vector3 GetSize() { return Vector3(0.0f, 0.0f, 0.0f); };
+	virtual Vector3* GetOtientatuons() { return nullptr; }
+	virtual Vector3 GetSize() { return Vector3(0.0f, 0.0f, 0.0f); }
+	virtual Vector3 LengthOBB(Vector3 rotation) { return rotation; }
 
 protected: // 継承先メンバ変数
 	

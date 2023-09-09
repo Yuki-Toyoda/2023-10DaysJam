@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "../../config/GlobalVariables.h"
-#include "Collision/ColliderShape/Sphere.h"
+#include "Collision/ColliderShape/OBB.h"
 
 void Player::Initialize(
     const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet,
@@ -188,9 +188,9 @@ void Player::Initialize(
 	tag_ = TagPlayer;
 
 	// コライダーの形
-	Sphere* sphere = new Sphere();
-	sphere->Initialize(GetWorldPosition(), 10.0f);
-	colliderShape_ = sphere;
+	OBB* obb = new OBB();
+	obb->Initialize(GetWorldPosition(), worldTransform_.translation_, Vector3(3.0f,3.0f,3.0f));
+	colliderShape_ = obb;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -245,6 +245,8 @@ void Player::Update() {
 		return false;
 	});
 
+	preTranslation_ = worldTransform_.translation_;
+
 	// 行動可能なら
 	if (canAction_) {
 		// 移動処理
@@ -266,7 +268,7 @@ void Player::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), GetColliderShape()->GetRadius());
+	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_,colliderShape_->GetSize());
 
 	// 3Dレティクルのワールド座標更新
 	worldTransform3DReticle_.UpdateMatrix();
@@ -422,7 +424,17 @@ void Player::ColliderDraw(bool enableDebugCamera) {
 }
 
 void Player::OnCollision(Collider* collision) { 
-	collision; }
+	
+	if (collision->GetTag() == TagPlayerBulletIce) {
+		
+		worldTransform_.translation_ = preTranslation_;
+		accelerationIce_ = MyMath::Normalize(velocity_) * -10.0f;
+		accelerationIceDown_ = MyMath::Normalize(velocity_);
+		worldTransform_.UpdateMatrix();
+
+	}
+
+}
 
 void Player::AddOrbs(PlayerBullet::BulletType orbType) {
 	// 所持しているオーブ数を確認
@@ -453,8 +465,21 @@ void Player::Move() {
 		// 移動ベクトルをカメラの角度に応じて回転させる
 		move = MyMath::Transform(move, rotateMat);
 
+		//氷の跳ね返り
+		velocity_ = move + accelerationIce_;
+		if (accelerationIce_.x != 0.0f) {
+			Vector3 preAccel = accelerationIce_;
+			accelerationIce_ = accelerationIce_ + accelerationIceDown_;
+			if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
+			    accelerationIce_.z * preAccel.z < 0.0f) {
+				accelerationIce_.x = 0.0f;
+				accelerationIce_.y = 0.0f;
+				accelerationIce_.z = 0.0f;
+			}
+		}
+
 		// 移動
-		worldTransform_.translation_ = worldTransform_.translation_ + move;
+		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 		// プレイヤーの向きを移動方向に合わせる
 		worldTransform_.rotation_ = viewProjection_->rotation_;
 

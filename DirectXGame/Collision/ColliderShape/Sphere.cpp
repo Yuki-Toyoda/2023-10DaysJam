@@ -76,4 +76,15 @@ void Sphere::ApplyGlobalVariables(const char* groupName) {
 
 }
 
+Vector3 Sphere::LengthSphere(Vector3 rotation) { 
+
+	Matrix4x4 rotateMatrix = MyMath::MakeRotateXYZMatrix(rotation);
+
+	Vector3 unit =
+	    MyMath::Normalize(MyMath::TransformNormal(Vector3(1.0f, 1.0f, 1.0f), rotateMatrix));
+
+	return unit * radius_;
+
+}
+
 

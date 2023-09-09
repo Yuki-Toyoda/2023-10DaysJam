@@ -139,6 +139,41 @@ void OBB::Draw() {
 
 }
 
+/// <summary>
+/// 角度指定した長さ
+/// </summary>
+Vector3 OBB::LengthOBB(Vector3 rotation) {
+
+
+	Matrix4x4 rotateMatrix = MyMath::MakeRotateXYZMatrix(rotation);
+
+	Vector3 unit =  MyMath::Normalize(MyMath::TransformNormal(Vector3(1.0f, 1.0f, 1.0f), rotateMatrix));
+
+	float e;
+
+	if (std::fabsf(unit.x) >= std::fabsf(unit.y)) {
+		if (std::fabsf(unit.x) >= std::fabsf(unit.z)) {
+			e = std::fabsf(unit.x);
+		} else {
+			e = std::fabsf(unit.z);
+		}
+	} else {
+		if (std::fabsf(unit.y) >= std::fabsf(unit.z)) {
+			e = std::fabsf(unit.y);
+		} else {
+			e = std::fabsf(unit.z);
+		}
+	}
+
+	unit.x /= e;
+	unit.y /= e;
+	unit.z /= e;
+
+	return unit * size_;
+
+
+}
+
 void OBB::AddToGlobalVariables(const char* groupName) {
 
 	// 調整項目クラスのインスタンス取得

@@ -8,6 +8,10 @@
 class Enemy;
 // エネミークラスの前方宣言
 class BossEnemy;
+// プレイヤークラスの前方宣言
+class Player;
+// プレイヤーバレットの前方宣言
+class PlayerBullet;
 
 /// <summary>
 /// 衝突判定クラス
@@ -94,6 +98,10 @@ public: //自分の情報
 	virtual Enemy* GetEnemy() { return nullptr; }
 
 	virtual BossEnemy* GetBossEnemy() { return nullptr; }
+
+	virtual Player* GetPlayer() { return nullptr; }
+
+	virtual PlayerBullet* GetPlayerBullet() { return nullptr; }
 	
 protected: // 継承先メンバ変数
 

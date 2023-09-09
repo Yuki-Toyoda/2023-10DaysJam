@@ -38,6 +38,11 @@ public: //メンバ関数
 	void ApplyGlobalVariables(const char* groupName) override;
 
 	/// <summary>
+	/// 角度指定した長さ
+	/// </summary>
+	Vector3 LengthSphere(Vector3 rotation) override;
+
+	/// <summary>
 	/// 中心点取得
 	/// </summary>
 	/// <returns></returns>

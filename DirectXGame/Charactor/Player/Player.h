@@ -128,6 +128,9 @@ private: // その他関数
 	/// </summary>
 	void ApplyGlobalVariables() override;
 
+public: // 自分取得
+	virtual Player* GetPlayer() override { return this; }
+
 private: // メンバ関数
 
 	// 入力検知用
@@ -260,6 +263,14 @@ private: // メンバ関数
 
 	//バレットダメージ
 	uint32_t bulletDamage_[4];
+
+	//速度
+	Vector3 velocity_ = {0.0f,0.0f,0.0f};
+	//
+	Vector3 preTranslation_ = {0.0f, 0.0f, 0.0f};
+	Vector3 accelerationIce_ = {0.0f, 0.0f, 0.0f};
+	Vector3 accelerationIceDown_ = {0.0f, 0.0f, 0.0f};
+
 
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG
