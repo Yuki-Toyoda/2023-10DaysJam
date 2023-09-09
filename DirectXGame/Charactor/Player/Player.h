@@ -78,6 +78,13 @@ public: // アクセッサ等
 	std::list<PlayerBullet*> GetBullets() { return bullets_; }
 
 	/// <summary>
+	/// バレットダメージゲッター
+	/// </summary>
+	uint32_t GetBulletDamage(PlayerBullet::BulletType bulletType) {
+		return bulletDamage_[bulletType];
+	}
+
+	/// <summary>
 	/// 衝突時呼び出し関数
 	/// </summary>
 	void OnCollision(Collider* collision) override;
@@ -250,6 +257,9 @@ private: // メンバ関数
 	int32_t changeCoolTime_;
 	// 変換クールタイムデフォルト値
 	int32_t kChangeCoolTime_;
+
+	//バレットダメージ
+	uint32_t bulletDamage_[4];
 
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG

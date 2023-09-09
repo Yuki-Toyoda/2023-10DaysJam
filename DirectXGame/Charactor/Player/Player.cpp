@@ -165,6 +165,12 @@ void Player::Initialize(
 	// 変換クールタイムデフォルト値
 	kChangeCoolTime_ = 120;
 
+	// バレットダメージ
+	bulletDamage_[0] = 1;
+	bulletDamage_[1] = 1;
+	bulletDamage_[2] = 1;
+	bulletDamage_[3] = 1;
+
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
 
@@ -213,6 +219,17 @@ void Player::Initialize(
 		groupName, "SpriteHavingOrbsSize", spriteHavingOrbsSize_); // 所持オーブ描画UIの大きさ
 	globalVariables->AddItem(
 		groupName, "SpriteHavingOrbsLineSpace", spriteHavingOrbsLineSpace_); // 所持オーブ描画UIの行間
+	
+	//バレットダメージ
+	globalVariables->AddItem(
+	    groupName, "BulletDamageNone", int(bulletDamage_[PlayerBullet::BulletType::None]));
+	globalVariables->AddItem(
+	    groupName, "BulletDamageFire", int(bulletDamage_[PlayerBullet::BulletType::Fire]));
+	globalVariables->AddItem(
+	    groupName, "BulletDamageIce", int(bulletDamage_[PlayerBullet::BulletType::Ice]));
+	globalVariables->AddItem(
+	    groupName, "BulletDamageThunder", int(bulletDamage_[PlayerBullet::BulletType::Thunder]));
+
 	colliderShape_->AddToGlobalVariables(groupName);
 
 }
@@ -901,6 +918,17 @@ void Player::ApplyGlobalVariables() {
 		globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsSize"); // 所持オーブ描画UIの大きさ
 	spriteHavingOrbsLineSpace_ = 
 		globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsLineSpace"); // 所持オーブ描画UIの行間
+
+	//バレットダメージ
+
+	bulletDamage_[PlayerBullet::BulletType::None] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "BulletDamageNone"));
+	bulletDamage_[PlayerBullet::BulletType::Fire] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "BulletDamageFire"));
+	bulletDamage_[PlayerBullet::BulletType::Ice] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "BulletDamageIce"));
+	bulletDamage_[PlayerBullet::BulletType::Thunder] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "BulletDamageThunder"));
 
 	colliderShape_->ApplyGlobalVariables(groupName);
 	

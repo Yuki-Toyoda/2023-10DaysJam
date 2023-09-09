@@ -13,7 +13,8 @@
 /// </summary>
 /// <param name="models">モデルデータ配列</param>
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
-    Vector3 posioton, EnemyManager* enemyManager, Player* player, std::list<BossEnemy*>* bossEnemies) {
+    Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
+    std::list<BossEnemy*>* bossEnemies) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -49,6 +50,18 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	// T
 	preRushT_ = 0.0f;
 
+	// 体力
+	hp_ = hp;
+
+	// 無敵か
+	isInvincible_ = false;
+
+	// 無敵タイマー
+	invincibilityTimer_ = 0;
+
+	// 衝突無敵タイマー
+	collisionInvincibilityTimer_ = 20;
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
@@ -81,6 +94,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	globalVariables->AddItem(groupName, "MoveToPlayerSpeed", moveToPlayerSpeed_);
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 	globalVariables->AddItem(groupName, "RushSpeed", rushSpeed_);
+	globalVariables->AddItem(groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTimer_));
 
 	colliderShape_->AddToGlobalVariables(groupName);
 
@@ -105,6 +119,13 @@ void Enemy::Update() {
 		Rushing();
 	default:
 		break;
+	}
+
+	//無敵タイマー処理
+	if (isInvincible_) {
+		if (--invincibilityTimer_ == 0) {
+			isInvincible_ = false;
+		}
 	}
 
 	//グローバル変数適用
@@ -145,21 +166,29 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 // 衝突時に呼ばれる関数
 void Enemy::OnCollision(Collider* collision) {
 
-	if (collision->GetTag() == TagPlayer || collision->GetTag() == TagPlayerBulletFire ||
-	    collision->GetTag() == TagPlayerBulletIce ||
-	    collision->GetTag() == TagPlayerBulletThunder) {
-		// 死亡フラグをたてる
-		isDead_ = true;
-	} 
-	else if (
-	    collision->GetTag() == TagBossEnemy && enemyState_ == Wait &&
-	    collision->GetBossEnemy()->GetBossEnemyState() == BossEnemy::Collect) {
-		Join(collision->GetBossEnemy());
-	} 
-	else if (collision->GetTag() == TagPlayerBulletNone) {
-		Dead();
-	}
+	switch (collision->GetTag()) {
 
+	case TagPlayer:
+		CollisionPlayer();
+		break;
+	case TagPlayerBulletNone:
+		CollisionBulletNone();
+		break;
+	case TagPlayerBulletFire:
+		CollisionBulletFire();
+		break;
+	case TagPlayerBulletIce:
+		CollisionBulletIce();
+		break;
+	case TagPlayerBulletThunder:
+		CollisionBulletThunder();
+		break;
+	case TagBossEnemy:
+		CollisionBossEnemy(collision->GetBossEnemy());
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -424,16 +453,70 @@ void Enemy::Dead() {
 
 	//死亡フラグをたてる
 	isDead_ = true;
-	//オーブ取得
-	if (enemyType_ == EnemyType::Fire) {
-		player_->AddOrbs(PlayerBullet::BulletType::Fire);
-	} else if (enemyType_ == EnemyType::Ice) {
-		player_->AddOrbs(PlayerBullet::BulletType::Ice);
-	} else if (enemyType_ == EnemyType::Thunder) {
-		player_->AddOrbs(PlayerBullet::BulletType::Thunder);
+	enemyManager_->SetEnemyCount(enemyManager_->GetEnemyCount() - 1);
+
+}
+
+void Enemy::HpFluctuation(uint32_t damage, uint32_t InvincibilityTime) {
+
+	hp_ -= damage;
+	if (hp_ <= 0) {
+		Dead();
+	} else {
+		isInvincible_ = true;
+		invincibilityTimer_ = InvincibilityTime;
 	}
 
 }
+
+void Enemy::CollisionBulletNone() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::None), collisionInvincibilityTimer_);
+
+	if (isDead_) {
+		// オーブ取得
+		if (enemyType_ == EnemyType::Fire) {
+			player_->AddOrbs(PlayerBullet::BulletType::Fire);
+		} else if (enemyType_ == EnemyType::Ice) {
+			player_->AddOrbs(PlayerBullet::BulletType::Ice);
+		} else if (enemyType_ == EnemyType::Thunder) {
+			player_->AddOrbs(PlayerBullet::BulletType::Thunder);
+		}
+	}
+
+}
+
+void Enemy::CollisionBulletFire() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTimer_);
+
+}
+
+void Enemy::CollisionBulletIce() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTimer_);
+
+}
+
+void Enemy::CollisionBulletThunder() {
+
+	HpFluctuation(
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), collisionInvincibilityTimer_);
+
+}
+
+void Enemy::CollisionBossEnemy(BossEnemy* bossEnemy) {
+
+	if (enemyState_ == Wait && bossEnemy->GetBossEnemyState() == BossEnemy::Collect) {
+		Join(bossEnemy);
+	}
+
+}
+
+void Enemy::CollisionPlayer() {}
 
 void Enemy::ApplyGlobalVariables() {
 

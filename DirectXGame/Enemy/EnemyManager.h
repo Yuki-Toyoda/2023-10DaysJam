@@ -102,6 +102,12 @@ public: // メンバ変数
 	size_t GetEnemyCount() { return enemyCount_; }
 
 	/// <summary>
+	/// エネミーカウントセッター
+	/// </summary>
+	/// <param name="enemyCount"></param>
+	void SetEnemyCount(size_t enemyCount) { enemyCount_ = enemyCount; }
+
+	/// <summary>
 	/// プレイヤーセッター
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
@@ -155,5 +161,8 @@ private: // メンバ変数
 
 	//スポナーナンバー
 	uint32_t spawnerNumber;
+
+	//初期Hp
+	uint32_t initialHp[4];
 
 };

@@ -14,6 +14,11 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	textureHandles_ = textureHandles; 
 
 	bossEnemyColliderSize = Vector3(1.2f, 1.2f, 6.0f);
+
+	initialHp[Enemy::EnemyType::None] = 3;
+	initialHp[Enemy::EnemyType::Fire] = 3;
+	initialHp[Enemy::EnemyType::Ice] = 3;
+	initialHp[Enemy::EnemyType::Thunder] = 3;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -25,9 +30,14 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	// メンバ変数の調整したい項目をグローバル変数に追加
 	globalVariables->AddItem(groupName, "EnemyMax", int(enemyMax));
 	globalVariables->AddItem(groupName, "BossEnemyColliderSize", bossEnemyColliderSize);
+
+	globalVariables->AddItem(groupName, "InitialHpNone", int(initialHp[Enemy::EnemyType::None]));
+	globalVariables->AddItem(groupName, "InitialHpFire", int(initialHp[Enemy::EnemyType::Fire]));
+	globalVariables->AddItem(groupName, "InitialHpIce", int(initialHp[Enemy::EnemyType::Ice]));
+	globalVariables->AddItem(groupName, "InitialHpThunder", int(initialHp[Enemy::EnemyType::Thunder]));
 	
 	//エネミーの数
-	enemyCount_ = enemyMax;
+	enemyCount_ = 0;
 
 	//バレットモデル
 	bulletModels_ = models;
@@ -65,7 +75,8 @@ void EnemyManager::Update() {
 	}
 	// ボスエネミー更新
 	for (BossEnemy* bossEnemy : bossEnemies_) {
-		bossEnemy->Update(&enemies_);
+		//bossEnemy->Update(&enemies_);
+		bossEnemy;
 	}
 
 	ApplyGlobalVariables();
@@ -108,11 +119,17 @@ void EnemyManager::ColliderDraw() {
 
 void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext) {
 	
-	Enemy* enemy = new Enemy();
+	if (enemyCount_ < enemyMax) {
+		Enemy* enemy = new Enemy();
 
-	enemy->Initialize(
-	    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position, this, player_,&bossEnemies_);
-	enemies_.push_back(enemy);
+		enemy->Initialize(
+		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
+		    initialHp[enemyTypeNext], this,
+		    player_,
+		    &bossEnemies_);
+		enemies_.push_back(enemy);
+		enemyCount_++;
+	}
 
 }
 
@@ -191,11 +208,9 @@ void EnemyManager::Delete() {
 
 void EnemyManager::Reset() {
 
-	if (enemyCount_ == 0) {
-		Delete();
-		enemyCount_ = enemyMax;
+	Delete();
+	enemyCount_ = 0;
 
-	}
 
 }
 
@@ -209,5 +224,14 @@ void EnemyManager::ApplyGlobalVariables() {
 	// メンバ変数の調整項目をグローバル変数に追加
 	enemyMax = uint32_t(globalVariables->GetIntValue(groupName, "EnemyMax"));
 	bossEnemyColliderSize = globalVariables->GetVector3Value(groupName, "BossEnemyColliderSize");
+
+	initialHp[Enemy::EnemyType::None] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpNone"));
+	initialHp[Enemy::EnemyType::Fire] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpFire"));
+	initialHp[Enemy::EnemyType::Ice] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpIce"));
+	initialHp[Enemy::EnemyType::Thunder] =
+	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpThunder"));
 
 }

@@ -39,7 +39,7 @@ public: //メンバ関数
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
-	    Vector3 posioton, EnemyManager* enemyManager, Player* player,
+	    Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
 	    std::list<BossEnemy*>* bossEnemies);
 
 	/// <summary>
@@ -120,6 +120,45 @@ public: //メンバ関数
 	void Dead();
 
 	/// <summary>
+	/// HP変動
+	/// </summary>
+	void HpFluctuation(uint32_t damage, uint32_t InvincibilityTime);
+
+public: //衝突処理
+	
+	/// <summary>
+	/// 通常弾
+	/// </summary>
+	void CollisionBulletNone();
+
+	/// <summary>
+	/// 炎弾
+	/// </summary>
+	void CollisionBulletFire();
+
+	/// <summary>
+	/// 氷弾
+	/// </summary>
+	void CollisionBulletIce();
+
+	/// <summary>
+	/// 雷弾
+	/// </summary>
+	void CollisionBulletThunder();
+
+	/// <summary>
+	/// ボスエネミー
+	/// </summary>
+	void CollisionBossEnemy(BossEnemy* bossEnemy);
+	
+	/// <summary>
+	/// プレイヤー
+	/// </summary>
+	void CollisionPlayer();
+
+public: //アクセッサ
+
+	/// <summary>
 	/// エネミーマネージャーセッター
 	/// </summary>
 	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
@@ -134,6 +173,12 @@ public: //メンバ関数
 	/// </summary>
 	/// <returns></returns>
 	EnemyState GetEnemyState() { return enemyState_; }
+
+	/// <summary>
+	/// 無敵かゲッター
+	/// </summary>
+	/// <returns></returns>
+	bool GetIsInvincible() { return isInvincible_; }
 
 public: // 自分の情報
 	
@@ -204,6 +249,19 @@ private: //メンバ変数
 	float preRushTSpeed_ = 0.05f;
 	//下がる距離
 	float preRushDistance_ = 100.0f;
+
+	//体力
+	int32_t hp_;
+
+	//無敵か
+	bool isInvincible_;
+
+	//無敵タイマー
+	uint32_t invincibilityTimer_;
+
+	// 衝突無敵タイマー
+	uint32_t collisionInvincibilityTimer_;
+
 
 
 };
