@@ -80,7 +80,7 @@ void EnemyBullet::Draw(const ViewProjection& viewProjection) {
 
 void EnemyBullet::OnCollision(Collider* collision) {
 
-	if (collision->GetTag() == TagPlayer) {
+	if (collision->GetTag() != TagBossEnemy ) {
 		isDead_ = true; 
 	}
 

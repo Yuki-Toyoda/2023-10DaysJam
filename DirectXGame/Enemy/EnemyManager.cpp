@@ -89,9 +89,9 @@ void EnemyManager::Update() {
 void EnemyManager::Draw(const ViewProjection& viewProjection) {
 	
 	//エネミーの描画
-	//for (Enemy* enemy : enemies_) {
-	//	enemy->Draw(viewProjection);
-	//}
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw(viewProjection);
+	}
 	// バレット描画
 	for (EnemyBullet* enemyBullet : enemyBullets_) {
 		enemyBullet->Draw(viewProjection);

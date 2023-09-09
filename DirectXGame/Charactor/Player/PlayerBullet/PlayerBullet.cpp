@@ -23,6 +23,9 @@ void PlayerBullet::Initialize(
 	isDead_ = false;
 	// 生存時間設定
 	deathTimer_ = klifeTime_;
+	
+	// 反射係数
+	reflectionCoefficient = 0.8f;
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffe);
@@ -82,6 +85,7 @@ void PlayerBullet::Initialize(
 		explosiveTime_ = 0.25f;
 		// タグ
 		tag_ = TagPlayerBulletFire;
+
 		break;
 	case PlayerBullet::Ice:
 		// 回転角をリセット
@@ -99,6 +103,7 @@ void PlayerBullet::Initialize(
 		deployWallEndStagingTime_ = 0.15f;
 		// タグ
 		tag_ = TagPlayerBulletIce;
+
 		break;
 	case PlayerBullet::Thunder:
 		// 回転角をリセット
@@ -119,6 +124,7 @@ void PlayerBullet::Initialize(
 		deployAreaEndStagingTime_ = 0.15f;
 		// タグ
 		tag_ = TagPlayerBulletThunder;
+
 		break;
 	}
 
@@ -127,6 +133,9 @@ void PlayerBullet::Initialize(
 	// 生存時間設定
 	deathTimer_ = klifeTime_;
 
+	// 反射係数
+	reflectionCoefficient = 0.8f;
+	
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
@@ -272,6 +281,12 @@ void PlayerBullet::WaterBulletUpdate() {
 			fallSpeed_ = 0.0f;
 			// 床と衝突
 			isHit_ = true;
+
+			// 衝突属性を設定
+			SetCollisionAttribute(0xfffffff7);
+			// 衝突対象を自分の属性以外に設定
+			SetCollisionMask(0x00000008);
+
 		} else {
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
@@ -504,7 +519,34 @@ void PlayerBullet::ColliderUpdate() {
 
 void PlayerBullet::OnCollision(Collider* collision) {
 
-	if (collision->GetTag() == TagEnemy && bulletType_ == None) {
+	switch (bulletType_) {
+	case PlayerBullet::None:
 		isDead_ = true;
+		break;
+	case PlayerBullet::Fire:
+		if (!isHit_) {
+			isHit_ = true;
+		}
+		break;
+	case PlayerBullet::Ice:
+		if (!isHit_) {
+			if (collision->GetTag() == TagPlayerBulletIce ||
+			    collision->GetTag() == TagEnemy ||
+			    collision->GetTag() == TagBossEnemy ||
+				collision->GetTag() == TagEnemyBullet) {
+				velocity_ = velocity_ * -reflectionCoefficient;
+			}
+		}
+		break;
+	case PlayerBullet::Thunder:
+		if (!isHit_) {
+			if (collision->GetTag() == TagPlayerBulletIce || collision->GetTag() == TagEnemy ||
+			    collision->GetTag() == TagBossEnemy || collision->GetTag() == TagEnemyBullet) {
+				velocity_ = velocity_ * -reflectionCoefficient;
+			}
+		}
+		break;
+	default:
+		break;
 	}
 }

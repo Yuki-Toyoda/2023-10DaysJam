@@ -132,6 +132,8 @@ private: // メンバ変数
 	BulletType bulletType_;
 	// 発射する弾の強さ
 	int32_t bulletStrength_;
+	//反射係数
+	float reflectionCoefficient;
 
 	#pragma region 特殊弾用変数
 	// 衝突判定
