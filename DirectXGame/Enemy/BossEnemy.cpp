@@ -283,11 +283,26 @@ void BossEnemy::CollectEnemies() {
 	}
 
 	//射撃
-	if (shotAttackCooltime_ > 0) {
-		--shotAttackCooltime_;
-	} else {
-		shotAttackCooltime_ = shotAttackCooltimeMax_;
-		ShotAttack();
+	//プレイヤーと向きあっている
+	//  自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵のワールド座標を取得する
+	Vector3 bossEnemyrPos = GetWorldPosition();
+	// 敵->自キャラの差分ベクトルを求める
+	Vector3 toPlayer = playerPos - bossEnemyrPos;
+	//プレイヤーのレイ
+	Vector3 Ray = MyMath::Transform(
+	                  Vector3(0.0f, 0.0f, 1.0f),
+	                  MyMath::MakeRotateXYZMatrix(player_->GetWorldTransform()->rotation_)) +
+	              playerPos;
+	Vector3 toRay = playerPos - Ray;
+	if (MyMath::Dot(toPlayer, toRay) >= 0.0f) {
+		if (shotAttackCooltime_ > 0) {
+			--shotAttackCooltime_;
+		} else {
+			shotAttackCooltime_ = shotAttackCooltimeMax_;
+			ShotAttack();
+		}
 	}
 
 }
