@@ -6,7 +6,7 @@
 #include "BaseEffect.h"
 
 /// <summary>
-/// 破片エフェクト
+/// 岩が吹き飛ぶエフェクト。強さを指定すると岩のサイズと吹き飛び方を変えられます
 /// </summary>
 class ExplosiveEffect : public BaseEffect {
 public: // メンバ関数

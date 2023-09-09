@@ -59,11 +59,13 @@ void PlayerBullet::Initialize(
 
 	switch (bulletType_) {
 	case PlayerBullet::Fire:
+		// 大きさを設定
+		worldTransform_.scale_ = {0.01f, 0.01f, 0.01f};
 		// 爆破範囲設定
 		explosiveRange_ = {
-		    50.0f * (1.0f + 0.45f * (bulletStrength - 1)), 
-			50.0f * (1.0f + 0.45f * (bulletStrength - 1)),
-		    50.0f * (1.0f + 0.45f * (bulletStrength - 1))};
+		    1.0f * (1.0f + 0.45f * (bulletStrength - 1)), 
+			1.0f * (1.0f + 0.45f * (bulletStrength - 1)),
+		    1.0f * (1.0f + 0.45f * (bulletStrength - 1))};
 		// 爆破演出時間
 		explosiveTime_ = 0.25f;
 		break;
@@ -211,7 +213,7 @@ void PlayerBullet::FireBulletUpdate() {
 		// 爆破演出をイージングで行う
 		if (animT_ <= explosiveTime_) {
 			worldTransform_.scale_ = 
-				MyMath::EaseOut(animT_, {0.5f, 0.5f, 0.5f}, explosiveRange_, explosiveTime_);
+				MyMath::EaseOut(animT_, {0.01f, 0.01f, 0.01f}, explosiveRange_, explosiveTime_);
 			// 演出用tを加算
 			animT_ += 1.0f / 60.0f;
 		} else {
