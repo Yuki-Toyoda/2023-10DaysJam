@@ -87,16 +87,18 @@ void PlayerBullet::Initialize(
 		deployWallEndStagingTime_ = 0.15f;
 		break;
 	case PlayerBullet::Thunder:
+		// 大きさを設定
+		worldTransform_.scale_ = {0.01f, 0.01f, 0.01f};
 		// 回転角をリセット
 		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 		// 展開エリアを設定
 		deployAreaSize_ = {
-			75.0f * (1.0f + 0.35f * (bulletStrength - 1)),
-			10.0f,
-		    75.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+			1.0f * (1.0f + 0.35f * (bulletStrength - 1)),
+		    1.0f,
+		    1.0f * (1.0f + 0.35f * (bulletStrength - 1)),
 		};
 		// 振動範囲を設定
-		shakeRange_ = 1.0f * (1.0f + 0.35f * (bulletStrength - 1));
+		shakeRange_ = 0.05f * (1.0f + 0.35f * (bulletStrength - 1));
 		// 展開演出時間
 		deployAreaStagingTime_ = 0.25f;
 		// 展開時間
@@ -371,7 +373,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployAreaStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseIn(
-				    animT_, {3.0f, 3.0f, 3.0f}, {2.0f, 2.0f, 2.0f},
+				    animT_, {0.1f, 0.1f, 0.1f}, {0.05f, 0.05f, 0.05f},
 				    deployAreaStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
@@ -387,7 +389,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployAreaStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
-				    animT_, {2.0f, deployAreaSize_.y, 2.0f}, deployAreaSize_,
+				    animT_, {0.05f, 0.05f, 0.05f}, deployAreaSize_,
 				    deployAreaStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
@@ -403,8 +405,8 @@ void PlayerBullet::ThunderBulletUpdate() {
 				        worldTransform_.translation_.z,
 				    },
 				    deploymentAreaTime_,
-				    {	deployAreaSize_.x,
-				        deployAreaSize_.z});
+				    {70.0f * (1.0f + 0.35f * (bulletStrength_ - 1)),
+				     70.0f * (1.0f + 0.35f * (bulletStrength_ - 1))});
 
 				// 演出tをリセット
 				animT_ = 0.0f;
@@ -437,7 +439,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 			if (animT_ <= deployAreaEndStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseOut(
 				    animT_, deployAreaSize_,
-				    {deployAreaSize_.x + 10.0f, deployAreaSize_.y, deployAreaSize_.z + 10.0f},
+				    {deployAreaSize_.x + 0.5f, deployAreaSize_.y, deployAreaSize_.z + 0.5f},
 				    deployAreaEndStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
@@ -454,8 +456,7 @@ void PlayerBullet::ThunderBulletUpdate() {
 			// 展開演出をイージングで行う
 			if (animT_ <= deployAreaEndStagingTime_) {
 				worldTransform_.scale_ = MyMath::EaseIn(
-				    animT_,
-				    {deployAreaSize_.x + 10.0f, deployAreaSize_.y, deployAreaSize_.z + 10.0f},
+				    animT_, {deployAreaSize_.x + 0.5f, deployAreaSize_.y, deployAreaSize_.z + 0.5f},
 				    {0.0f, 0.0f, 0.0f}, deployAreaEndStagingTime_);
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
