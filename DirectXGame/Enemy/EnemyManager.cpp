@@ -8,7 +8,7 @@ EnemyManager* EnemyManager::GetInstance() {
 
 void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
-    const std::vector<Model*>& bossModels) {
+    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels) {
 	
 	//モデル
 	models_ = models;
@@ -43,7 +43,7 @@ void EnemyManager::Initialize(
 	enemyCount_ = 0;
 
 	//バレットモデル
-	bulletModels_ = models;
+	bulletModels_ = bulletModels;
 
 	//ボスエネミーモデル
 	bossModels_ = bossModels;

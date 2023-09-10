@@ -29,7 +29,7 @@ public: // メンバ変数
 	/// </summary>
 	void Initialize(
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
-	    const std::vector<Model*>& bossModels);
+	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels);
 
 	/// <summary>
 	/// 更新

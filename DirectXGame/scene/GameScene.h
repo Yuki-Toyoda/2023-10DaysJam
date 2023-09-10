@@ -84,6 +84,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelEnemy_;
 	// ボスエネミーモデル
 	std::unique_ptr<Model> modelBossEnemy_;
+	// エネミーバレットモデル
+	std::unique_ptr<Model> modelEnemyBullet_;
 
 	// 破片モデル
 	std::unique_ptr<Model> modelDebris_;
