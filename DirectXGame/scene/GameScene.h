@@ -27,6 +27,16 @@ class EffectManager;
 /// ゲームシーン
 /// </summary>
 class GameScene {
+
+public: //サブクラス
+	enum SceneName {
+		Title,
+		Tutorial,
+		Main,
+		GameClear,
+		GameOver,
+	};
+
 public: // メンバ関数
 	/// <summary>
 	/// コンストクラタ
@@ -52,6 +62,76 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+private: // 更新処理
+
+	/// <summary>
+	/// タイトル
+	/// </summary>
+	void TitleUpdate();
+
+	/// <summary>
+	/// チュートリアル
+	/// </summary>
+	void TutorialUpdate();
+
+	/// <summary>
+	/// 本編
+	/// </summary>
+	void MainUpdate();
+
+	/// <summary>
+	/// クリア
+	/// </summary>
+	void GameClearUpdate();
+
+	/// <summary>
+	/// ゲームオーバー
+	/// </summary>
+	void GameOverUpdate();
+
+	/// <summary>
+	/// フェードインアウト
+	/// </summary>
+	void FadeInOutUpdate();
+
+	/// <summary>
+	/// フェードインアウトセットアップ
+	/// </summary>
+	/// <param name="nextScene"></param>
+	void FadeInOutSetUp(SceneName nextScene);
+
+private: //描画
+
+	/// <summary>
+	/// タイトル
+	/// </summary>
+	void TitleDraw(ID3D12GraphicsCommandList* commandList);
+
+	/// <summary>
+	/// チュートリアル
+	/// </summary>
+	void TutorialDraw(ID3D12GraphicsCommandList* commandList);
+
+	/// <summary>
+	/// 本編
+	/// </summary>
+	void MainDraw(ID3D12GraphicsCommandList* commandList);
+
+	/// <summary>
+	/// クリア
+	/// </summary>
+	void GameClearDraw(ID3D12GraphicsCommandList* commandList);
+
+	/// <summary>
+	/// ゲームオーバー
+	/// </summary>
+	void GameOverDraw(ID3D12GraphicsCommandList* commandList);
+
+	/// <summary>
+	/// フェードインアウト
+	/// </summary>
+	void FadeInOutDraw();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -169,4 +249,30 @@ private: // メンバ変数
 
 	// 衝突マネージャー
 	std::unique_ptr<CollisionManager> collisionManager;
+
+	//現在のシーン
+	SceneName currentScene_;
+	//次のシーン
+	SceneName nextScene_;
+
+	// フェードインしているか
+	bool isFadeIn_ = false;
+	// フェードアウトしているか
+	bool isFadeOut_ = false;
+	// フェード時間
+	const uint32_t kFadeTime_ = 60;
+	// フェードタイマー
+	uint32_t fadeTimer_ = 0;
+
+	// フェードスプライト
+	std::unique_ptr<Sprite> fadeSprite_;
+	// フェードテクスチャ
+	uint32_t fadeTextureHandle_ = 0u;
+	// フェードポジション
+	Vector2 fadePosition_;
+	// フェード色
+	Vector4 fadeColor_;
+	// フェードサイズ
+	Vector2 fadeSize_;
+
 };

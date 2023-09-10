@@ -215,21 +215,83 @@ void GameScene::Initialize() {
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
 
+	// 現在のシーン
+	currentScene_ = Main;
+	// 次のシーン
+	nextScene_ = Main;
+
+	// フェードインしているか
+	isFadeIn_ = false;
+	// フェードアウトしているか
+	isFadeOut_ = false;
+	// フェードタイマー
+	fadeTimer_ = 0;
+
+	// フェードテクスチャ
+	fadeTextureHandle_ = TextureManager::Load("white1x1.png");
+	// フェードポジション
+	fadePosition_ = {float(WinApp::kWindowWidth) / 2.0f, float(WinApp::kWindowHeight) / 2.0f};
+	// フェード色
+	fadeColor_ = {0.0f, 0.0f, 0.0f, 1.0f};
+	// フェードアンカーポイント
+	Vector2 anchorPoint = {0.5f, 0.5f};
+	// フェードスプライト
+	fadeSprite_.reset(Sprite::Create(fadeTextureHandle_, fadePosition_, fadeColor_, anchorPoint));
+	// フェードサイズ
+	fadeSize_ = {float(WinApp::kWindowWidth), float(WinApp::kWindowHeight)};
+	fadeSprite_->SetSize(fadeSize_);
+
 }
 
 void GameScene::Update() {
+
+	switch (currentScene_) {
+	case GameScene::Title:
+		TitleUpdate();
+		break;
+	case GameScene::Tutorial:
+		TutorialUpdate();
+		break;
+	case GameScene::Main:
+		MainUpdate();
+		break;
+	case GameScene::GameClear:
+		GameClearUpdate();
+		break;
+	case GameScene::GameOver:
+		GameOverUpdate();
+		break;
+	default:
+		break;
+	}
+
+	//フェードインアウト
+	FadeInOutUpdate();
 	
-	//リスト削除
+
+}
+
+void GameScene::TitleUpdate() {
+
+
+
+}
+
+void GameScene::TutorialUpdate() {}
+
+void GameScene::MainUpdate() {
+
+	// リスト削除
 	enemyManager_->DeleteEnemy();
 	enemyManager_->DeleteEnemyBullet();
 
 	// 更新処理全般
-	camera_->Update(); // カメラ
-	skyDome_->Update(); // 天球
-	ground_->Update(); // 地面
-	player_->Update(); // プレイヤー
+	camera_->Update();        // カメラ
+	skyDome_->Update();       // 天球
+	ground_->Update();        // 地面
+	player_->Update();        // プレイヤー
 	effectManager_->Update(); // エフェクトマネージャー
-	enemyManager_->Update();// エネミー
+	enemyManager_->Update();  // エネミー
 
 	// デバックカメラ有効時
 	if (enableDebugCamera_) {
@@ -254,7 +316,7 @@ void GameScene::Update() {
 	collisionManager->ListRegister(player_.get());
 	// 敵全てについて
 	for (Enemy* enemy : enemyManager_->GetEnemies()) {
-		collisionManager->ListRegister(enemy);		
+		collisionManager->ListRegister(enemy);
 	}
 	// 敵弾全てについて
 	for (EnemyBullet* enemybullet : enemyManager_->GetEnemyBullets()) {
@@ -273,15 +335,52 @@ void GameScene::Update() {
 
 	#ifdef _DEBUG
 
-	//フィールドの更新
+	// フィールドの更新
 	field_->Update();
 
 	ImGui::Begin("Debug");
 	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);
-	
+
 	ImGui::End();
 
 #endif // _DEBUG
+
+}
+
+void GameScene::GameClearUpdate() {}
+
+void GameScene::GameOverUpdate() {}
+
+void GameScene::FadeInOutUpdate() {
+
+	if (isFadeOut_) {
+		if (--fadeTimer_ == 0) {
+			isFadeOut_ = false;
+			isFadeIn_ = true;
+			fadeTimer_ = kFadeTime_;
+			currentScene_ = nextScene_;
+			fadeColor_.w = 1.0f;
+		} else {
+			fadeColor_.w = float(kFadeTime_ - fadeTimer_) / float(kFadeTime_);
+		}
+		fadeSprite_->SetColor(fadeColor_);
+	} else if (isFadeIn_) {
+		if (--fadeTimer_ == 0) {
+			isFadeIn_ = false;
+			fadeColor_.w = 0.0f;
+		} else {
+			fadeColor_.w = float(fadeTimer_) / float(kFadeTime_);
+		}
+		fadeSprite_->SetColor(fadeColor_);
+	}
+
+}
+
+void GameScene::FadeInOutSetUp(SceneName nextScene) {
+
+	isFadeOut_ = true;
+	nextScene_ = nextScene;
+	fadeTimer_ = kFadeTime_;
 
 }
 
@@ -291,6 +390,30 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	//ライン描画のビュープロジェクション設定
 	PrimitiveDrawer::GetInstance()->SetViewProjection(viewProjection_);
+
+	switch (currentScene_) {
+	case GameScene::Title:
+		TitleDraw(commandList);
+		break;
+	case GameScene::Tutorial:
+		TutorialDraw(commandList);
+		break;
+	case GameScene::Main:
+		MainDraw(commandList);
+		break;
+	case GameScene::GameClear:
+		GameClearDraw(commandList);
+		break;
+	case GameScene::GameOver:
+		GameOverDraw(commandList);
+		break;
+	default:
+		break;
+	}
+
+}
+
+void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) { 
 
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
@@ -314,11 +437,103 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	skyDome_->Draw(*viewProjection_); // 天球
-	ground_->Draw(*viewProjection_); // 地面
-	player_->Draw(*viewProjection_); // プレイヤー
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+
+	//フェードインアウト
+	FadeInOutDraw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+#pragma endregion
+
+}
+
+void GameScene::TutorialDraw(ID3D12GraphicsCommandList* commandList) {
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	
+	// フェードインアウト
+	FadeInOutDraw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+#pragma endregion
+
+}
+
+void GameScene::MainDraw(ID3D12GraphicsCommandList* commandList) {
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+	skyDome_->Draw(*viewProjection_);       // 天球
+	ground_->Draw(*viewProjection_);        // 地面
+	player_->Draw(*viewProjection_);        // プレイヤー
 	effectManager_->Draw(*viewProjection_); // エフェクトマネージャー
-	enemyManager_->Draw(*viewProjection_);// エネミー
+	enemyManager_->Draw(*viewProjection_);  // エネミー
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -333,7 +548,10 @@ void GameScene::Draw() {
 	/// </summary>
 	player_->SpriteDraw(); // プレイヤー
 
-	#ifdef _DEBUG
+	// フェードインアウト
+	FadeInOutDraw();
+
+#ifdef _DEBUG
 	player_->ColliderDraw(enableDebugCamera_);
 	enemyManager_->ColliderDraw();
 #endif // _DEBUG
@@ -342,4 +560,105 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+
+}
+
+void GameScene::GameClearDraw(ID3D12GraphicsCommandList* commandList) {
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// フェードインアウト
+	FadeInOutDraw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+#pragma endregion
+
+}
+
+void GameScene::GameOverDraw(ID3D12GraphicsCommandList* commandList) {
+	
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	// 深度バッファクリア
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+#pragma endregion
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// フェードインアウト
+	FadeInOutDraw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+#pragma endregion
+
+}
+
+void GameScene::FadeInOutDraw() {
+
+	if (isFadeIn_ || isFadeOut_) {
+		fadeSprite_->Draw();
+	}
+
 }
