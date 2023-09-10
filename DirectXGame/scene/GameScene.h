@@ -116,6 +116,7 @@ private: // メンバ変数
 	uint32_t texturehandleFireBullet_ = 0u; // 炎弾
 	uint32_t texturehandleIceBullet_ = 0u; // 炎弾
 	uint32_t texturehandleThunderBullet_ = 0u; // 雷弾
+	uint32_t texturehandleNone_ = 0u; // 撃てない
 	// 選択テクスチャ
 	uint32_t textureHandleSelectArrow_L_ = 0u;
 	uint32_t textureHandleSelectArrow_R_ = 0u;
@@ -123,6 +124,10 @@ private: // メンバ変数
 	uint32_t textureHandleRBHoldText_ = 0u;
 	// オーブ変換テキストテクスチャ
 	uint32_t textureHandleChangeOrbText_ = 0u;
+	// 特殊射撃テキストテクスチャ
+	uint32_t textureHandleSpecialShotText_ = 0u;
+	// 倍率テクスチャ
+	uint32_t textureHandleMagnification[3] = {0u};
 
 	// 氷壁用テクスチャ
 	uint32_t textureHandleIceWallTex[3] = {0u};

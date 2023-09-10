@@ -98,8 +98,54 @@ void Player::Initialize(
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteChangeOrbText_->SetSize(spriteChangeOrbUI_.size_);
 
+	// 左トリガースプライト初期化
+	spriteLeftTriggerUI_.textureHandle_ = textureHandles_[TextureManager::LT_N];
+	spriteLeftTriggerUI_.position_ = {800.0f, 650.0f}; // 座標
+	spriteLeftTriggerUI_.size_ = {96.0f, 96.0f};       // 大きさ
+	spriteLeftTrigger_.reset(Sprite::Create(
+	    spriteLeftTriggerUI_.textureHandle_, spriteLeftTriggerUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteLeftTrigger_->SetSize(spriteLeftTriggerUI_.size_);
+
+	// 特殊射撃テキストの初期化
+	spriteSpecialShotTextUI_.textureHandle_ = textureHandles_[TextureManager::SpecialShotText];
+	spriteSpecialShotTextUI_.size_ = {256.0f, 64.0f};                                  // 大きさ
+	spriteSpecialShotTextUI_.position_ = {
+	    spriteLeftTriggerUI_.position_.x + (spriteSpecialShotTextUI_.size_.x / 2.0f) +
+	        (spriteLeftTriggerUI_.size_.x / 2.0f),
+	    spriteLeftTriggerUI_.position_.y}; // 座標
+	specialShotText_.reset(Sprite::Create(
+	    spriteSpecialShotTextUI_.textureHandle_, spriteSpecialShotTextUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	specialShotText_->SetSize(spriteSpecialShotTextUI_.size_);
+
+	// 現在の特殊射撃スプライトの初期化
+	spriteNowSpecialShotPlanUI_.textureHandle_ = textureHandles_[TextureManager::None]; // テクスチャ
+	spriteNowSpecialShotPlanUI_.position_ = {
+	    spriteSpecialShotTextUI_.position_.x + (spriteSpecialShotTextUI_.size_.x / 1.5f),
+	    spriteSpecialShotTextUI_.position_.y};          // 座標
+	spriteNowSpecialShotPlanUI_.size_ = {96.0f, 96.0f}; // 大きさ
+	spriteSpecialShotPlan_.reset(Sprite::Create(
+	    spriteNowSpecialShotPlanUI_.textureHandle_,
+	    spriteNowSpecialShotPlanUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f},
+	    {0.5f, 0.5f}));
+	spriteSpecialShotPlan_->SetSize(spriteNowSpecialShotPlanUI_.size_);
+
+	// 現在の特殊射撃倍率スプライトの初期化
+	spriteSpecialShotMagnificationUI_.textureHandle_ =
+	    textureHandles_[TextureManager::Texturex1]; // テクスチャ
+	spriteSpecialShotMagnificationUI_.position_ = {
+	    spriteNowSpecialShotPlanUI_.position_.x + (spriteNowSpecialShotPlanUI_.size_.x / 1.25f),
+	    spriteNowSpecialShotPlanUI_.position_.y + 20.0f};             // 座標
+	spriteSpecialShotMagnificationUI_.size_ = {64.0f, 64.0f}; // 大きさ
+	spriteSpecialShotMagnification_.reset(Sprite::Create(
+	    spriteSpecialShotMagnificationUI_.textureHandle_, spriteSpecialShotMagnificationUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteSpecialShotMagnification_->SetSize(spriteSpecialShotMagnificationUI_.size_);
+
 	// 身長高さ
-	height_ = 5.0f;
+	height_ = 20.0f;
 
 	// 行動可能に
 	canAction_ = true;
@@ -452,6 +498,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 		bullet->Draw(viewProjection);
 	}
 }
+
 void Player::SpriteDraw() {
 	// 照準描画
 	spriteReticle_->Draw();
@@ -468,6 +515,12 @@ void Player::SpriteDraw() {
 			spriteDpadRight_->Draw(); // 十字右ボタンUI描画
 		}
 	}
+
+	// 現在の特殊射撃を描画
+	spriteLeftTrigger_->Draw();
+	specialShotText_->Draw();
+	spriteSpecialShotPlan_->Draw();
+	spriteSpecialShotMagnification_->Draw();
 
 	// オーブ変換テキストUIの描画
 	spriteChangeOrbText_->Draw();
@@ -779,6 +832,11 @@ void Player::Reload() {
 
 void Player::SpecialShot() {
 
+	// 特殊射撃の強さをリセット
+	specialShotStrength_ = 1;
+	// 特殊射撃の予定をリセット
+	specialShotBulletPlans_ = PlayerBullet::None;
+
 	// 所持しているオーブ数を確認
 	int havingOrbCount = (int)havingOrbs_.size();
 	for (int i = 0; i < havingOrbCount; i++) {
@@ -861,6 +919,9 @@ void Player::SpecialShot() {
 
 				// 所持オーブのリセット
 				havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
+
+				// 特殊射撃の予定をリセット
+				specialShotBulletPlans_ = PlayerBullet::None;
 
 			}
 		}
@@ -966,10 +1027,6 @@ void Player::UIUpdate() {
 
 		// とりあえずの色設定
 		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-		// 特殊射撃の予定をリセット
-		specialShotBulletPlans_ = PlayerBullet::None;
-		// 特殊射撃の強さをリセット
-		specialShotStrength_ = 1;
 	}
 
 	// 所持しているオーブ数を確認
@@ -1033,6 +1090,48 @@ void Player::UIUpdate() {
 		spriteDpadRight_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
 	}
 
+	// 次の特殊射撃を元にスプライトを変更
+	switch (specialShotBulletPlans_) {
+	case PlayerBullet::None:
+		// 撃てない
+		spriteSpecialShotPlan_->SetTextureHandle(textureHandles_[TextureManager::None]);
+		spriteSpecialShotPlan_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		break;
+	case PlayerBullet::Fire:
+		// 炎弾
+		spriteSpecialShotPlan_->SetTextureHandle(textureHandles_[TextureManager::FireBullet]);
+		spriteSpecialShotPlan_->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
+		break;
+	case PlayerBullet::Ice:
+		// 氷弾
+		spriteSpecialShotPlan_->SetTextureHandle(textureHandles_[TextureManager::IceBullet]);
+		spriteSpecialShotPlan_->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
+		break;
+	case PlayerBullet::Thunder:
+		// 雷弾
+		spriteSpecialShotPlan_->SetTextureHandle(textureHandles_[TextureManager::ThunderBullet]);
+		spriteSpecialShotPlan_->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
+		break;
+	}
+
+	// 特殊射撃の強さを元にスプライトを変更
+	switch (specialShotStrength_) {
+	case 1:
+		spriteSpecialShotMagnification_->SetTextureHandle(
+		    textureHandles_[TextureManager::Texturex1]);
+		break;
+	case 2:
+		spriteSpecialShotMagnification_->SetTextureHandle(
+		    textureHandles_[TextureManager::Texturex2]);
+		break;
+	case 3:
+		spriteSpecialShotMagnification_->SetTextureHandle(
+		    textureHandles_[TextureManager::Texturex3]);
+		break;
+	default:
+		break;
+	}
+
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
@@ -1049,6 +1148,25 @@ void Player::UIUpdate() {
 			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {512.0f, 128.0f});	
 
 		}
+		// 左トリガー
+		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_) {
+			// ボタンを押すとテクスチャを変更
+			spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_P]);
+		} else {
+			// ボタンを押すとテクスチャを変更
+			spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_N]);
+		}
+
+		if (!canSpecialShot_) {
+			spriteLeftTrigger_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
+			specialShotText_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
+			spriteSpecialShotMagnification_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
+		} else {
+			spriteLeftTrigger_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+			specialShotText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+			spriteSpecialShotMagnification_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		}
+
 	}
 
 }

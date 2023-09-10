@@ -68,6 +68,7 @@ void GameScene::Initialize() {
 	texturehandleFireBullet_ = TextureManager::Load("/Image/Player/FireBulletUI.png"); // 炎弾
 	texturehandleIceBullet_ = TextureManager::Load("/Image/Player/IceBulletUI.png"); // 氷弾
 	texturehandleThunderBullet_ = TextureManager::Load("/Image/Player/ThunderBulletUI.png"); // 雷弾
+	texturehandleNone_ = TextureManager::Load("/Image/Player/X.png"); // 撃てない
 	textureHandleSelectedOrb_ = TextureManager::Load("/Image/Player/SelectedOrbUI.png"); // 選択オーブ
 	textureHandleSelectArrow_L_ =
 	    TextureManager::Load("/Image/Player/selectArrowUI_L.png"); // オーブ選択左矢印
@@ -76,6 +77,11 @@ void GameScene::Initialize() {
 	textureHandleRBHoldText_ =
 	    TextureManager::Load("/Image/Player/RBHoldUI.png"); // RBホールドテキスト
 	textureHandleChangeOrbText_ = TextureManager::Load("/Image/Player/changeOrbTextUI.png"); // 選択オーブテキスト
+	textureHandleSpecialShotText_ =
+	    TextureManager::Load("/Image/Player/specialShotTextUI.png"); // 特殊射撃テキスト
+	textureHandleMagnification[0] = TextureManager::Load("/Image/Player/x1.png"); // 倍率テクスチャx1
+	textureHandleMagnification[1] = TextureManager::Load("/Image/Player/x2.png"); // 倍率テクスチャx2
+	textureHandleMagnification[2] = TextureManager::Load("/Image/Player/x3.png"); // 倍率テクスチャx3
 
 	// エフェクトテクスチャ群
 	textureHandleIceWallTex[0] = TextureManager::Load("/Wall/WallTex.png");
@@ -105,11 +111,16 @@ void GameScene::Initialize() {
 		texturehandleFireBullet_, // 炎弾
 		texturehandleIceBullet_, // 氷弾
 		texturehandleThunderBullet_, // 雷弾
+	    texturehandleNone_, // 撃てない
 	    textureHandleSelectedOrb_, // オーブ選択
 		textureHandleSelectArrow_L_, // オーブ選択左矢印
 		textureHandleSelectArrow_R_, // オーブ選択右矢印
 	    textureHandleRBHoldText_, // RBホールドテキスト
 	    textureHandleChangeOrbText_, // 選択オーブテキスト
+	    textureHandleSpecialShotText_, // 特殊射撃テキスト
+	    textureHandleMagnification[0], // 1x
+	    textureHandleMagnification[1], // 2x
+	    textureHandleMagnification[2], // 3x
 
 		// エフェクト用テクスチャ
 		textureHandleIceWallTex[0], // 氷壁1段階目

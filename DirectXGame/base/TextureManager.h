@@ -31,20 +31,26 @@ public: // サブクラス
 
 		// UIテクスチャ
 		Reticle, // 照準
-		Orb,
-		FireBullet,
-		IceBullet,
-		ThunderBullet,
-		selectOrb,
-		selectArrow_L,
-		selectArrow_R,
-		RBHoldText,
-		changeOrbText,
+		Orb, // オーブ
+		FireBullet, // 炎弾
+		IceBullet, // 氷弾
+		ThunderBullet, // 雷弾
+		None, // 撃てない
+		selectOrb, // オーブ選択
+		selectArrow_L, // オーブ選択左矢印
+		selectArrow_R, // オーブ選択右矢印
+		RBHoldText, // RBホールドテキスト
+		changeOrbText, // 選択オーブテキスト
+		SpecialShotText, // 特殊射撃テキスト
+		Texturex1, // x1テクスチャ
+		Texturex2, // x1テクスチャ
+		Texturex3, // x1テクスチャ
+		
 
 		// エフェクト用テクスチャ
-		IceWall,
-		IceWallDamage1,
-		IceWallDamage2,
+		IceWall, // 氷壁1段階目
+		IceWallDamage1, // 氷壁2段階目
+		IceWallDamage2, // 氷壁3段階目
 
 	};
 
