@@ -6,7 +6,9 @@ EnemyManager* EnemyManager::GetInstance() {
 	return &instance;
 }
 
-void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uint32_t> textureHandles) {
+void EnemyManager::Initialize(
+    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
+    const std::vector<Model*>& bossModels) {
 	
 	//モデル
 	models_ = models;
@@ -47,7 +49,7 @@ void EnemyManager::Initialize(const std::vector<Model*>& models, std::vector<uin
 	bulletModels_ = models;
 
 	//ボスエネミーモデル
-	bossModels_ = models;
+	bossModels_ = bossModels;
 
 	// エネミースポナーの追加
 	spawnerNumber_ = 0;

@@ -123,6 +123,7 @@ void GameScene::Initialize() {
 	effectManager_->Initialize();
 
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
+	modelBossEnemy_.reset(Model::CreateFromOBJ("BossFish", true)); // ボスエネミー
 
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
@@ -154,7 +155,7 @@ void GameScene::Initialize() {
 	camera_->SetShakeStrength(player_->GetShakeStrength());
 
 	//テクスチャハンドル
-	std::vector<uint32_t> textureHandles = {
+	std::vector<uint32_t> enemyTextureHandles = {
 		TextureManager::GetInstance()->Load("./Resources/white1x1.png"),
 		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyFire.png"),
 		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyIce.png"),
@@ -162,7 +163,9 @@ void GameScene::Initialize() {
 	};
 
 	//エネミーマネージャー
-	enemyManager_->Initialize(std::vector<Model*>{modelEnemy_.get()}, textureHandles);
+	enemyManager_->Initialize(
+	    std::vector<Model*>{modelEnemy_.get()}, enemyTextureHandles,
+	    std::vector<Model*>{modelBossEnemy_.get()});
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);

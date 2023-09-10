@@ -1,0 +1,70 @@
+{
+    "EnemySpawner0": {
+        "GenerateCooltimeMax": 120,
+        "Size": [
+            10.0,
+            0.0,
+            10.0
+        ],
+        "posChangeCooltime0": 0,
+        "posChangeCooltime1": 0,
+        "posChangeCooltime2": 0,
+        "posChangeCooltime3": 0,
+        "posChangeCooltime4": 0,
+        "posChangeCooltime5": 0,
+        "posChangeCooltime6": 0,
+        "posChangeCooltime7": 0,
+        "posChangeCooltime8": 0,
+        "posChangeCooltime9": 0,
+        "position0": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position1": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position2": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position3": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position4": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position5": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position6": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position7": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position8": [
+            0.0,
+            20.0,
+            0.0
+        ],
+        "position9": [
+            0.0,
+            20.0,
+            0.0
+        ]
+    }
+}
