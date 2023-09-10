@@ -10,6 +10,10 @@ void Ground::Intialize(Model* model) {
 
 	// ワールド座標初期化
 	worldTransform_.Initialize();
+	worldTransform_.scale_.x *= 2.5f;
+	worldTransform_.scale_.z *= 2.5f;
+	worldTransform_.UpdateMatrix();
+
 }
 
 void Ground::Update() {
