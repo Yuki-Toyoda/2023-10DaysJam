@@ -59,6 +59,10 @@ void Player::Initialize(
 	// 3Dレティクルワールド座標の初期化
 	worldTransform3DReticle_.Initialize();
 
+	// 体力スプライト初期化
+	spriteHeartUI_.textureHandle_ = textureHandles_[TextureManager::Heart];
+	spriteHeartUI_.position_ = {200.0f, 650.0f};
+
 	// 十字ボタンUIの初期化
 	spriteDpadUI_.textureHandle_ = textureHandles_[TextureManager::Dpad];
 	spriteDpadUI_.position_ = {200.0f, 650.0f};

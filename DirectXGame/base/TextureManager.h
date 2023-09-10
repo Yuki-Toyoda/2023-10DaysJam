@@ -43,6 +43,7 @@ public: // サブクラス
 
 		// UIテクスチャ
 		Reticle, // 照準
+		Heart, // ハート
 		Orb, // オーブ
 		FireBullet, // 炎弾
 		IceBullet, // 氷弾

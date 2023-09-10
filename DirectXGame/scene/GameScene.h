@@ -111,6 +111,8 @@ private: // メンバ変数
 
 	// レティクル用テクスチャ
 	uint32_t textureHandleReticle_ = 0u;
+	// 体力用テクスチャ
+	uint32_t textureHandleHeart_ = 0u;
 	// オーブテクスチャ
 	uint32_t texturehandleOrb_ = 0u;
 	// 選択しているオーブを示すテクスチャ

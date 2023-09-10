@@ -76,6 +76,7 @@ void GameScene::Initialize() {
 
 	// UIテクスチャ群
 	textureHandleReticle_ = TextureManager::Load("/Image/Player/reticle.png"); // 照準
+	textureHandleHeart_ = TextureManager::Load("/Image/Player/PlayerHeart.png"); // ハート
 	texturehandleOrb_ = TextureManager::Load("/Image/Player/OrbUI.png"); // オーブ
 	texturehandleFireBullet_ = TextureManager::Load("/Image/Player/FireBulletUI.png"); // 炎弾
 	texturehandleIceBullet_ = TextureManager::Load("/Image/Player/IceBulletUI.png"); // 氷弾
@@ -137,6 +138,7 @@ void GameScene::Initialize() {
 
 		// UIテクスチャ
 	    textureHandleReticle_, // 照準
+	    textureHandleHeart_, // ハート
 	    texturehandleOrb_, // オーブ 
 		texturehandleFireBullet_, // 炎弾
 		texturehandleIceBullet_, // 氷弾

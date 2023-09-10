@@ -366,7 +366,12 @@ private: // メンバ関数
 	//体力
 	int32_t hp; 
 	//初期体力
-	const uint32_t StartHp = 10;
+	const uint32_t StartHp = 5;
+
+	// 体力UI
+	UI spriteHeartUI_;
+	std::unique_ptr<Sprite> spriteHeart_[5];
+
 	// 無敵か
 	bool isInvincible_;
 	// 無敵タイマー
