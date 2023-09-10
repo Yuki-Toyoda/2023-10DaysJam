@@ -261,7 +261,7 @@ private: //メンバ変数
 	uint32_t invincibilityTimer_;
 
 	// 衝突無敵タイマー
-	uint32_t collisionInvincibilityTimer_;
+	uint32_t collisionInvincibilityTime_;
 
 
 

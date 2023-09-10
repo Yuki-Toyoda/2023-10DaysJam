@@ -171,6 +171,16 @@ void Player::Initialize(
 	bulletDamage_[2] = 1;
 	bulletDamage_[3] = 1;
 
+	// 体力
+	hp = StartHp; 
+
+	// 無敵か
+	isInvincible_ = false;
+	// 無敵タイマー
+	invincibilityTimer_ = 0;
+	// 衝突無敵タイマー
+	collisionInvincibilityTime_ = 20;
+
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
 
@@ -230,6 +240,9 @@ void Player::Initialize(
 	globalVariables->AddItem(
 	    groupName, "BulletDamageThunder", int(bulletDamage_[PlayerBullet::BulletType::Thunder]));
 
+	globalVariables->AddItem(
+	    groupName, "CollisionInvincibilityTime", int(collisionInvincibilityTime_));
+
 	colliderShape_->AddToGlobalVariables(groupName);
 
 }
@@ -245,7 +258,15 @@ void Player::Update() {
 		return false;
 	});
 
+	//前フレームの位置を保存
 	preTranslation_ = worldTransform_.translation_;
+
+	// 無敵タイマー処理
+	if (isInvincible_) {
+		if (--invincibilityTimer_ == 0) {
+			isInvincible_ = false;
+		}
+	}
 
 	// 行動可能なら
 	if (canAction_) {
@@ -374,7 +395,7 @@ void Player::Update() {
 	ImGui::DragInt("DefaultChangeCoolTime", &kChangeCoolTime_, 1.0f);
 
 	ImGui::DragFloat3("wT", &worldTransform_.translation_.x, 1.0f);
-
+	ImGui::DragInt("HP", &hp);
 
 	ImGui::End();
 
@@ -426,12 +447,13 @@ void Player::ColliderDraw(bool enableDebugCamera) {
 void Player::OnCollision(Collider* collision) { 
 	
 	if (collision->GetTag() == TagPlayerBulletIce) {
-		
-		worldTransform_.translation_ = preTranslation_;
-		accelerationIce_ = MyMath::Normalize(velocity_) * -10.0f;
-		accelerationIceDown_ = MyMath::Normalize(velocity_);
-		worldTransform_.UpdateMatrix();
-
+		OnCollisionIce();
+	} else if (collision->GetTag() == TagEnemy || 
+		collision->GetTag() == TagBossEnemy ||
+	    collision->GetTag() == TagEnemyBullet) {
+		if (!isInvincible_) {
+			OnCollisionEnemy();
+		}
 	}
 
 }
@@ -446,6 +468,27 @@ void Player::AddOrbs(PlayerBullet::BulletType orbType) {
 	}
 	// 引数のオーブを追加
 	havingOrbs_.push_back(orbType);
+}
+
+void Player::OnCollisionIce() {
+
+	float reflection = -10.0f;
+	float accelerationDown = 1.0f / 2.0f;
+
+	worldTransform_.translation_ = preTranslation_;
+	accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
+	accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
+	worldTransform_.UpdateMatrix();
+	
+}
+
+void Player::OnCollisionEnemy() {
+
+	//ダメージ受ける
+	hp--;
+	invincibilityTimer_ = collisionInvincibilityTime_;
+	isInvincible_ = true;
+
 }
 
 void Player::Move() {
@@ -956,6 +999,9 @@ void Player::ApplyGlobalVariables() {
 	    uint32_t(globalVariables->GetIntValue(groupName, "BulletDamageIce"));
 	bulletDamage_[PlayerBullet::BulletType::Thunder] =
 	    uint32_t(globalVariables->GetIntValue(groupName, "BulletDamageThunder"));
+
+	collisionInvincibilityTime_ =
+	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTime"));
 
 	colliderShape_->ApplyGlobalVariables(groupName);
 	

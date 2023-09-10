@@ -60,7 +60,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	invincibilityTimer_ = 0;
 
 	// 衝突無敵タイマー
-	collisionInvincibilityTimer_ = 20;
+	collisionInvincibilityTime_ = 20;
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
@@ -94,7 +94,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	globalVariables->AddItem(groupName, "MoveToPlayerSpeed", moveToPlayerSpeed_);
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 	globalVariables->AddItem(groupName, "RushSpeed", rushSpeed_);
-	globalVariables->AddItem(groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTimer_));
+	globalVariables->AddItem(groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTime_));
 
 	colliderShape_->AddToGlobalVariables(groupName);
 
@@ -490,7 +490,7 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 void Enemy::CollisionBulletNone() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::None), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::None), collisionInvincibilityTime_);
 
 	if (isDead_) {
 		// オーブ取得
@@ -508,21 +508,21 @@ void Enemy::CollisionBulletNone() {
 void Enemy::CollisionBulletFire() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTime_);
 
 }
 
 void Enemy::CollisionBulletIce() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTime_);
 
 }
 
 void Enemy::CollisionBulletThunder() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), collisionInvincibilityTime_);
 
 }
 
@@ -549,7 +549,7 @@ void Enemy::ApplyGlobalVariables() {
 	moveToPlayerSpeed_ = globalVariables->GetFloatValue(groupName, "MoveToPlayerSpeed");
 	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed");
 	rushSpeed_ = globalVariables->GetFloatValue(groupName, "RushSpeed");
-	collisionInvincibilityTimer_ =
+	collisionInvincibilityTime_ =
 	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTimer"));
 
 	colliderShape_->ApplyGlobalVariables(groupName);

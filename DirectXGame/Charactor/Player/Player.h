@@ -95,6 +95,18 @@ public: // アクセッサ等
 	/// <param name="orbType">追加するオーブタイプ</param>
 	void AddOrbs(PlayerBullet::BulletType orbType);
 
+private: //衝突処理
+
+	/// <summary>
+	/// 氷との衝突処理
+	/// </summary>
+	void OnCollisionIce();
+	
+	/// <summary>
+	/// エネミーとの衝突処理
+	/// </summary>
+	void OnCollisionEnemy();
+
 private: // 行動関数
 
 	/// <summary>
@@ -266,11 +278,23 @@ private: // メンバ関数
 
 	//速度
 	Vector3 velocity_ = {0.0f,0.0f,0.0f};
-	//
+	// 前フレームの位置
 	Vector3 preTranslation_ = {0.0f, 0.0f, 0.0f};
+	// 氷の跳ね返り加速
 	Vector3 accelerationIce_ = {0.0f, 0.0f, 0.0f};
+	//氷の跳ね返り加速量ダウン
 	Vector3 accelerationIceDown_ = {0.0f, 0.0f, 0.0f};
 
+	//体力
+	int32_t hp; 
+	//初期体力
+	const uint32_t StartHp = 10;
+	// 無敵か
+	bool isInvincible_;
+	// 無敵タイマー
+	uint32_t invincibilityTimer_;
+	// 衝突無敵タイマー
+	uint32_t collisionInvincibilityTime_;
 
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG
