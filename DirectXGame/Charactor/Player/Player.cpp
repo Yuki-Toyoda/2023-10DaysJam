@@ -90,7 +90,7 @@ void Player::Initialize(
 
 	// オーブ変換テキストの初期化
 	spriteChangeOrbUI_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
-	spriteChangeOrbUI_.position_ = {200.0f, 500.0f}; // 座標
+	spriteChangeOrbUI_.position_ = {220.0f, 485.0f}; // 座標
 	spriteChangeOrbUI_.size_ = {256.0f, 64.0f}; // 大きさ
 	spriteChangeOrbText_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::RBHoldText],
@@ -181,7 +181,7 @@ void Player::Initialize(
 	// 発射レートリセット
 	fireCoolTime_ = 0;
 	// 発射レート設定
-	kMaxFireCoolTime_ = 25;
+	kMaxFireCoolTime_ = 15;
 	// 最大弾数設定
 	kMaxMagazine_ = 15;
 	// 弾数リセット
@@ -1141,11 +1141,16 @@ void Player::UIUpdate() {
 			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
 			// テクスチャ描画範囲設定
 			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
+			spriteChangeOrbText_->SetPosition({230.0f, 475.0f}); // 座標
+			spriteChangeOrbText_->SetSize({352.0f, 88.0f});     // 大きさ
 		} else {
 			// テキストUIのテクスチャを変更
 			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::RBHoldText]);	
 			// テクスチャ描画範囲設定
 			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {512.0f, 128.0f});	
+
+			spriteChangeOrbText_->SetPosition({195.0f, 485.0f}); // 座標
+			spriteChangeOrbText_->SetSize({256.0f, 64.0f});      // 大きさ
 
 		}
 		// 左トリガー
