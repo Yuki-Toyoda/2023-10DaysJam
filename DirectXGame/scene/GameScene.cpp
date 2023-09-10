@@ -155,9 +155,7 @@ void GameScene::Update() {
 	collisionManager->ListRegister(player_.get());
 	// 敵全てについて
 	for (Enemy* enemy : enemyManager_->GetEnemies()) {
-		if (!enemy->GetIsInvincible()) {
-			collisionManager->ListRegister(enemy);		
-		}
+		collisionManager->ListRegister(enemy);		
 	}
 	// 敵弾全てについて
 	for (EnemyBullet* enemybullet : enemyManager_->GetEnemyBullets()) {
@@ -165,9 +163,7 @@ void GameScene::Update() {
 	}
 	// ボス敵全てについて
 	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
-		if (!bossEnemy->GetIsInvincible()) {
-			collisionManager->ListRegister(bossEnemy);
-		}
+		collisionManager->ListRegister(bossEnemy);
 	}
 	// 自弾全てについて
 	for (PlayerBullet* playerBullet : player_->GetBullets()) {

@@ -62,6 +62,9 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	// 衝突無敵タイマー
 	collisionInvincibilityTime_ = 20;
 
+	//雷弾無敵タイム
+	thunderInvincibilityTime_ = 40;
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
@@ -95,6 +98,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 	globalVariables->AddItem(groupName, "RushSpeed", rushSpeed_);
 	globalVariables->AddItem(groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTime_));
+	globalVariables->AddItem(
+	    groupName, "ThunderInvincibilityTime", int(thunderInvincibilityTime_));
 
 	colliderShape_->AddToGlobalVariables(groupName);
 
@@ -120,6 +125,9 @@ void Enemy::Update() {
 	default:
 		break;
 	}
+
+	// 前フレームの位置を保存
+	preTranslation_ = worldTransform_.translation_;
 
 	//無敵タイマー処理
 	if (isInvincible_) {
@@ -172,16 +180,22 @@ void Enemy::OnCollision(Collider* collision) {
 		CollisionPlayer();
 		break;
 	case TagPlayerBulletNone:
-		CollisionBulletNone();
+		if (!isInvincible_) {
+			CollisionBulletNone();
+		}
 		break;
 	case TagPlayerBulletFire:
-		CollisionBulletFire();
+		if (!isInvincible_) {
+			CollisionBulletFire();
+		}
 		break;
 	case TagPlayerBulletIce:
-		CollisionBulletIce();
+		CollisionBulletIce(collision->GetPlayerBullet()->GetIsHit());
 		break;
 	case TagPlayerBulletThunder:
-		CollisionBulletThunder();
+		if (!isInvincible_) {
+			CollisionBulletThunder();
+		}
 		break;
 	case TagBossEnemy:
 		CollisionBossEnemy(collision->GetBossEnemy());
@@ -203,8 +217,7 @@ void Enemy::Move() {
 	// 速度ベクトルを自機の向きに合わせて回転させる
 	velocity = {0.0f, 0.0f, moveSpeed_};
 
-	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
-	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
+	velocity_ = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
 
 }
 
@@ -219,12 +232,9 @@ void Enemy::MoveToPlayer() {
 	// ベクトルの正規化
 	toPlayer = MyMath::Normalize(toPlayer);
 	//速度
-	Vector3 velocity = toPlayer * moveToPlayerSpeed_;
+	velocity_ = toPlayer * moveToPlayerSpeed_;
 	//回転
 	MoveRotation(toPlayer);
-
-	// 座標を移動させる(1フレーム分の移動量を足しこむ)
-	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
 
 }
 
@@ -337,7 +347,20 @@ void Enemy::Waiting() {
 	} else {
 		Move();
 	}
-
+	// 氷の跳ね返り
+	velocity_ = velocity_ + accelerationIce_;
+	if (accelerationIce_.x != 0.0f) {
+		Vector3 preAccel = accelerationIce_;
+		accelerationIce_ = accelerationIce_ + accelerationIceDown_;
+		if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
+		    accelerationIce_.z * preAccel.z < 0.0f) {
+			accelerationIce_.x = 0.0f;
+			accelerationIce_.y = 0.0f;
+			accelerationIce_.z = 0.0f;
+		}
+	}
+	// 座標を移動させる(1フレーム分の移動量を足しこむ)
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 
 }
 
@@ -512,17 +535,32 @@ void Enemy::CollisionBulletFire() {
 
 }
 
-void Enemy::CollisionBulletIce() {
+void Enemy::CollisionBulletIce(bool ishit) {
 
-	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTime_);
+	if (ishit) {
+		if (enemyState_ == Wait) {
+			float reflection = -10.0f;
+			float accelerationDown = 1.0f / 2.0f;
+
+			worldTransform_.translation_ = preTranslation_;
+			accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
+			accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
+			worldTransform_.UpdateMatrix();
+		} else {
+			Dead();
+		}
+	} else {
+		HpFluctuation(
+		    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTime_);
+	}
+
 
 }
 
 void Enemy::CollisionBulletThunder() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), collisionInvincibilityTime_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), thunderInvincibilityTime_);
 
 }
 
@@ -534,7 +572,11 @@ void Enemy::CollisionBossEnemy(BossEnemy* bossEnemy) {
 
 }
 
-void Enemy::CollisionPlayer() {}
+void Enemy::CollisionPlayer() {
+
+	Dead();
+
+}
 
 void Enemy::ApplyGlobalVariables() {
 
@@ -551,6 +593,8 @@ void Enemy::ApplyGlobalVariables() {
 	rushSpeed_ = globalVariables->GetFloatValue(groupName, "RushSpeed");
 	collisionInvincibilityTime_ =
 	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTimer"));
+	thunderInvincibilityTime_ =
+	    uint32_t(globalVariables->GetIntValue(groupName, "ThunderInvincibilityTime"));
 
 	colliderShape_->ApplyGlobalVariables(groupName);
 

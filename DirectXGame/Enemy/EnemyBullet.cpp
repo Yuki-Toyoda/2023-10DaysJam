@@ -26,6 +26,8 @@ void EnemyBullet::Initialize(
 	// X軸周りの角度(Θx)
 	worldTransform_.rotation_.x = std::atan2f(-velocity_.y, length);
 
+	worldTransform_.UpdateMatrix();
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定

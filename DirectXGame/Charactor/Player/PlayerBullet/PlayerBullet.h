@@ -81,6 +81,12 @@ public: // アクセッサ等
 	/// <param name="isHit">衝突したか</param>
 	void SetIsHit(bool isHit) { isHit_ = isHit; }
 
+	/// <summary>
+	/// 氷弾が衝突した状態ゲッター
+	/// </summary>
+	/// <param name="isHit">衝突したか</param>
+	bool GetIsHit() { return isHit_; }
+
 private: // 弾ごとの行動関数
 
 	/// <summary>

@@ -58,7 +58,7 @@ void BossEnemy::Initialize(
 	invincibilityTimer_ = 0;
 
 	// 衝突無敵タイマー
-	collisionInvincibilityTimer_ = 20;
+	collisionInvincibilityTime_ = 20;
 
 	// 射撃クールタイム
 	shotAttackCooltime_ = 0;
@@ -107,7 +107,9 @@ void BossEnemy::Initialize(
 	globalVariables->AddItem(groupName, "MoveRotateSpeed", moveRotateSpeed_);
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);
 	globalVariables->AddItem(
-	    groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTimer_));
+	    groupName, "CollisionInvincibilityTimer", int(collisionInvincibilityTime_));
+	globalVariables->AddItem(groupName, "ThunderInvincibilityTime", int(thunderInvincibilityTime_));
+
 
 	// グループ名設定
 	const char* groupName2 = "BossEnemyUnit";
@@ -146,6 +148,16 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 	ApplyGlobalVariables();
 
 	enemies_ = enemies;
+
+	// 前フレームの位置を保存
+	preTranslation_ = worldTransform_.translation_;
+	
+	// 無敵タイマー処理
+	if (isInvincible_) {
+		if (--invincibilityTimer_ == 0) {
+			isInvincible_ = false;
+		}
+	}
 	
 	switch (bossEnemyState_) {
 	case BossEnemy::Collect:
@@ -163,13 +175,6 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 		break;
 	default:
 		break;
-	}
-
-	// 無敵タイマー処理
-	if (isInvincible_) {
-		if (--invincibilityTimer_ == 0) {
-			isInvincible_ = false;
-		}
 	}
 
 	// ワールド行列更新
@@ -210,7 +215,7 @@ void BossEnemy::OnCollision(Collider* collision) {
 		CollisionBulletFire();
 		break;
 	case TagPlayerBulletIce:
-		CollisionBulletIce();
+		CollisionBulletIce(collision->GetPlayerBullet()->GetIsHit());
 		break;
 	case TagPlayerBulletThunder:
 		CollisionBulletThunder();
@@ -235,8 +240,7 @@ void BossEnemy::Move() {
 	//  速度ベクトルを自機の向きに合わせて回転させる
 	velocity = {0.0f, 0.0f, moveSpeed_};
 
-	velocity = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
-	worldTransform_.translation_ = worldTransform_.translation_ + velocity;
+	velocity_ = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
 
 }
 
@@ -273,14 +277,28 @@ void BossEnemy::CollectEnemies() {
 		Vector3 toEnemy = MyMath::Normalize(shortestPos - pos);
 		// 速度
 		velocity_ = toEnemy * moveSpeed_;
-		// 座標を移動させる(1フレーム分の移動量を足しこむ)
-		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 		//回転
 		MoveRotation(toEnemy);
 	} else {
 		//通常移動
 		Move();
 	}
+
+	// 氷の跳ね返り
+	velocity_ = velocity_ + accelerationIce_;
+	if (accelerationIce_.x != 0.0f) {
+		Vector3 preAccel = accelerationIce_;
+		accelerationIce_ = accelerationIce_ + accelerationIceDown_;
+		if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
+		    accelerationIce_.z * preAccel.z < 0.0f) {
+			accelerationIce_.x = 0.0f;
+			accelerationIce_.y = 0.0f;
+			accelerationIce_.z = 0.0f;
+		}
+	}
+
+	// 座標を移動させる(1フレーム分の移動量を足しこむ)
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 
 	//射撃
 	//プレイヤーと向きあっている
@@ -599,28 +617,40 @@ void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 void BossEnemy::CollisionBulletNone() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::None), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::None), collisionInvincibilityTime_);
 
 }
 
 void BossEnemy::CollisionBulletFire() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTime_);
 
 }
 
-void BossEnemy::CollisionBulletIce() {
+void BossEnemy::CollisionBulletIce(bool ishit) {
 
-	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTimer_);
+	if (ishit) {
+		if (bossEnemyState_ == Collect) {
+			float reflection = -10.0f;
+			float accelerationDown = 1.0f / 2.0f;
+
+			worldTransform_.translation_ = preTranslation_;
+			accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
+			accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
+			worldTransform_.UpdateMatrix();
+		}
+	} else {
+		HpFluctuation(
+		    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTime_);
+	}
 
 }
 
 void BossEnemy::CollisionBulletThunder() {
 
 	HpFluctuation(
-	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), collisionInvincibilityTimer_);
+	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), thunderInvincibilityTime_);
 
 }
 
@@ -648,8 +678,10 @@ void BossEnemy::ApplyGlobalVariables() {
 	moveSpeed_ = globalVariables->GetFloatValue(groupName, "MoveSpeed");
 	moveRotateSpeed_ = globalVariables->GetFloatValue(groupName, "MoveRotateSpeed");
 	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed");
-	collisionInvincibilityTimer_ =
+	collisionInvincibilityTime_ =
 	    uint32_t(globalVariables->GetIntValue(groupName, "CollisionInvincibilityTimer"));
+	thunderInvincibilityTime_ =
+	    uint32_t(globalVariables->GetIntValue(groupName, "ThunderInvincibilityTime"));
 
 
 	// グループ名設定

@@ -110,7 +110,7 @@ public: // 衝突処理
 	/// <summary>
 	/// 氷弾
 	/// </summary>
-	void CollisionBulletIce();
+	void CollisionBulletIce(bool ishit);
 
 	/// <summary>
 	/// 雷弾
@@ -255,12 +255,22 @@ private: // メンバ変数
 	uint32_t invincibilityTimer_;
 
 	// 衝突無敵タイマー
-	uint32_t collisionInvincibilityTimer_;
+	uint32_t collisionInvincibilityTime_;
 
 	// 射撃クールタイム
 	uint32_t shotAttackCooltime_;
 
 	// 最大射撃クールタイム
 	uint32_t shotAttackCooltimeMax_;
+
+	// 雷弾無敵タイマー
+	uint32_t thunderInvincibilityTime_;
+
+	// 前フレームの位置
+	Vector3 preTranslation_ = {0.0f, 0.0f, 0.0f};
+	// 氷の跳ね返り加速
+	Vector3 accelerationIce_ = {0.0f, 0.0f, 0.0f};
+	// 氷の跳ね返り加速量ダウン
+	Vector3 accelerationIceDown_ = {0.0f, 0.0f, 0.0f};
 
 };
