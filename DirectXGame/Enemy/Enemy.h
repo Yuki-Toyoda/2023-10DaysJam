@@ -269,4 +269,9 @@ private: //メンバ変数
 	// 氷の跳ね返り加速量ダウン
 	Vector3 accelerationIceDown_ = {0.0f, 0.0f, 0.0f};
 
+	//サンダー
+	bool isCollisionThunder = false;
+	// 減速倍率
+	float decelerationMagnification = 0.5f;
+
 };

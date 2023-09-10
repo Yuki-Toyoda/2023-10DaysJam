@@ -157,6 +157,9 @@ void Enemy::Update() {
 	//コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
+	//サンダーと当たったかをfalseに
+	isCollisionThunder = false;
+
 }
 
 /// <summary>
@@ -180,22 +183,16 @@ void Enemy::OnCollision(Collider* collision) {
 		CollisionPlayer();
 		break;
 	case TagPlayerBulletNone:
-		if (!isInvincible_) {
-			CollisionBulletNone();
-		}
+		CollisionBulletNone();
 		break;
 	case TagPlayerBulletFire:
-		if (!isInvincible_) {
-			CollisionBulletFire();
-		}
+		CollisionBulletFire();
 		break;
 	case TagPlayerBulletIce:
 		CollisionBulletIce(collision->GetPlayerBullet()->GetIsHit());
 		break;
 	case TagPlayerBulletThunder:
-		if (!isInvincible_) {
-			CollisionBulletThunder();
-		}
+		CollisionBulletThunder();
 		break;
 	case TagBossEnemy:
 		CollisionBossEnemy(collision->GetBossEnemy());
@@ -359,6 +356,13 @@ void Enemy::Waiting() {
 			accelerationIce_.z = 0.0f;
 		}
 	}
+
+	
+	// 雷の減速
+	if (isCollisionThunder) {
+		velocity_ = velocity_ * decelerationMagnification;
+	}
+
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 
@@ -561,6 +565,8 @@ void Enemy::CollisionBulletThunder() {
 
 	HpFluctuation(
 	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), thunderInvincibilityTime_);
+
+	isCollisionThunder = true;
 
 }
 

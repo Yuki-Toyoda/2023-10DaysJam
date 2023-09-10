@@ -183,9 +183,8 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 	// コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
-	if (enemiesJoiningNum > enemiesJoiningNumMax) {
-		assert(0);
-	}
+	// サンダーと当たったかをfalseに
+	isCollisionThunder = false;
 
 }
 
@@ -242,6 +241,10 @@ void BossEnemy::Move() {
 
 	velocity_ = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
 
+	if (isCollisionThunder) {
+		velocity_ = velocity_ * decelerationMagnification;
+	}
+
 }
 
 void BossEnemy::CollectEnemies() {
@@ -295,6 +298,11 @@ void BossEnemy::CollectEnemies() {
 			accelerationIce_.y = 0.0f;
 			accelerationIce_.z = 0.0f;
 		}
+	}
+
+	//雷の減速
+	if (isCollisionThunder) {
+		velocity_ = velocity_ * decelerationMagnification;
 	}
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
@@ -651,6 +659,8 @@ void BossEnemy::CollisionBulletThunder() {
 
 	HpFluctuation(
 	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), thunderInvincibilityTime_);
+
+	isCollisionThunder = true;
 
 }
 
