@@ -77,6 +77,12 @@ public: // アクセッサ等
 	/// <param name="orbType">追加するオーブタイプ</param>
 	void AddOrbs(PlayerBullet::BulletType orbType);
 
+	/// <summary>
+	/// カメラシェイク強さのゲッター
+	/// </summary>
+	/// <returns>カメラシェイク強さ変数のポインタ</returns>
+	Vector2* GetShakeStrength() { return (Vector2*)&handOverCameraShakeStrength_; }
+
 private: // 行動関数
 
 	/// <summary>
@@ -102,6 +108,18 @@ private: // 行動関数
 	/// 特殊射撃
 	/// </summary>
 	void SpecialShot();
+
+	/// <summary>
+	/// カメラシェイク再生開始関数(再生開始したいタイミングで一度だけ呼び出してください)
+	/// </summary>
+	/// <param name="shakeStrength">カメラシェイク強さ</param>
+	/// <param name="shakeTime">振動秒数</param>
+	void PlayCameraShake(Vector2 shakeStrength, float shakeTime);
+
+	/// <summary>
+	/// カメラシェイク関数(呼び出さなくていいです)
+	/// </summary>
+	void CameraShake();
 
 private: // その他関数
 
@@ -144,6 +162,16 @@ private: // メンバ関数
 
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
+	// カメラに渡す変数
+	Vector2 handOverCameraShakeStrength_;
+	// 振動強さ
+	Vector2 shakeStrength_;
+	// カメラシェイク有効トリガー
+	bool enableCameraShake_;
+	// シェイク演出用t
+	float shakeT_;
+	// シェイク演出時間
+	float shakeTime_;
 
 	// テクスチャリスト
 	std::vector<uint32_t> textureHandles_;
@@ -254,6 +282,11 @@ private: // メンバ関数
 
 	// 追加するオーブの種類
 	int selectOrbs_;
+
+	// シェイク強さ
+	Vector2 testShakeStrength_;
+	// シェイク秒数
+	float testShakeTime_;
 
 	#endif // _DEBUG
 #pragma endregion

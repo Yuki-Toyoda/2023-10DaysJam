@@ -38,6 +38,16 @@ void Player::Initialize(
 	triggerDeadZone_R_ = 25; // 右
 	triggerDeadZone_L_ = 25; // 左
 
+	// シェイク強さリセット
+	handOverCameraShakeStrength_ = {0.0f, 0.0f};
+	shakeStrength_ = {0.0f, 0.0f};
+	// カメラシェイク無効
+	enableCameraShake_ = false;
+	// シェイク演出tリセット
+	shakeT_ = 0.0f;
+	// シェイク秒数リセット
+	shakeTime_ = 0.0f;
+
 	// 照準スプライト初期化
 	spriteReticle_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::Reticle],
@@ -185,6 +195,11 @@ void Player::Initialize(
 	// 追加するオーブの種類リセット
 	selectOrbs_ = PlayerBullet::Fire;
 
+	// シェイク強さリセット
+	testShakeStrength_ = {0.0f, 0.0f};
+	// シェイク秒数リセット
+	testShakeTime_ = 0.0f;
+
 #endif // _DEBUG
 #pragma endregion
 
@@ -243,6 +258,11 @@ void Player::Update() {
 		Reload();
 		// 特殊射撃
 		SpecialShot();
+	}
+
+	// カメラシェイクが有効ならカメラシェイクさせる
+	if (enableCameraShake_) {
+		CameraShake();
 	}
 
 	// UIの更新処理
@@ -356,6 +376,11 @@ void Player::Update() {
 	ImGui::DragInt("ChangeCoolTime", &changeCoolTime_, 1.0f);
 	ImGui::DragInt("DefaultChangeCoolTime", &kChangeCoolTime_, 1.0f);
 
+	ImGui::DragFloat2("shakeStrength", &testShakeStrength_.x, 0.1f);
+	ImGui::DragFloat("shakeTime", &testShakeTime_, 0.1f);
+	if (ImGui::Button("cameraShake")) {
+		PlayCameraShake(testShakeStrength_, testShakeTime_);
+	}
 
 	ImGui::End();
 
@@ -786,6 +811,34 @@ void Player::SpecialShot() {
 				}
 			}
 		}
+	}
+}
+
+void Player::PlayCameraShake(Vector2 shakeStrength, float shakeTime) {
+	// 引数の値をメンバ変数に代入
+	shakeStrength_ = shakeStrength;
+	shakeTime_ = shakeTime;
+
+	// 演出用tをリセット
+	shakeT_ = 0.0f;
+	// カメラ振動有効
+	enableCameraShake_ = true;
+}
+
+void Player::CameraShake() {
+	// 指定秒数カメラシェイク
+	if (shakeT_ <= shakeTime_) {
+		// カメラシェイクをイージングで表現
+		handOverCameraShakeStrength_.x = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.x, shakeStrength_.x, 2), 0.0f, shakeTime_);
+		handOverCameraShakeStrength_.y = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.y, shakeStrength_.y, 2), 0.0f, shakeTime_);
+		// 演出t加算
+		shakeT_ += 1.0f / 60.0f;
+	} else {
+		// カメラシェイク強さリセット
+		handOverCameraShakeStrength_ = {0.0f, 0.0f};
+		enableCameraShake_ = false;
 	}
 }
 

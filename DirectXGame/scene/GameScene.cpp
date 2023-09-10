@@ -140,6 +140,8 @@ void GameScene::Initialize() {
 	player_->SetViewProjection(camera_->GetViewProjection());
 	// エフェクトマネージャーにもカメラのビュープロジェクションをセット
 	effectManager_->SetViewProjection(camera_->GetViewProjection());
+	// カメラにカメラシェイク強さの変数ポインタを渡す
+	camera_->SetShakeStrength(player_->GetShakeStrength());
 }
 
 void GameScene::Update() {
