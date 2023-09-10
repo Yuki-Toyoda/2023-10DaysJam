@@ -316,21 +316,38 @@ void BossEnemy::CollectEnemies() {
 	// 敵のワールド座標を取得する
 	Vector3 bossEnemyrPos = GetWorldPosition();
 	// 敵->自キャラの差分ベクトルを求める
-	Vector3 toPlayer = playerPos - bossEnemyrPos;
+	//Vector3 toPlayer = playerPos - bossEnemyrPos;
 	//プレイヤーのレイ
-	Vector3 Ray = MyMath::Transform(
+	Vector3 ray = MyMath::Transform(
 	                  Vector3(0.0f, 0.0f, 1.0f),
 	                  MyMath::MakeRotateXYZMatrix(player_->GetWorldTransform()->rotation_)) +
 	              playerPos;
-	Vector3 toRay = playerPos - Ray;
-	if (MyMath::Dot(toPlayer, toRay) >= 0.0f) {
+	Vector3 playerRay = playerPos - ray;
+
+	// ボスのレイ
+	ray = MyMath::Transform(
+	                  Vector3(0.0f, 0.0f, 1.0f),
+	                  MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_)) +
+	      bossEnemyrPos;
+	Vector3 enemyRay = bossEnemyrPos - ray;
+
+	Vector3 toPlayer = bossEnemyrPos - playerPos;
+
+	//向きあっているかの値
+	float faceToFace = -0.5f;
+
+	ImGui::Begin("ok");
+	if (MyMath::Dot(enemyRay, playerRay) <= faceToFace && 
+		MyMath::Dot(enemyRay, toPlayer) >= 0.0f) {
 		if (shotAttackCooltime_ > 0) {
 			--shotAttackCooltime_;
 		} else {
 			shotAttackCooltime_ = shotAttackCooltimeMax_;
 			ShotAttack();
 		}
+		ImGui::Text("OK");
 	}
+	ImGui::End();
 
 }
 
@@ -569,13 +586,15 @@ void BossEnemy::ShotAttack() {
 	Vector3 velocity(0, 0, bulletSpeed_);
 	// 弾の位置
 	Vector3 position = GetWorldPosition();
+	//距離
+	float distance = 45.0f;
 
 	position.z += std::cosf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) *
-	              5.0f; // コサイン
+	              distance; // コサイン
 	position.x +=
-	    std::sinf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) * 5.0f;
+	    std::sinf(worldTransform_.rotation_.y) * std::cosf(worldTransform_.rotation_.x) * distance;
 	position.y +=
-	    -std::sinf(worldTransform_.rotation_.x) * std::cosf(worldTransform_.rotation_.z) * 5.0f;
+	    -std::sinf(worldTransform_.rotation_.x) * std::cosf(worldTransform_.rotation_.z) * distance;
 
 
 	//回転
