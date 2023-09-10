@@ -10,6 +10,44 @@
 /// テクスチャマネージャ
 /// </summary>
 class TextureManager {
+public: // サブクラス
+
+	enum PlayerTextures {
+		// サンプルテクスチャ
+		Texture1x1, // 1x1
+
+		// ボタン用テクスチャ
+		Dpad,        // 十字ボタン
+		DpadArrow_N, // 十字ボタン矢印
+		DpadArrow_P, // 十字ボタン矢印押下時
+		XButton_N,   // Xボタン
+		XButton_P,   // Xボタン押下時
+		RT_N,        // RTトリガー
+		RT_P,        // RTトリガー押下時
+		RB_N,        // RBトリガー
+		RB_P,        // RBトリガー押下時
+		LT_N,        // LTトリガー
+		LT_P,        // LTトリガー押下時
+
+		// UIテクスチャ
+		Reticle, // 照準
+		Orb,
+		FireBullet,
+		IceBullet,
+		ThunderBullet,
+		selectOrb,
+		selectArrow_L,
+		selectArrow_R,
+		RBHoldText,
+		changeOrbText,
+
+		// エフェクト用テクスチャ
+		IceWall,
+		IceWallDamage1,
+		IceWallDamage2,
+
+	};
+
 public:
 	// デスクリプターの数
 	static const size_t kNumDescriptors = 256;

@@ -25,7 +25,6 @@ class EffectManager;
 /// ゲームシーン
 /// </summary>
 class GameScene {
-
 public: // メンバ関数
 	/// <summary>
 	/// コンストクラタ
@@ -84,31 +83,39 @@ private: // メンバ変数
 	// 火花モデル
 	std::unique_ptr<Model> modelSpark_;
 
+	// 1x1テクスチャ
+	uint32_t textureHandle1x1_ = 0u;
+
 	// ボタン用テクスチャ達
 	uint32_t texturehandleDpad_ = 0u; // 十字ボタン
 	uint32_t texturehandleDpadArrow_N_ = 0u; // 十字ボタン矢印
 	uint32_t texturehandleDpadArrow_P_ = 0u; // 十字ボタン矢印押下時
+	uint32_t texturehandleButton_X_N_ = 0u; // Xボタン
+	uint32_t texturehandleButton_X_P_ = 0u; // Xボタン押下時
+	uint32_t texturehandleButton_RT_N_ = 0u; // RTトリガー
+	uint32_t texturehandleButton_RT_P_ = 0u; // RTトリガー押下時
+	uint32_t texturehandleButton_RB_N_ = 0u; // RBトリガー
+	uint32_t texturehandleButton_RB_P_ = 0u; // RBトリガー押下時
+	uint32_t texturehandleButton_LT_N_ = 0u; // LTトリガー
+	uint32_t texturehandleButton_LT_P_ = 0u; // LTトリガー押下時
 
-	// 1x1テクスチャ
-	uint32_t textureHandle1x1_ = 0u;
 	// レティクル用テクスチャ
 	uint32_t textureHandleReticle_ = 0u;
 	// オーブテクスチャ
 	uint32_t texturehandleOrb_ = 0u;
 	// 選択しているオーブを示すテクスチャ
 	uint32_t textureHandleSelectedOrb_ = 0u;
-
 	// 特殊弾テクスチャ
 	uint32_t texturehandleFireBullet_ = 0u; // 炎弾
 	uint32_t texturehandleIceBullet_ = 0u; // 炎弾
 	uint32_t texturehandleThunderBullet_ = 0u; // 雷弾
-
-	// 選択不可テクスチャ
-	uint32_t textureHandleX_ = 0u;
 	// 選択テクスチャ
 	uint32_t textureHandleSelectArrow_L_ = 0u;
 	uint32_t textureHandleSelectArrow_R_ = 0u;
-	// 
+	// RBホールドテキストテクスチャ
+	uint32_t textureHandleRBHoldText_ = 0u;
+	// オーブ変換テキストテクスチャ
+	uint32_t textureHandleChangeOrbText_ = 0u;
 
 	// 氷壁用テクスチャ
 	uint32_t textureHandleIceWallTex[3] = {0u};

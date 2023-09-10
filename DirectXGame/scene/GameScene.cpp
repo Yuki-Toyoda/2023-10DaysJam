@@ -39,40 +39,77 @@ void GameScene::Initialize() {
 	    modelSpark_.get() // 火花エフェクト用
 	}; // プレイヤー弾用モデルリストの生成
 
-	// テクスチャ読み込み
+	/// テクスチャ読み込み
+
+	// サンプルテクスチャ
 	textureHandle1x1_ = TextureManager::Load("white1x1.png");
-	textureHandleReticle_ = TextureManager::Load("/Image/Player/reticle.png");
-	texturehandleOrb_ = TextureManager::Load("/Image/Player/OrbUI.png");
-	texturehandleDpad_ = TextureManager::Load("/Image/Button/Dpad.png");
-	texturehandleDpadArrow_N_ = TextureManager::Load("/Image/Button/DpadArrow_P.png");
-	texturehandleDpadArrow_P_ = TextureManager::Load("/Image/Button/DpadArrow_N.png");
-	texturehandleFireBullet_ = TextureManager::Load("/Image/Player/FireBulletUI.png");
-	texturehandleIceBullet_ = TextureManager::Load("/Image/Player/IceBulletUI.png");
-	texturehandleThunderBullet_ = TextureManager::Load("/Image/Player/ThunderBulletUI.png");
-	textureHandleSelectedOrb_ = TextureManager::Load("/Image/Player/SelectedOrbUI.png");
-	textureHandleX_ = TextureManager::Load("/Image/Player/X.png");
-	textureHandleSelectArrow_L_ = TextureManager::Load("/Image/Player/selectArrowUI_L.png");
-	textureHandleSelectArrow_R_ = TextureManager::Load("/Image/Player/selectArrowUI_R.png");
+
+	// ボタン用テクスチャ達
+	texturehandleDpad_ = TextureManager::Load("/Image/Button/Dpad.png"); // 十字ボタン
+	texturehandleDpadArrow_N_ = TextureManager::Load("/Image/Button/DpadArrow_P.png"); // 十字ボタン矢印
+	texturehandleDpadArrow_P_ = TextureManager::Load("/Image/Button/DpadArrow_N.png"); // 十字ボタン矢印押下時
+	texturehandleButton_X_N_ = TextureManager::Load("/Image/Button/button_x_N.png"); // Xボタン
+	texturehandleButton_X_P_ = TextureManager::Load("/Image/Button/button_x_P.png"); // Xボタン押下時
+	texturehandleButton_RT_N_ = TextureManager::Load("/Image/Button/rt_N.png"); // RTトリガー
+	texturehandleButton_RT_P_ = TextureManager::Load("/Image/Button/rt_P.png"); // RTトリガー押下時
+	texturehandleButton_RB_N_ = TextureManager::Load("/Image/Button/rb_N.png"); // RBトリガー
+	texturehandleButton_RB_P_ = TextureManager::Load("/Image/Button/rb_P.png"); // RBトリガー押下時
+	texturehandleButton_LT_N_ = TextureManager::Load("/Image/Button/lt_N.png"); // LTトリガー
+	texturehandleButton_LT_P_ = TextureManager::Load("/Image/Button/lt_P.png"); // LTトリガー押下時
+
+	// UIテクスチャ群
+	textureHandleReticle_ = TextureManager::Load("/Image/Player/reticle.png"); // 照準
+	texturehandleOrb_ = TextureManager::Load("/Image/Player/OrbUI.png"); // オーブ
+	texturehandleFireBullet_ = TextureManager::Load("/Image/Player/FireBulletUI.png"); // 炎弾
+	texturehandleIceBullet_ = TextureManager::Load("/Image/Player/IceBulletUI.png"); // 氷弾
+	texturehandleThunderBullet_ = TextureManager::Load("/Image/Player/ThunderBulletUI.png"); // 雷弾
+	textureHandleSelectedOrb_ = TextureManager::Load("/Image/Player/SelectedOrbUI.png"); // 選択オーブ
+	textureHandleSelectArrow_L_ =
+	    TextureManager::Load("/Image/Player/selectArrowUI_L.png"); // オーブ選択左矢印
+	textureHandleSelectArrow_R_ =
+	    TextureManager::Load("/Image/Player/selectArrowUI_R.png"); // オーブ選択右矢印
+	textureHandleRBHoldText_ =
+	    TextureManager::Load("/Image/Player/RBHoldUI.png"); // RBホールドテキスト
+	textureHandleChangeOrbText_ = TextureManager::Load("/Image/Player/changeOrbTextUI.png"); // 選択オーブテキスト
+
+	// エフェクトテクスチャ群
 	textureHandleIceWallTex[0] = TextureManager::Load("/Wall/WallTex.png");
 	textureHandleIceWallTex[1] = TextureManager::Load("/Wall/WallTex2.png");
 	textureHandleIceWallTex[2] = TextureManager::Load("/Wall/WallTex3.png");
-	std::vector<uint32_t> playerTextureHandles = {
+
+	std::vector<uint32_t> playerTextureHandles = { 
+		// サンプルテクスチャ
 		textureHandle1x1_, // 1x1
+
+		// ボタン用テクスチャ
+		texturehandleDpad_, // 十字ボタン
+		texturehandleDpadArrow_N_, // 十字ボタン矢印
+		texturehandleDpadArrow_P_, // 十字ボタン矢印押下時
+		texturehandleButton_X_N_, // Xボタン
+		texturehandleButton_X_P_, // Xボタン押下時
+		texturehandleButton_RT_N_, // RTトリガー
+		texturehandleButton_RT_P_, // RTトリガー押下時
+		texturehandleButton_RB_N_, // RBトリガー
+		texturehandleButton_RB_P_, // RBトリガー押下時
+		texturehandleButton_LT_N_, // LTトリガー
+		texturehandleButton_LT_P_, // LTトリガー押下時
+
+		// UIテクスチャ
 	    textureHandleReticle_, // 照準
-	    texturehandleOrb_, // オーブ
-	    texturehandleDpad_,  // 十字ボタン
-		texturehandleDpadArrow_N_, 
-		texturehandleDpadArrow_P_, 
-		texturehandleFireBullet_,
-		texturehandleIceBullet_,   
-		texturehandleThunderBullet_,
-	    textureHandleSelectedOrb_,
-	    textureHandleX_,           
-		textureHandleSelectArrow_L_,
-		textureHandleSelectArrow_R_,
-		textureHandleIceWallTex[0],
-		textureHandleIceWallTex[1],
-		textureHandleIceWallTex[2],
+	    texturehandleOrb_, // オーブ 
+		texturehandleFireBullet_, // 炎弾
+		texturehandleIceBullet_, // 氷弾
+		texturehandleThunderBullet_, // 雷弾
+	    textureHandleSelectedOrb_, // オーブ選択
+		textureHandleSelectArrow_L_, // オーブ選択左矢印
+		textureHandleSelectArrow_R_, // オーブ選択右矢印
+	    textureHandleRBHoldText_, // RBホールドテキスト
+	    textureHandleChangeOrbText_, // 選択オーブテキスト
+
+		// エフェクト用テクスチャ
+		textureHandleIceWallTex[0], // 氷壁1段階目
+	    textureHandleIceWallTex[1], // 氷壁2段階目
+	    textureHandleIceWallTex[2], // 氷壁3段階目
 	};
 
 	// エフェクトマネージャーの取得

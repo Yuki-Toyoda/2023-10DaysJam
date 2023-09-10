@@ -106,6 +106,11 @@ private: // 行動関数
 private: // その他関数
 
 	/// <summary>
+	/// UIの更新処理
+	/// </summary>
+	void UIUpdate();
+
+	/// <summary>
 	/// 調整項目適用関数
 	/// </summary>
 	void ApplyGlobalVariables() override;
@@ -157,6 +162,10 @@ private: // メンバ関数
 	std::unique_ptr<Sprite> spriteDpadUP_; // 上
 	std::unique_ptr<Sprite> spriteDpadLeft_; // 左
 	std::unique_ptr<Sprite> spriteDpadRight_; // 右
+
+	// オーブ変換テキスト
+	UI spriteChangeOrbUI_;
+	std::unique_ptr<Sprite> spriteChangeOrbText_;
 
 	// プレイヤー身長
 	float height_;
