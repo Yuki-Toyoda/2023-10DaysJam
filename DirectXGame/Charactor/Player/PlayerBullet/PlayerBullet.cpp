@@ -637,6 +637,7 @@ void PlayerBullet::ColliderUpdate() {
 	case PlayerBullet::Thunder:
 		// 雷弾更新
 		scale.x *= 65.0f;
+		scale.y *= 200.0f;
 		scale.z *= 65.0f;
 		colliderShape_->Update(pos, rotate, scale);
 		break;
