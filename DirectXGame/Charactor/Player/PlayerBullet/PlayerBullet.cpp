@@ -623,17 +623,21 @@ void PlayerBullet::ColliderUpdate() {
 		break;
 	case PlayerBullet::Fire:
 		// 炎弾更新
-		scale = scale * 0.85f;
+		scale = scale * 50.0f;
 		colliderShape_->Update(pos, rotate, scale);
 		break;
 	case PlayerBullet::Ice:
 		// 水弾更新
-		pos.y += worldTransform_.scale_.y;
-		scale.z *= 0.35f;
+		pos.y += worldTransform_.scale_.y * 20.0f;
+		scale.x *= 50.0f;
+		scale.y *= 20.0f;
+		scale.z *= 6.0f;
 		colliderShape_->Update(pos, rotate, scale);
 		break;
 	case PlayerBullet::Thunder:
 		// 雷弾更新
+		scale.x *= 65.0f;
+		scale.z *= 65.0f;
 		colliderShape_->Update(pos, rotate, scale);
 		break;
 	default:
