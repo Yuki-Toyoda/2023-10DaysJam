@@ -212,7 +212,14 @@ void EnemyManager::Reset() {
 
 	Delete();
 	enemyCount_ = 0;
+	
+	// エネミースポナーの追加
+	spawnerNumber_ = 0;
+	AddEnemySpawner();
+	AddEnemySpawner();
 
+	//ボスエネミーの追加
+	AddBossEnemy();
 
 }
 

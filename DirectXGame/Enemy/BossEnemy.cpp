@@ -340,7 +340,6 @@ void BossEnemy::CollectEnemies() {
 	//向きあっているかの値
 	float faceToFace = -0.5f;
 
-	ImGui::Begin("ok");
 	if (MyMath::Dot(enemyRay, playerRay) <= faceToFace && 
 		MyMath::Dot(enemyRay, toPlayer) >= 0.0f) {
 		if (shotAttackCooltime_ > 0) {
@@ -349,9 +348,7 @@ void BossEnemy::CollectEnemies() {
 			shotAttackCooltime_ = shotAttackCooltimeMax_;
 			ShotAttack();
 		}
-		ImGui::Text("OK");
 	}
-	ImGui::End();
 
 }
 

@@ -243,9 +243,18 @@ void GameScene::Initialize() {
 	fadeSize_ = {float(WinApp::kWindowWidth), float(WinApp::kWindowHeight)};
 	fadeSprite_->SetSize(fadeSize_);
 
+	// ゲームパッドの状態取得
+	input_->GetJoystickState(0, joyState);
+	preJoyState = joyState;
+
 }
 
 void GameScene::Update() {
+
+	// ゲームパッドの状態取得
+	preJoyState = joyState;
+	input_->GetJoystickState(0, joyState);
+	
 
 	switch (currentScene_) {
 	case GameScene::Title:
@@ -255,7 +264,9 @@ void GameScene::Update() {
 		TutorialUpdate();
 		break;
 	case GameScene::Main:
-		MainUpdate();
+		if (!theGameIsOver) {
+			MainUpdate();
+		}
 		break;
 	case GameScene::GameClear:
 		GameClearUpdate();
@@ -273,11 +284,7 @@ void GameScene::Update() {
 
 }
 
-void GameScene::TitleUpdate() {
-
-
-
-}
+void GameScene::TitleUpdate() {}
 
 void GameScene::TutorialUpdate() {}
 
@@ -293,7 +300,7 @@ void GameScene::MainUpdate() {
 	ground_->Update();        // 地面
 	player_->Update();        // プレイヤー
 	effectManager_->Update(); // エフェクトマネージャー
-	enemyManager_->Update();  // エネミー
+	enemyManager_->Update();  // エネミーマネージャー
 
 	// デバックカメラ有効時
 	if (enableDebugCamera_) {
@@ -335,6 +342,12 @@ void GameScene::MainUpdate() {
 	// 当たり判定
 	collisionManager->CheakAllCollision();
 
+	//ゲームオーバーか?
+	if (player_->GetHp() <= 0) {
+		FadeInOutSetUp(GameOver);
+		theGameIsOver = true;
+	}
+
 	#ifdef _DEBUG
 
 	// フィールドの更新
@@ -351,17 +364,48 @@ void GameScene::MainUpdate() {
 
 void GameScene::GameClearUpdate() {}
 
-void GameScene::GameOverUpdate() {}
+void GameScene::GameOverUpdate() {
+
+	//Aボタンでタイトルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+		FadeInOutSetUp(Main);
+	}
+
+}
 
 void GameScene::FadeInOutUpdate() {
 
 	if (isFadeOut_) {
 		if (--fadeTimer_ == 0) {
+			// 次のシーンへ
 			isFadeOut_ = false;
 			isFadeIn_ = true;
 			fadeTimer_ = kFadeTime_;
 			currentScene_ = nextScene_;
 			fadeColor_.w = 1.0f;
+
+			//セットアップ
+			switch (nextScene_) {
+			case GameScene::Title:
+				TitleSetup();
+				break;
+			case GameScene::Tutorial:
+				TutorialSetup();
+				break;
+			case GameScene::Main:
+				MainSetup();
+				break;
+			case GameScene::GameClear:
+				GameClearSetup();
+				break;
+			case GameScene::GameOver:
+				GameOverSetup();
+				break;
+			default:
+				break;
+			}
+
 		} else {
 			fadeColor_.w = float(kFadeTime_ - fadeTimer_) / float(kFadeTime_);
 		}
@@ -378,11 +422,36 @@ void GameScene::FadeInOutUpdate() {
 
 }
 
-void GameScene::FadeInOutSetUp(SceneName nextScene) {
+void GameScene::TitleSetup() {}
 
-	isFadeOut_ = true;
-	nextScene_ = nextScene;
-	fadeTimer_ = kFadeTime_;
+void GameScene::TutorialSetup() {}
+
+void GameScene::MainSetup() {
+
+	theGameIsOver = false;
+
+	// カメラ
+	camera_->SetUp();
+	// プレイヤー
+	player_->Setup();
+	// エフェクトマネージャー
+	effectManager_->Initialize();
+	// エネミーマネージャー
+	enemyManager_->Reset();
+
+}
+
+void GameScene::GameClearSetup() {}
+
+void GameScene::GameOverSetup() {}
+
+void GameScene::FadeInOutSetUp(SceneName nextScene) {
+	
+	if (!isFadeOut_ && !isFadeIn_) {
+		isFadeOut_ = true;
+		nextScene_ = nextScene;
+		fadeTimer_ = kFadeTime_;
+	}
 
 }
 

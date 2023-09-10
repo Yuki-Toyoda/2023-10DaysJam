@@ -95,6 +95,33 @@ private: // 更新処理
 	/// </summary>
 	void FadeInOutUpdate();
 
+private: // セットアップ
+
+	/// <summary>
+	/// タイトル
+	/// </summary>
+	void TitleSetup();
+
+	/// <summary>
+	/// チュートリアル
+	/// </summary>
+	void TutorialSetup();
+
+	/// <summary>
+	/// 本編
+	/// </summary>
+	void MainSetup();
+
+	/// <summary>
+	/// クリア
+	/// </summary>
+	void GameClearSetup();
+
+	/// <summary>
+	/// ゲームオーバー
+	/// </summary>
+	void GameOverSetup();
+
 	/// <summary>
 	/// フェードインアウトセットアップ
 	/// </summary>
@@ -276,5 +303,12 @@ private: // メンバ変数
 	Vector4 fadeColor_;
 	// フェードサイズ
 	Vector2 fadeSize_;
+
+	//ゲーム終了したか
+	bool theGameIsOver;
+
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	XINPUT_STATE preJoyState;
 
 };

@@ -55,6 +55,11 @@ public: // メンバ関数
 	/// </summary>
 	void ColliderDraw(bool enableDebugCamera);
 
+	/// <summary>
+	/// セットアップ
+	/// </summary>
+	void Setup();
+
 public: // アクセッサ等
 
 	/// <summary>
@@ -105,6 +110,11 @@ public: // アクセッサ等
 	/// 変換に必要な敵の数を減らす関数
 	/// </summary>
 	void SubtractNeedChangeOrbEnemyCount_();
+
+	/// <summary>
+	/// hp取得
+	/// </summary>
+	int32_t GetHp() { return hp; }
 
 private: //衝突処理
 

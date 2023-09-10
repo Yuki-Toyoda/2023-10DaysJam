@@ -650,6 +650,109 @@ void Player::ColliderDraw(bool enableDebugCamera) {
 	}
 }
 
+void Player::Setup() {
+
+	// 初期座標を設定
+	worldTransform_.translation_ = {0.0f, 100.0f, 0.0f};
+	// シェイク強さリセット
+	handOverCameraShakeStrength_ = {0.0f, 0.0f};
+	shakeStrength_ = {0.0f, 0.0f};
+	// カメラシェイク無効
+	enableCameraShake_ = false;
+	// シェイク演出tリセット
+	shakeT_ = 0.0f;
+	// シェイク秒数リセット
+	shakeTime_ = 0.0f;
+
+		// 身長高さ
+	height_ = 20.0f;
+
+	// 行動可能に
+	canAction_ = true;
+
+	// 移動速度初期化
+	moveSpeed_ = 3.0f;
+	// 最大落下速度設定
+	kMaxFallSpeed_ = -9.8f;
+	// 落下速度初期化
+	fallSpeed_ = 0.0f;
+	// 落下加速度
+	kFallAcceleration_ = 0.098f;
+	// 接地している
+	isGround_ = false;
+
+	// ジャンプ不可能に
+	canJump_ = false;
+	// ジャンプ速度初期化
+	jumpSpeed_ = 0.0f;
+	// 最大ジャンプ速度設定
+	kMaxJumpHeight_ = 5.0f;
+	// ジャンプ減衰速度を設定
+	kJumpDecayRate_ = 0.098f;
+
+	// 射撃座標のオフセット
+	shotPosOffset_ = {0.0f, -5.0f, 0.0f};
+	// カメラから照準オブジェクトの距離
+	kDistanceToReticleObject_ = 150.0f;
+	// 射撃可能に
+	canShot_ = true;
+	// 弾速設定
+	bulletSpeed_ = 20.0f;
+	// 発射レートリセット
+	fireCoolTime_ = 0;
+	// 発射レート設定
+	kMaxFireCoolTime_ = 15;
+	// 最大弾数設定
+	kMaxMagazine_ = 15;
+	// 弾数リセット
+	magazine_ = kMaxMagazine_;
+	// リロード中ではない
+	isReloading_ = false;
+	// リロード時間設定
+	kMaxReloadTime_ = 60;
+	// リロード時間リセット
+	reloadTime_ = kMaxReloadTime_;
+
+	// オーブ所持数最大値設定
+	kMaxHavingOrbs_ = 3;
+	// 所持オーブのリセット
+	havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());
+
+		// 特殊射撃で撃つ予定の弾のリセット
+	specialShotBulletPlans_ = PlayerBullet::None;
+	// 特殊射撃の強さをリセット
+	specialShotStrength_ = 1;
+	// 特殊射撃できるか
+	canSpecialShot_ = false;
+	// チャージするオーブの種類リセット
+	selectedChangeType_ = PlayerBullet::Fire;
+	// 現在選択しているオーブ
+	selectedChangeOrb_ = 0;
+	// 変換に必要な敵数のデフォルト値設定
+	kNeedChangeOrbEnemyCount_ = 5;
+	// 変換に必要な敵数設定
+	needChangeOrbEnemyCount_ = kNeedChangeOrbEnemyCount_;
+	// 変換クールタイム
+	changeCoolTime_ = 0;
+	// 変換クールタイムデフォルト値
+	kChangeCoolTime_ = 120;
+
+	// 体力
+	hp = StartHp;
+
+	// 無敵か
+	isInvincible_ = false;
+	// 無敵タイマー
+	invincibilityTimer_ = 0;
+
+	// デスフラグの立った弾を削除
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		delete bullet;
+		return true;
+	});
+
+}
+
 void Player::OnCollision(Collider* collision) { 
 	
 	if (collision->GetTag() == TagPlayerBulletIce) {

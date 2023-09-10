@@ -19,6 +19,11 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// セットアップ
+	/// </summary>
+	void SetUp();
+
 public: // アクセッサ等
 
 	/// <summary>

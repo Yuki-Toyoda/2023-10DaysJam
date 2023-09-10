@@ -86,6 +86,14 @@ void Camera::Update() {
 	viewProjection_.UpdateMatrix();
 }
 
+void Camera::SetUp() {
+
+	viewProjection_.Initialize();
+	viewProjection_.translation_ = {0.0f, 5.0f, 0.0f};
+	viewProjection_.rotation_ = {0.0f, 0.0f, 0.0f};
+
+}
+
 void Camera::ApplyGlobalVariables() {
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
