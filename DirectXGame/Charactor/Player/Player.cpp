@@ -2,6 +2,7 @@
 #include "../../config/GlobalVariables.h"
 #include "TextureManager.h"
 #include "Collision/ColliderShape/OBB.h"
+#include <Ambient/Field.h>
 
 void Player::Initialize(
     const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet,
@@ -368,6 +369,8 @@ void Player::Update() {
 	// 調整項目を反映
 	ApplyGlobalVariables();
 
+	// 位置制限
+	TranslationLimit();
 	// 基底クラス更新
 	BaseCharacter::Update();
 
@@ -1017,6 +1020,21 @@ void Player::CameraShake() {
 		handOverCameraShakeStrength_ = {0.0f, 0.0f};
 		enableCameraShake_ = false;
 	}
+}
+
+void Player::TranslationLimit() {
+
+	// トランスフォームの制限確認
+	Field* field = Field::GetInstance();
+	worldTransform_.translation_.x =
+	    std::clamp(worldTransform_.translation_.x, field->GetMin().x, field->GetMax().x);
+
+	worldTransform_.translation_.y =
+	    std::clamp(worldTransform_.translation_.y, field->GetMin().y, field->GetMax().y);
+
+	worldTransform_.translation_.z =
+	    std::clamp(worldTransform_.translation_.z, field->GetMin().z, field->GetMax().z);
+
 }
 
 void Player::UIUpdate() {

@@ -151,6 +151,11 @@ private: // 行動関数
 	/// </summary>
 	void CameraShake();
 
+	/// <summary>
+	/// 位置制限
+	/// </summary>
+	void TranslationLimit();
+
 private: // その他関数
 
 	/// <summary>

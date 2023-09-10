@@ -94,6 +94,11 @@ public: // メンバ関数
 	/// </summary>
 	void HpFluctuation(int32_t damage, uint32_t InvincibilityTime);
 
+	/// <summary>
+	/// 位置制限
+	/// </summary>
+	void TranslationLimit();
+
 public: // 衝突処理
 
 	/// <summary>
