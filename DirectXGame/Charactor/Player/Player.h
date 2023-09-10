@@ -228,6 +228,19 @@ private: // メンバ関数
 	UI spriteChangeOrbUI_;
 	std::unique_ptr<Sprite> spriteChangeOrbText_;
 
+	// 左トリガースプライト
+	UI spriteLeftTriggerUI_;
+	std::unique_ptr<Sprite> spriteLeftTrigger_;
+	// 特殊射撃テキストスプライト
+	UI spriteSpecialShotTextUI_;
+	std::unique_ptr<Sprite> specialShotText_;
+	// 現在の特殊射撃スプライト
+	UI spriteNowSpecialShotPlanUI_;
+	std::unique_ptr<Sprite> spriteSpecialShotPlan_;
+	// 現在の特殊射撃倍率スプライト
+	UI spriteSpecialShotMagnificationUI_;
+	std::unique_ptr<Sprite> spriteSpecialShotMagnification_;
+
 	// プレイヤー身長
 	float height_;
 
