@@ -54,6 +54,8 @@ void EnemySpawner::Initialize(EnemyManager* enemyManager, uint32_t num) {
 
 void EnemySpawner::Update() {
 
+	ApplyGlobalVariables();
+
 	if (--generateCooltime_ == 0) {
 		Spawn();
 	}
