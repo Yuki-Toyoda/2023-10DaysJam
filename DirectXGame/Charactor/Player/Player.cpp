@@ -540,6 +540,11 @@ void Player::OnCollisionEnemy() {
 	invincibilityTimer_ = collisionInvincibilityTime_;
 	isInvincible_ = true;
 
+	//カメラシェイク
+	Vector2 shakeStrength = { 5.0f,5.0f}; // カメラシェイク強さ
+	float shakeTime = 1.0f; // シェイクタイム
+	PlayCameraShake(shakeStrength, shakeTime);
+
 }
 
 void Player::Move() {
