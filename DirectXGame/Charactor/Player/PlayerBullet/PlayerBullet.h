@@ -1,6 +1,7 @@
 #pragma once
 #include "../Charactor/BaseCharacter.h"
 #include "../math/MyMath.h"
+#include "../audio/Audio.h"
 
 /// <summary>
 /// プレイヤー弾クラス
@@ -49,6 +50,7 @@ public: // メンバ関数
 	/// <param name="bulletStrength">撃つ弾の強さ</param>
 	void Initialize(
 	    const std::vector<Model*>& models, const std::vector<uint32_t>& textureHandles,
+	    const std::vector<uint32_t>& audioHandles,
 	    Vector3 startPos, Vector3 startotation, Vector3 velocity,
 	    BulletType bulletType, int32_t bulletStrength);
 
@@ -129,8 +131,14 @@ public: //自分取得
 
 private: // メンバ変数
 
+	// 音再生用
+	Audio* audio_;
+
 	// テクスチャリスト
 	std::vector<uint32_t> textureHandles_;
+
+	// 効果音リスト
+	std::vector<uint32_t> audioHandles_;
 
 	// 死亡状態
 	bool isDead_;
@@ -201,6 +209,10 @@ private: // メンバ変数
 	float deploymentAreaTime_;
 	// 終了演出時間
 	float deployAreaEndStagingTime_;
+
+	// 効果音ループ用変数
+	int voiceHandleDeployThunderArea_ = -1;
+
 #pragma endregion
 
 
