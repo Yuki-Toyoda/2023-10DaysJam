@@ -210,6 +210,7 @@ void Enemy::Move() {
 	Vector3 velocity(0.0f, moveRotateSpeed_, 0.0f);
 
 	worldTransform_.rotation_.y = worldTransform_.rotation_.y + velocity.y;
+	worldTransform_.rotation_.x = 0.0f;
 	
 	//移動
 	// 速度ベクトルを自機の向きに合わせて回転させる
