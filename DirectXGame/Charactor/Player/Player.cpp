@@ -91,13 +91,71 @@ void Player::Initialize(
 
 	// オーブ変換テキストの初期化
 	spriteChangeOrbUI_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
-	spriteChangeOrbUI_.position_ = {200.0f, 500.0f}; // 座標
+	spriteChangeOrbUI_.position_ = {220.0f, 485.0f}; // 座標
 	spriteChangeOrbUI_.size_ = {256.0f, 64.0f}; // 大きさ
 	spriteChangeOrbText_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::RBHoldText],
 	    {spriteChangeOrbUI_.position_.x, spriteChangeOrbUI_.position_.y},
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteChangeOrbText_->SetSize(spriteChangeOrbUI_.size_);
+
+	// オーブ変換テキスト2のリセット
+	spriteChangeOrbUI2_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
+	spriteChangeOrbUI2_.position_ = {1125.0f, 125.0f};                                 // 座標
+	spriteChangeOrbUI2_.size_ = {256.0f, 32.0f};                                      // 大きさ
+	spriteChangeOrbText2_.reset(Sprite::Create(
+	    textureHandles_[TextureManager::changeOrbText2],
+	    {spriteChangeOrbUI2_.position_.x, spriteChangeOrbUI2_.position_.y},
+	    {1.0f, 1.0f, 1.0f, 1.0f},
+	    {0.5f, 0.5f}));
+	spriteChangeOrbText2_->SetSize(spriteChangeOrbUI2_.size_);
+
+	// オーブ変換に必要な敵数テキスト
+	spriteNeedChangeOrbEnemyCountTextUI_.textureHandle_ =
+	    textureHandles_[TextureManager::NeedEnemyCountText]; // テクスチャ
+	spriteNeedChangeOrbEnemyCountTextUI_.position_ = {1050.0f, 175.0f}; 
+	spriteNeedChangeOrbEnemyCountTextUI_.size_ = {384.0f, 64.0f}; 
+	spriteNeedChangeOrbEnemyCountText_.reset(Sprite::Create(
+	    spriteNeedChangeOrbEnemyCountTextUI_.textureHandle_,
+	    spriteNeedChangeOrbEnemyCountTextUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteNeedChangeOrbEnemyCountText_->SetSize(spriteNeedChangeOrbEnemyCountTextUI_.size_);
+
+	// オーブ変換に必要な敵数
+	spriteNeedChangeOrbEnemyCountUI_.textureHandle_ =
+	    textureHandles_[TextureManager::texture_0]; // テクスチャ
+	spriteNeedChangeOrbEnemyCountUI_.position_ = {
+	    spriteNeedChangeOrbEnemyCountTextUI_.position_.x +
+	        (spriteNeedChangeOrbEnemyCountTextUI_.size_.x / 2.0f),
+	    spriteNeedChangeOrbEnemyCountTextUI_.position_.y}; // 座標
+	spriteNeedChangeOrbEnemyCountUI_.size_ = {64.0f, 64.0f}; // 大きさ
+	spriteNeedChangeOrbEnemyCount_.reset(Sprite::Create(
+	    spriteNeedChangeOrbEnemyCountUI_.textureHandle_, 
+		spriteNeedChangeOrbEnemyCountUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteNeedChangeOrbEnemyCount_->SetSize(spriteNeedChangeOrbEnemyCountUI_.size_);
+
+	// 右トリガースプライト
+	spriteRightTriggerUI_.textureHandle_ =
+	    textureHandles_[TextureManager::RT_N]; // テクスチャ
+	spriteRightTriggerUI_.position_ = {1000.0f, 525.0f}; // 座標
+	spriteRightTriggerUI_.size_ = {96.0f, 96.0f};       // 大きさ
+	spriteRightTrigger_.reset(Sprite::Create(
+	    spriteRightTriggerUI_.textureHandle_, spriteRightTriggerUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteRightTrigger_->SetSize(spriteRightTriggerUI_.size_);
+
+	// 通常射撃テキストの初期化
+	spriteNormalShotTextUI_.textureHandle_ = textureHandles_[TextureManager::NormalShotText];
+	spriteNormalShotTextUI_.size_ = {256.0f, 64.0f}; // 大きさ
+	spriteNormalShotTextUI_.position_ = {
+	    spriteRightTriggerUI_.position_.x + (spriteRightTriggerUI_.size_.x) +
+	        (spriteRightTriggerUI_.size_.x / 2.0f),
+	    spriteRightTriggerUI_.position_.y}; // 座標
+	spriteNormalShotText_.reset(Sprite::Create(
+	    spriteNormalShotTextUI_.textureHandle_, spriteNormalShotTextUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteNormalShotText_->SetSize(spriteNormalShotTextUI_.size_);
 
 	// 左トリガースプライト初期化
 	spriteLeftTriggerUI_.textureHandle_ = textureHandles_[TextureManager::LT_N];
@@ -182,7 +240,7 @@ void Player::Initialize(
 	// 発射レートリセット
 	fireCoolTime_ = 0;
 	// 発射レート設定
-	kMaxFireCoolTime_ = 25;
+	kMaxFireCoolTime_ = 15;
 	// 最大弾数設定
 	kMaxMagazine_ = 15;
 	// 弾数リセット
@@ -232,6 +290,10 @@ void Player::Initialize(
 	selectedChangeType_ = PlayerBullet::Fire;
 	// 現在選択しているオーブ
 	selectedChangeOrb_ = 0;
+	// 変換に必要な敵数のデフォルト値設定
+	kNeedChangeOrbEnemyCount_ = 5;
+	// 変換に必要な敵数設定
+	needChangeOrbEnemyCount_ = kNeedChangeOrbEnemyCount_;
 	// 変換クールタイム
 	changeCoolTime_ = 0;
 	// 変換クールタイムデフォルト値
@@ -488,6 +550,11 @@ void Player::Update() {
 	ImGui::DragFloat3("wT", &worldTransform_.translation_.x, 1.0f);
 	ImGui::DragInt("HP", &hp);
 
+	ImGui::DragInt("needChangeOrbEnemyCount_", &needChangeOrbEnemyCount_, 1.0f);
+	if (ImGui::Button("SubtractNeedChangeOrbEnemyCount")) {
+		SubtractNeedChangeOrbEnemyCount_();
+	}
+
 	ImGui::End();
 
 #endif // _DEBUG
@@ -516,8 +583,17 @@ void Player::SpriteDraw() {
 			spriteDpadUP_->Draw(); // 十字上ボタンUI描画
 			spriteDpadLeft_->Draw(); // 十字左ボタンUI描画
 			spriteDpadRight_->Draw(); // 十字右ボタンUI描画
+			spriteChangeOrbText2_->Draw(); // オーブ変換テキスト2
 		}
 	}
+
+	// 変換に必要な敵数
+	spriteNeedChangeOrbEnemyCountText_->Draw();
+	spriteNeedChangeOrbEnemyCount_->Draw();
+
+	// 通常射撃描画
+	spriteRightTrigger_->Draw();
+	spriteNormalShotText_->Draw();
 
 	// 現在の特殊射撃を描画
 	spriteLeftTrigger_->Draw();
@@ -575,6 +651,17 @@ void Player::AddOrbs(PlayerBullet::BulletType orbType) {
 	}
 	// 引数のオーブを追加
 	havingOrbs_.push_back(orbType);
+}
+
+void Player::SubtractNeedChangeOrbEnemyCount_() {
+	// 変換に必要な敵数が0以下ではない時
+	if (needChangeOrbEnemyCount_ > 0) {
+		// 敵数デクリメント
+		needChangeOrbEnemyCount_--;
+	} else {
+		// 敵数固定
+		needChangeOrbEnemyCount_ = 0;
+	}
 }
 
 void Player::OnCollisionIce() {
@@ -972,22 +1059,19 @@ void Player::SpecialShot() {
 			}
 
 			// オーブの数が1以上なら
-			if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
+			if (havingOrbCount > 0 && needChangeOrbEnemyCount_ <= 0) {
 				// 選択したオーブを別のオーブに変換する
 				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
-					// 所持しているオーブリストの指定された位置に新しいオーブを挿入
-					havingOrbs_.insert(
-					    havingOrbs_.begin() + selectedChangeOrb_,
-					    (PlayerBullet::BulletType)selectedChangeType_);
-					// 変換に使用したオーブを削除
-					havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
-					// 変換クールタイムを設定
-					changeCoolTime_ = kChangeCoolTime_;
-				}
-			} else {
-				if (changeCoolTime_ > 0) {
-					// 変換クールタイムデクリメント
-					changeCoolTime_--;
+					if (havingOrbs_[selectedChangeOrb_] != selectedChangeType_) {
+						// 所持しているオーブリストの指定された位置に新しいオーブを挿入
+						havingOrbs_.insert(
+						    havingOrbs_.begin() + selectedChangeOrb_,
+						    (PlayerBullet::BulletType)selectedChangeType_);
+						// 変換に使用したオーブを削除
+						havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
+						// 変換に必要な敵数をリセット
+						needChangeOrbEnemyCount_ = kNeedChangeOrbEnemyCount_;
+					}
 				}
 			}
 		}
@@ -1103,12 +1187,16 @@ void Player::UIUpdate() {
 
 	// オーブが２つ以上ある場合矢印を
 	if (havingOrbCount >= 2) {
-		// 矢印UIを明るい状態に
+		if (needChangeOrbEnemyCount_ <= 0) {
+			// 矢印UIを明るい状態に
+			spriteChangeOrbText2_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		}
 		spriteDpadLeft_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 		spriteDpadRight_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	} 
 	else {
 		// 矢印UIを暗い状態に
+		spriteChangeOrbText2_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
 		spriteDpadLeft_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
 		spriteDpadRight_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
 	}
@@ -1155,20 +1243,89 @@ void Player::UIUpdate() {
 		break;
 	}
 
+	// 変換に必要な敵数を元にスプライトを変更
+	switch (needChangeOrbEnemyCount_) { 
+		case 0:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_0]);
+		break;
+		case 1:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_1]);
+		break;
+		case 2:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_2]);
+		break;
+		case 3:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_3]);
+		break;
+		case 4:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_4]);
+		break;
+		case 5:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_5]);
+		break;
+		case 6:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_6]);
+		break;
+		case 7:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_7]);
+		break;
+		case 8:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_8]);
+		break;
+		case 9:
+		// スプライトを変更
+		spriteNeedChangeOrbEnemyCount_->SetTextureHandle(
+		    textureHandles_[TextureManager::texture_9]);
+		break;
+	default:
+		break;
+	}
+
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
+
+		// Rトリガーが押されたら
+		if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_P]);
+		} else {
+			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
+		}
+
 		// RBホールド
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 			// テキストUIのテクスチャを変更
 			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
 			// テクスチャ描画範囲設定
 			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
+			spriteChangeOrbText_->SetPosition({230.0f, 475.0f}); // 座標
+			spriteChangeOrbText_->SetSize({352.0f, 88.0f});     // 大きさ
 		} else {
 			// テキストUIのテクスチャを変更
 			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::RBHoldText]);	
 			// テクスチャ描画範囲設定
 			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {512.0f, 128.0f});	
+
+			spriteChangeOrbText_->SetPosition({195.0f, 485.0f}); // 座標
+			spriteChangeOrbText_->SetSize({256.0f, 64.0f});      // 大きさ
 
 		}
 		// 左トリガー
