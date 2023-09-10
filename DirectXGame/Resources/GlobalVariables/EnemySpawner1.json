@@ -1,70 +1,70 @@
 {
     "EnemySpawner1": {
-        "GenerateCooltimeMax": 120,
+        "GenerateCooltimeMax": 30,
         "Size": [
             50.0,
             10.0,
             50.0
         ],
-        "posChangeCooltime0": 0,
-        "posChangeCooltime1": 0,
-        "posChangeCooltime2": 0,
-        "posChangeCooltime3": 0,
-        "posChangeCooltime4": 0,
-        "posChangeCooltime5": 0,
-        "posChangeCooltime6": 0,
-        "posChangeCooltime7": 0,
-        "posChangeCooltime8": 0,
-        "posChangeCooltime9": 0,
+        "posChangeCooltime0": 300,
+        "posChangeCooltime1": 300,
+        "posChangeCooltime2": 300,
+        "posChangeCooltime3": 300,
+        "posChangeCooltime4": 300,
+        "posChangeCooltime5": 300,
+        "posChangeCooltime6": 300,
+        "posChangeCooltime7": 300,
+        "posChangeCooltime8": 300,
+        "posChangeCooltime9": 300,
         "position0": [
             0.0,
             50.0,
-            0.0
+            -300.0
         ],
         "position1": [
             0.0,
             50.0,
-            0.0
+            -300.0
         ],
         "position2": [
-            0.0,
+            -300.0,
             50.0,
-            0.0
+            -300.0
         ],
         "position3": [
-            0.0,
+            -300.0,
             50.0,
             0.0
         ],
         "position4": [
-            0.0,
+            -300.0,
             50.0,
-            0.0
+            300.0
         ],
         "position5": [
             0.0,
             50.0,
-            0.0
+            300.0
         ],
         "position6": [
             0.0,
             50.0,
-            0.0
+            300.0
         ],
         "position7": [
-            0.0,
+            300.0,
             50.0,
-            0.0
+            300.0
         ],
         "position8": [
-            0.0,
+            300.0,
             50.0,
             0.0
         ],
         "position9": [
-            0.0,
+            -300.0,
             50.0,
-            0.0
+            300.0
         ]
     }
 }
