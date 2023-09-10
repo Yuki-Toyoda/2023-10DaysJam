@@ -533,6 +533,7 @@ void Enemy::CollisionBulletNone() {
 		} else if (enemyType_ == EnemyType::Thunder) {
 			player_->AddOrbs(PlayerBullet::BulletType::Thunder);
 		}
+		player_->SubtractNeedChangeOrbEnemyCount_();
 	}
 
 }
@@ -541,6 +542,10 @@ void Enemy::CollisionBulletFire() {
 
 	HpFluctuation(
 	    player_->GetBulletDamage(PlayerBullet::BulletType::Fire), collisionInvincibilityTime_);
+
+	if (isDead_) {
+		player_->SubtractNeedChangeOrbEnemyCount_();
+	}
 
 }
 
@@ -563,6 +568,10 @@ void Enemy::CollisionBulletIce(bool ishit) {
 		    player_->GetBulletDamage(PlayerBullet::BulletType::Ice), collisionInvincibilityTime_);
 	}
 
+	
+	if (isDead_) {
+		player_->SubtractNeedChangeOrbEnemyCount_();
+	}
 
 }
 
@@ -572,6 +581,11 @@ void Enemy::CollisionBulletThunder() {
 	    player_->GetBulletDamage(PlayerBullet::BulletType::Thunder), thunderInvincibilityTime_);
 
 	isCollisionThunder = true;
+	
+	if (isDead_) {
+		player_->SubtractNeedChangeOrbEnemyCount_();
+	}
+
 
 }
 
