@@ -101,6 +101,11 @@ public: // アクセッサ等
 	/// <returns>カメラシェイク強さ変数のポインタ</returns>
 	Vector2* GetShakeStrength() { return (Vector2*)&handOverCameraShakeStrength_; }
 
+	/// <summary>
+	/// 変換に必要な敵の数を減らす関数
+	/// </summary>
+	void SubtractNeedChangeOrbEnemyCount_();
+
 private: //衝突処理
 
 	/// <summary>
@@ -228,6 +233,18 @@ private: // メンバ関数
 	UI spriteChangeOrbUI_;
 	std::unique_ptr<Sprite> spriteChangeOrbText_;
 
+	// オーブ変換テキスト2
+	UI spriteChangeOrbUI2_;
+	std::unique_ptr<Sprite> spriteChangeOrbText2_;
+
+	// オーブ変換に必要な敵数テキスト
+	UI spriteNeedChangeOrbEnemyCountTextUI_;
+	std::unique_ptr<Sprite> spriteNeedChangeOrbEnemyCountText_;
+
+	// オーブ変換に必要な敵数スプライト
+	UI spriteNeedChangeOrbEnemyCountUI_;
+	std::unique_ptr<Sprite> spriteNeedChangeOrbEnemyCount_;
+
 	// 右トリガースプライト
 	UI spriteRightTriggerUI_;
 	std::unique_ptr<Sprite> spriteRightTrigger_;
@@ -325,6 +342,10 @@ private: // メンバ関数
 	std::unique_ptr<Sprite> spriteSelectedOrbs_;
 	// 変換するオーブ
 	int32_t selectedChangeOrb_;
+	// 変換に必要な敵数
+	int32_t needChangeOrbEnemyCount_;
+	// 変換に必要な敵数のデフォルト値
+	int32_t kNeedChangeOrbEnemyCount_;
 	// 変換クールタイム
 	int32_t changeCoolTime_;
 	// 変換クールタイムデフォルト値

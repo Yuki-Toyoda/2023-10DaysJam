@@ -49,6 +49,18 @@ void GameScene::Initialize() {
 	// サンプルテクスチャ
 	textureHandle1x1_ = TextureManager::Load("white1x1.png");
 
+	// 番号テクスチャ
+	textureHandleNumbers_[0] = TextureManager::Load("/Image/Numbers/0.png");
+	textureHandleNumbers_[1] = TextureManager::Load("/Image/Numbers/1.png");
+	textureHandleNumbers_[2] = TextureManager::Load("/Image/Numbers/2.png");
+	textureHandleNumbers_[3] = TextureManager::Load("/Image/Numbers/3.png");
+	textureHandleNumbers_[4] = TextureManager::Load("/Image/Numbers/4.png");
+	textureHandleNumbers_[5] = TextureManager::Load("/Image/Numbers/5.png");
+	textureHandleNumbers_[6] = TextureManager::Load("/Image/Numbers/6.png");
+	textureHandleNumbers_[7] = TextureManager::Load("/Image/Numbers/7.png");
+	textureHandleNumbers_[8] = TextureManager::Load("/Image/Numbers/8.png");
+	textureHandleNumbers_[9] = TextureManager::Load("/Image/Numbers/9.png");
+
 	// ボタン用テクスチャ達
 	texturehandleDpad_ = TextureManager::Load("/Image/Button/Dpad.png"); // 十字ボタン
 	texturehandleDpadArrow_N_ = TextureManager::Load("/Image/Button/DpadArrow_P.png"); // 十字ボタン矢印
@@ -77,6 +89,10 @@ void GameScene::Initialize() {
 	textureHandleRBHoldText_ =
 	    TextureManager::Load("/Image/Player/RBHoldUI.png"); // RBホールドテキスト
 	textureHandleChangeOrbText_ = TextureManager::Load("/Image/Player/changeOrbTextUI.png"); // 選択オーブテキスト
+	textureHandleChangeOrbText2_ =
+	    TextureManager::Load("/Image/Player/changeOrbTextUI2.png"); // 選択オーブテキスト
+	textureHandleNeedEnemyCountText_ =
+	    TextureManager::Load("/Image/Player/NeedChangeEnemyCountTextUI.png"); // オーブ変換に必要な敵数C
 	textureHandleNormalShotText_ =
 	    TextureManager::Load("/Image/Player/NormalShotTextUI.png"); // 通常射撃テキスト
 	textureHandleSpecialShotText_ =
@@ -93,6 +109,18 @@ void GameScene::Initialize() {
 	std::vector<uint32_t> playerTextureHandles = { 
 		// サンプルテクスチャ
 		textureHandle1x1_, // 1x1
+
+		// 番号テクスチャ
+	    textureHandleNumbers_[0], // 0
+	    textureHandleNumbers_[1], // 1
+	    textureHandleNumbers_[2], // 2
+	    textureHandleNumbers_[3], // 3
+	    textureHandleNumbers_[4], // 4
+	    textureHandleNumbers_[5], // 5
+	    textureHandleNumbers_[6], // 6
+	    textureHandleNumbers_[7], // 7
+	    textureHandleNumbers_[8], // 8
+	    textureHandleNumbers_[9], // 9
 
 		// ボタン用テクスチャ
 		texturehandleDpad_, // 十字ボタン
@@ -119,6 +147,8 @@ void GameScene::Initialize() {
 		textureHandleSelectArrow_R_, // オーブ選択右矢印
 	    textureHandleRBHoldText_, // RBホールドテキスト
 	    textureHandleChangeOrbText_, // 選択オーブテキスト
+	    textureHandleChangeOrbText2_, // 選択オーブテキスト2
+	    textureHandleNeedEnemyCountText_, // 変換に必要な敵数テキスト
 	    textureHandleNormalShotText_, // 通常射撃テキスト
 	    textureHandleSpecialShotText_, // 特殊射撃テキスト
 	    textureHandleMagnification[0], // 1x

@@ -93,6 +93,9 @@ private: // メンバ変数
 	// 1x1テクスチャ
 	uint32_t textureHandle1x1_ = 0u;
 
+	// 番号テクスチャ
+	uint32_t textureHandleNumbers_[10];
+
 	// ボタン用テクスチャ達
 	uint32_t texturehandleDpad_ = 0u; // 十字ボタン
 	uint32_t texturehandleDpadArrow_N_ = 0u; // 十字ボタン矢印
@@ -124,6 +127,10 @@ private: // メンバ変数
 	uint32_t textureHandleRBHoldText_ = 0u;
 	// オーブ変換テキストテクスチャ
 	uint32_t textureHandleChangeOrbText_ = 0u;
+	uint32_t textureHandleChangeOrbText2_ = 0u;
+	// オーブ変換に必要な敵数テキストテクスチャ
+	uint32_t textureHandleNeedEnemyCountText_ = 0u;
+
 	// 通常射撃テキストテクスチャ
 	uint32_t textureHandleNormalShotText_ = 0u;
 	// 特殊射撃テキストテクスチャ

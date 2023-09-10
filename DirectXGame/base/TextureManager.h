@@ -16,6 +16,18 @@ public: // サブクラス
 		// サンプルテクスチャ
 		Texture1x1, // 1x1
 
+		// 番号
+		texture_0,
+		texture_1,
+		texture_2,
+		texture_3,
+		texture_4,
+		texture_5,
+		texture_6,
+		texture_7,
+		texture_8,
+		texture_9,
+
 		// ボタン用テクスチャ
 		Dpad,        // 十字ボタン
 		DpadArrow_N, // 十字ボタン矢印
@@ -41,6 +53,8 @@ public: // サブクラス
 		selectArrow_R, // オーブ選択右矢印
 		RBHoldText, // RBホールドテキスト
 		changeOrbText, // 選択オーブテキスト
+		changeOrbText2, // 選択オーブテキスト2
+		NeedEnemyCountText, // 変換に必要な敵数テキスト
 		NormalShotText, // 通常射撃テキスト
 		SpecialShotText, // 特殊射撃テキスト
 		Texturex1, // x1テクスチャ
