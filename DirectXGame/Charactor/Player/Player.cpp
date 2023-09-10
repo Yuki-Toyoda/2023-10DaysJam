@@ -98,6 +98,28 @@ void Player::Initialize(
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteChangeOrbText_->SetSize(spriteChangeOrbUI_.size_);
 
+	// 右トリガースプライト
+	spriteRightTriggerUI_.textureHandle_ =
+	    textureHandles_[TextureManager::RT_N]; // テクスチャ
+	spriteRightTriggerUI_.position_ = {1000.0f, 525.0f}; // 座標
+	spriteRightTriggerUI_.size_ = {96.0f, 96.0f};       // 大きさ
+	spriteRightTrigger_.reset(Sprite::Create(
+	    spriteRightTriggerUI_.textureHandle_, spriteRightTriggerUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteRightTrigger_->SetSize(spriteRightTriggerUI_.size_);
+
+	// 通常射撃テキストの初期化
+	spriteNormalShotTextUI_.textureHandle_ = textureHandles_[TextureManager::NormalShotText];
+	spriteNormalShotTextUI_.size_ = {256.0f, 64.0f}; // 大きさ
+	spriteNormalShotTextUI_.position_ = {
+	    spriteRightTriggerUI_.position_.x + (spriteRightTriggerUI_.size_.x) +
+	        (spriteRightTriggerUI_.size_.x / 2.0f),
+	    spriteRightTriggerUI_.position_.y}; // 座標
+	spriteNormalShotText_.reset(Sprite::Create(
+	    spriteNormalShotTextUI_.textureHandle_, spriteNormalShotTextUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteNormalShotText_->SetSize(spriteNormalShotTextUI_.size_);
+
 	// 左トリガースプライト初期化
 	spriteLeftTriggerUI_.textureHandle_ = textureHandles_[TextureManager::LT_N];
 	spriteLeftTriggerUI_.position_ = {800.0f, 650.0f}; // 座標
@@ -515,6 +537,10 @@ void Player::SpriteDraw() {
 			spriteDpadRight_->Draw(); // 十字右ボタンUI描画
 		}
 	}
+
+	// 通常射撃描画
+	spriteRightTrigger_->Draw();
+	spriteNormalShotText_->Draw();
 
 	// 現在の特殊射撃を描画
 	spriteLeftTrigger_->Draw();
@@ -1135,6 +1161,14 @@ void Player::UIUpdate() {
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
+
+		// Rトリガーが押されたら
+		if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_P]);
+		} else {
+			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
+		}
+
 		// RBホールド
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
 			// テキストUIのテクスチャを変更

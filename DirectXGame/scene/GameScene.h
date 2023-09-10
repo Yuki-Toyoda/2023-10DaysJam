@@ -124,6 +124,8 @@ private: // メンバ変数
 	uint32_t textureHandleRBHoldText_ = 0u;
 	// オーブ変換テキストテクスチャ
 	uint32_t textureHandleChangeOrbText_ = 0u;
+	// 通常射撃テキストテクスチャ
+	uint32_t textureHandleNormalShotText_ = 0u;
 	// 特殊射撃テキストテクスチャ
 	uint32_t textureHandleSpecialShotText_ = 0u;
 	// 倍率テクスチャ

@@ -77,6 +77,8 @@ void GameScene::Initialize() {
 	textureHandleRBHoldText_ =
 	    TextureManager::Load("/Image/Player/RBHoldUI.png"); // RBホールドテキスト
 	textureHandleChangeOrbText_ = TextureManager::Load("/Image/Player/changeOrbTextUI.png"); // 選択オーブテキスト
+	textureHandleNormalShotText_ =
+	    TextureManager::Load("/Image/Player/NormalShotTextUI.png"); // 通常射撃テキスト
 	textureHandleSpecialShotText_ =
 	    TextureManager::Load("/Image/Player/specialShotTextUI.png"); // 特殊射撃テキスト
 	textureHandleMagnification[0] = TextureManager::Load("/Image/Player/x1.png"); // 倍率テクスチャx1
@@ -117,6 +119,7 @@ void GameScene::Initialize() {
 		textureHandleSelectArrow_R_, // オーブ選択右矢印
 	    textureHandleRBHoldText_, // RBホールドテキスト
 	    textureHandleChangeOrbText_, // 選択オーブテキスト
+	    textureHandleNormalShotText_, // 通常射撃テキスト
 	    textureHandleSpecialShotText_, // 特殊射撃テキスト
 	    textureHandleMagnification[0], // 1x
 	    textureHandleMagnification[1], // 2x

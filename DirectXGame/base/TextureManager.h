@@ -41,6 +41,7 @@ public: // サブクラス
 		selectArrow_R, // オーブ選択右矢印
 		RBHoldText, // RBホールドテキスト
 		changeOrbText, // 選択オーブテキスト
+		NormalShotText, // 通常射撃テキスト
 		SpecialShotText, // 特殊射撃テキスト
 		Texturex1, // x1テクスチャ
 		Texturex2, // x1テクスチャ

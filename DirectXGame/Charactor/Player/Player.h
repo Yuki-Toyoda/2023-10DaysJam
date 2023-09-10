@@ -228,6 +228,13 @@ private: // メンバ関数
 	UI spriteChangeOrbUI_;
 	std::unique_ptr<Sprite> spriteChangeOrbText_;
 
+	// 右トリガースプライト
+	UI spriteRightTriggerUI_;
+	std::unique_ptr<Sprite> spriteRightTrigger_;
+	// 通常射撃テキストスプライト
+	UI spriteNormalShotTextUI_;
+	std::unique_ptr<Sprite> spriteNormalShotText_;
+
 	// 左トリガースプライト
 	UI spriteLeftTriggerUI_;
 	std::unique_ptr<Sprite> spriteLeftTrigger_;
