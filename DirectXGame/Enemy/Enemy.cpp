@@ -208,11 +208,15 @@ void Enemy::Move() {
 	//回転
 	// 回転速度
 	Vector3 velocity(0.0f, moveRotateSpeed_, 0.0f);
-	worldTransform_.rotation_ = worldTransform_.rotation_ + velocity;
+
+	worldTransform_.rotation_.y = worldTransform_.rotation_.y + velocity.y;
 	
 	//移動
 	// 速度ベクトルを自機の向きに合わせて回転させる
 	velocity = {0.0f, 0.0f, moveSpeed_};
+	if (worldTransform_.translation_.y <= risingHeight) {
+		velocity.y = moveSpeed_ / 10.0f;
+	}
 
 	velocity_ = MyMath::Transform(velocity, MyMath::MakeRotateXYZMatrix(worldTransform_.rotation_));
 

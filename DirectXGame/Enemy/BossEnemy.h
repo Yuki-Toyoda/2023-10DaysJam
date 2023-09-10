@@ -29,9 +29,8 @@ public: // メンバ関数
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(
-	    const std::vector<Model*>& models, uint32_t textureHandle,
-	    EnemyManager* enemyManager,
-	    Player* player, Vector3 colliderSize, uint32_t hp);
+	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
+	    Player* player, uint32_t hp);
 
 	/// <summary>
 	/// 更新

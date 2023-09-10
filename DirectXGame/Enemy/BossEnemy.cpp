@@ -15,7 +15,7 @@
 /// <param name="models">モデルデータ配列</param>
 void BossEnemy::Initialize(
     const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
-    Player* player, Vector3 colliderSize, uint32_t hp) {
+    Player* player, uint32_t hp) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -25,7 +25,8 @@ void BossEnemy::Initialize(
 	textureHandle_ = textureHandle;
 
 	// 初期座標
-	worldTransform_.translation_ = {10.0f, 0.0f, 30.0f};
+	worldTransform_.translation_ = {0.0f, 50.0f, 300.0f};
+	worldTransform_.rotation_.y = float(std::numbers::pi);
 	worldTransform_.UpdateMatrix();
 
 	// デスフラグ
@@ -93,7 +94,7 @@ void BossEnemy::Initialize(
 
 	// コライダーの形
 	OBB* obb = new OBB();
-	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, colliderSize);
+	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, Vector3(100.0f,100.0f,100.0f));
 	colliderShape_ = obb;
 
 	// 調整項目クラスのインスタンス取得

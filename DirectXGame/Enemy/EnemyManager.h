@@ -169,9 +169,6 @@ private: // メンバ変数
 	// エネミースポナー
 	std::list<EnemySpawner*> enemySpawneres_;
 
-	//ボスエネミーのコライダーサイズ
-	Vector3 bossEnemyColliderSize_;
-
 	//スポナーナンバー
 	uint32_t spawnerNumber_;
 

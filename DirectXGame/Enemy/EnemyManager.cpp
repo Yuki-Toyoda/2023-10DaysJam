@@ -15,8 +15,6 @@ void EnemyManager::Initialize(
 	// エネミーのテクスチャハンドル
 	textureHandles_ = textureHandles; 
 
-	bossEnemyColliderSize_ = Vector3(1.2f, 1.2f, 6.0f);
-
 	initialHp_[Enemy::EnemyType::None] = 3;
 	initialHp_[Enemy::EnemyType::Fire] = 3;
 	initialHp_[Enemy::EnemyType::Ice] = 3;
@@ -33,7 +31,6 @@ void EnemyManager::Initialize(
 
 	// メンバ変数の調整したい項目をグローバル変数に追加
 	globalVariables->AddItem(groupName, "EnemyMax", int(enemyMax));
-	globalVariables->AddItem(groupName, "BossEnemyColliderSize", bossEnemyColliderSize_);
 
 	globalVariables->AddItem(groupName, "InitialHpNone", int(initialHp_[Enemy::EnemyType::None]));
 	globalVariables->AddItem(groupName, "InitialHpFire", int(initialHp_[Enemy::EnemyType::Fire]));
@@ -176,7 +173,7 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, this, player_,bossEnemyColliderSize_,bossInitialHp_);
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, this, player_,bossInitialHp_);
 	bossEnemies_.push_back(bossEnemy);
 
 }
@@ -228,7 +225,6 @@ void EnemyManager::ApplyGlobalVariables() {
 
 	// メンバ変数の調整項目をグローバル変数に追加
 	enemyMax = uint32_t(globalVariables->GetIntValue(groupName, "EnemyMax"));
-	bossEnemyColliderSize_ = globalVariables->GetVector3Value(groupName, "BossEnemyColliderSize");
 
 	initialHp_[Enemy::EnemyType::None] =
 	    uint32_t(globalVariables->GetIntValue(groupName, "InitialHpNone"));

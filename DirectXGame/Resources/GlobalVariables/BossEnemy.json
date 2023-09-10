@@ -1,13 +1,16 @@
 {
     "BossEnemy": {
+        "BulletSpeed": 1.5,
+        "CollisionInvincibilityTimer": 20,
         "MovePointMax": 4,
         "MoveRotateSpeed": 0.009999999776482582,
         "MoveSpeed": 1.0,
         "MoveTime": 10.0,
         "OBBSize": [
-            1.2000000476837158,
-            1.2000000476837158,
-            6.0
-        ]
+            10.0,
+            25.0,
+            40.0
+        ],
+        "ThunderInvincibilityTime": 0
     }
 }

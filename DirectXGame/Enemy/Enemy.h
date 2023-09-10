@@ -274,4 +274,7 @@ private: //メンバ変数
 	// 減速倍率
 	float decelerationMagnification = 0.5f;
 
+	//上昇
+	const float risingHeight = 40.0f;
+
 };
