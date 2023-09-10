@@ -95,13 +95,19 @@ public: // アクセッサ等
 	/// <param name="orbType">追加するオーブタイプ</param>
 	void AddOrbs(PlayerBullet::BulletType orbType);
 
+	/// <summary>
+	/// カメラシェイク強さのゲッター
+	/// </summary>
+	/// <returns>カメラシェイク強さ変数のポインタ</returns>
+	Vector2* GetShakeStrength() { return (Vector2*)&handOverCameraShakeStrength_; }
+
 private: //衝突処理
 
 	/// <summary>
 	/// 氷との衝突処理
 	/// </summary>
 	void OnCollisionIce();
-	
+
 	/// <summary>
 	/// エネミーとの衝突処理
 	/// </summary>
@@ -133,7 +139,24 @@ private: // 行動関数
 	/// </summary>
 	void SpecialShot();
 
+	/// <summary>
+	/// カメラシェイク再生開始関数(再生開始したいタイミングで一度だけ呼び出してください)
+	/// </summary>
+	/// <param name="shakeStrength">カメラシェイク強さ</param>
+	/// <param name="shakeTime">振動秒数</param>
+	void PlayCameraShake(Vector2 shakeStrength, float shakeTime);
+
+	/// <summary>
+	/// カメラシェイク関数(呼び出さなくていいです)
+	/// </summary>
+	void CameraShake();
+
 private: // その他関数
+
+	/// <summary>
+	/// UIの更新処理
+	/// </summary>
+	void UIUpdate();
 
 	/// <summary>
 	/// 調整項目適用関数
@@ -172,6 +195,16 @@ private: // メンバ関数
 
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
+	// カメラに渡す変数
+	Vector2 handOverCameraShakeStrength_;
+	// 振動強さ
+	Vector2 shakeStrength_;
+	// カメラシェイク有効トリガー
+	bool enableCameraShake_;
+	// シェイク演出用t
+	float shakeT_;
+	// シェイク演出時間
+	float shakeTime_;
 
 	// テクスチャリスト
 	std::vector<uint32_t> textureHandles_;
@@ -190,6 +223,10 @@ private: // メンバ関数
 	std::unique_ptr<Sprite> spriteDpadUP_; // 上
 	std::unique_ptr<Sprite> spriteDpadLeft_; // 左
 	std::unique_ptr<Sprite> spriteDpadRight_; // 右
+
+	// オーブ変換テキスト
+	UI spriteChangeOrbUI_;
+	std::unique_ptr<Sprite> spriteChangeOrbText_;
 
 	// プレイヤー身長
 	float height_;
@@ -263,7 +300,7 @@ private: // メンバ関数
 	// 特殊射撃できるか
 	bool canSpecialShot_;
 	// 変換するオーブの種類
-	PlayerBullet::BulletType selectedChangeType_;
+	int selectedChangeType_;
 	// 変換するオーブを示すスプライト
 	std::unique_ptr<Sprite> spriteSelectedOrbs_;
 	// 変換するオーブ
@@ -301,6 +338,11 @@ private: // メンバ関数
 
 	// 追加するオーブの種類
 	int selectOrbs_;
+
+	// シェイク強さ
+	Vector2 testShakeStrength_;
+	// シェイク秒数
+	float testShakeTime_;
 
 	#endif // _DEBUG
 #pragma endregion

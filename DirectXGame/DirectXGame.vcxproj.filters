@@ -53,7 +53,10 @@
     <Filter Include="Effect">
       <UniqueIdentifier>{bd1854fb-70c9-40ab-9403-95f0faeec5ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Charactor\Enemy">
+    <Filter Include="Effect\Fuck">
+      <UniqueIdentifier>{1d35cf52-993e-4304-8448-2d0bcf57be61}</UniqueIdentifier>
+    </Filter>
+       <Filter Include="Charactor\Enemy">
       <UniqueIdentifier>{0940c18c-2112-4713-82ee-590467e7862f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Charactor\Enemy\BossEnemy">
@@ -120,6 +123,18 @@
     </ClCompile>
     <ClCompile Include="Collision\CollisionManager.cpp">
       <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\FuckEffect.cpp">
+      <Filter>Effect\Fuck</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\SparkEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\DebrisEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\WorldTransformEX.cpp">
+      <Filter>3d</Filter>
     </ClCompile>
     <ClCompile Include="Collision\Collision.cpp">
       <Filter>Collision</Filter>
@@ -327,6 +342,15 @@
     </ClInclude>
     <ClInclude Include="Collision\ColliderShape\Sphere.h">
       <Filter>Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\FuckEffect.h">
+      <Filter>Effect\Fuck</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\SparkEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\DebrisEffect.h">
+      <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

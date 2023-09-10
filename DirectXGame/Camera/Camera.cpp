@@ -64,6 +64,10 @@ void Camera::Update() {
 
 		// 追従対象からカメラまでのオフセットを設定
 		Vector3 offset = {0.0f, 0.0f, -3.0f};
+		// カメラシェイク強さを取得
+		Vector2 shakeStrength = (Vector2)*shakeStrength_;
+		offset.x += shakeStrength.x;
+		offset.y += shakeStrength.y;
 
 		// カメラの角度から回転行列を生成
 		Matrix4x4 rotateMat = MyMath::MakeRotateXYZMatrix(viewProjection_.rotation_);

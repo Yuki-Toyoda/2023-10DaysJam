@@ -33,6 +33,12 @@ public: // アクセッサ等
 	/// <param name="target">追従対象ワールド座標</param>
 	void SetTarget(const WorldTransform* target) { target_ = target; }
 
+	/// <summary>
+	/// カメラシェイク強さのセッター
+	/// </summary>
+	/// <param name="shakeStrength">シェイク強さの変数ポインタ</param>
+	void SetShakeStrength(const Vector2* shakeStrength) { shakeStrength_ = shakeStrength; }
+
 private: // メンバ関数
 
 	/// <summary>
@@ -55,4 +61,8 @@ private: // メンバ変数
 	float fov_;
 	// カメラ感度
 	Vector2 cameraSensitivity_;
+
+	// カメラシェイク強さ
+	const Vector2* shakeStrength_ = nullptr;
+
 };

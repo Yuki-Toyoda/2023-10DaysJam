@@ -34,7 +34,8 @@ public: // メンバ関数
 	/// <param name="startPos">初期座標</param>
 	/// <param name="startotation">初期角度</param>
 	/// <param name="velocity">弾速</param>
-	void Initialize(const std::vector<Model*>& models, 
+	void Initialize(
+	    const std::vector<Model*>& models,
 		Vector3 startPos, Vector3 startotation, Vector3 velocity);
 
 	/// <summary>
@@ -47,7 +48,8 @@ public: // メンバ関数
 	/// <param name="bulletType">撃つ弾の種類</param>
 	/// <param name="bulletStrength">撃つ弾の強さ</param>
 	void Initialize(
-	    const std::vector<Model*>& models, Vector3 startPos, Vector3 startotation, Vector3 velocity,
+	    const std::vector<Model*>& models, const std::vector<uint32_t>& textureHandles,
+	    Vector3 startPos, Vector3 startotation, Vector3 velocity,
 	    BulletType bulletType, int32_t bulletStrength);
 
 	/// <summary>
@@ -76,7 +78,7 @@ public: // アクセッサ等
 	BulletType GetBulletType() { return bulletType_; }
 
 	/// <summary>
-	/// 炎弾が衝突した状態セッター
+	/// 特殊弾が衝突した状態セッター
 	/// </summary>
 	/// <param name="isHit">衝突したか</param>
 	void SetIsHit(bool isHit) { isHit_ = isHit; }
@@ -102,7 +104,7 @@ private: // 弾ごとの行動関数
 	/// <summary>
 	/// 水弾更新処理
 	/// </summary>
-	void WaterBulletUpdate();
+	void IceBulletUpdate();
 
 	/// <summary>
 	/// 雷弾更新処理
@@ -126,6 +128,9 @@ public: //自分取得
 	virtual PlayerBullet* GetPlayerBullet() override { return this; }
 
 private: // メンバ変数
+
+	// テクスチャリスト
+	std::vector<uint32_t> textureHandles_;
 
 	// 死亡状態
 	bool isDead_;
@@ -169,8 +174,14 @@ private: // メンバ変数
 #pragma endregion
 
 	#pragma region 氷弾用変数
+	// テクスチャ用行動中間地点
+	int actionWayPointTexture_;
+	// 描画するテクスチャ番号
+	int drawTextureNumber_;
 	// 展開する壁のサイズ
 	Vector3 deployWallSize_;
+	// エフェクトに渡す用のサイズ
+	Vector3 deployWallSizeParticle_;
 	// 展開演出時間
 	float deployWallStagingTime_;
 	// 展開時間

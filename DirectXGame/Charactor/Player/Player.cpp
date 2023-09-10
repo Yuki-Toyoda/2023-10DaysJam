@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../../config/GlobalVariables.h"
+#include "TextureManager.h"
 #include "Collision/ColliderShape/OBB.h"
 
 void Player::Initialize(
@@ -38,9 +39,20 @@ void Player::Initialize(
 	triggerDeadZone_R_ = 25; // 右
 	triggerDeadZone_L_ = 25; // 左
 
+	// シェイク強さリセット
+	handOverCameraShakeStrength_ = {0.0f, 0.0f};
+	shakeStrength_ = {0.0f, 0.0f};
+	// カメラシェイク無効
+	enableCameraShake_ = false;
+	// シェイク演出tリセット
+	shakeT_ = 0.0f;
+	// シェイク秒数リセット
+	shakeTime_ = 0.0f;
+
 	// 照準スプライト初期化
 	spriteReticle_.reset(Sprite::Create(
-	    textureHandles_[1], {(float)WinApp::kWindowWidth / 2, (float)WinApp::kWindowHeight / 2},
+	    textureHandles_[TextureManager::Reticle],
+	    {(float)WinApp::kWindowWidth / 2, (float)WinApp::kWindowHeight / 2},
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	// 照準スプライト大きさ設定
 	spriteReticle_->SetSize({64.0f, 64.0f});
@@ -48,7 +60,7 @@ void Player::Initialize(
 	worldTransform3DReticle_.Initialize();
 
 	// 十字ボタンUIの初期化
-	spriteDpadUI_.textureHandle_ = textureHandles_[3];
+	spriteDpadUI_.textureHandle_ = textureHandles_[TextureManager::Dpad];
 	spriteDpadUI_.position_ = {200.0f, 650.0f};
 	spriteDpadUI_.size_ = {128.0f, 128.0f};
 	spriteDpad_.reset(Sprite::Create(
@@ -56,22 +68,35 @@ void Player::Initialize(
 	    {0.5f, 0.5f}));
 	// 十字ボタン矢印UI
 	spriteDpadArrow_.reset(Sprite::Create(
-	    textureHandles_[4], spriteDpadUI_.position_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
-	// 炎弾UI
+	    textureHandles_[TextureManager::DpadArrow_P], spriteDpadUI_.position_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	// 上ボタンUI
 	spriteDpadUP_.reset(Sprite::Create(
-	    textureHandles_[6], {spriteDpadUI_.position_.x, spriteDpadUI_.position_.y - 96.0f},
+	    textureHandles_[TextureManager::FireBullet], 
+		{spriteDpadUI_.position_.x, spriteDpadUI_.position_.y - 96.0f},
 	    {1.0f, 0.0f, 0.05f, 1.0f}, {0.5f, 0.5f}));
 	spriteDpadUP_->SetSize({64.0f, 64.0f});
-	// 氷弾UI
+	// 左ボタンUI
 	spriteDpadLeft_.reset(Sprite::Create(
-	    textureHandles_[7], {spriteDpadUI_.position_.x - 96.0f, spriteDpadUI_.position_.y},
+	    textureHandles_[TextureManager::selectArrow_L],
+	    {spriteDpadUI_.position_.x - 96.0f, spriteDpadUI_.position_.y},
 	    {0.65f, 0.65f, 0.65f, 1.0f}, {0.5f, 0.5f}));
 	spriteDpadLeft_->SetSize({64.0f, 64.0f});
-	// 雷弾UI
+	// 右ボタンUI
 	spriteDpadRight_.reset(Sprite::Create(
-	    textureHandles_[8], {spriteDpadUI_.position_.x + 96.0f, spriteDpadUI_.position_.y},
+	    textureHandles_[TextureManager::selectArrow_R],
+	    {spriteDpadUI_.position_.x + 96.0f, spriteDpadUI_.position_.y},
 	    {0.65f, 0.65f, 0.65f, 1.0f}, {0.5f, 0.5f}));
 	spriteDpadRight_->SetSize({64.0f, 64.0f});
+
+	// オーブ変換テキストの初期化
+	spriteChangeOrbUI_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
+	spriteChangeOrbUI_.position_ = {200.0f, 500.0f}; // 座標
+	spriteChangeOrbUI_.size_ = {256.0f, 64.0f}; // 大きさ
+	spriteChangeOrbText_.reset(Sprite::Create(
+	    textureHandles_[TextureManager::RBHoldText],
+	    {spriteChangeOrbUI_.position_.x, spriteChangeOrbUI_.position_.y},
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	spriteChangeOrbText_->SetSize(spriteChangeOrbUI_.size_);
 
 	// 身長高さ
 	height_ = 5.0f;
@@ -135,7 +160,7 @@ void Player::Initialize(
 	for (int i = 0; i < 3; i++) {
 		// スプライトの生成
 		spriteHavingOrbs_[i].reset(Sprite::Create(
-		    textureHandles_[2],
+		    textureHandles_[TextureManager::Orb],
 		    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * i),
 		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)},
 		    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
@@ -144,7 +169,7 @@ void Player::Initialize(
 	}
 	// 変換するオーブを示すスプライトのリセット
 	spriteSelectedOrbs_.reset(Sprite::Create(
-	    textureHandles_[9],
+	    textureHandles_[TextureManager::selectOrb],
 	    {spriteHavingOrbsStartPos_.x,
 	     spriteHavingOrbsStartPos_.y},
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
@@ -186,6 +211,11 @@ void Player::Initialize(
 
 	// 追加するオーブの種類リセット
 	selectOrbs_ = PlayerBullet::Fire;
+
+	// シェイク強さリセット
+	testShakeStrength_ = {0.0f, 0.0f};
+	// シェイク秒数リセット
+	testShakeTime_ = 0.0f;
 
 #endif // _DEBUG
 #pragma endregion
@@ -282,6 +312,13 @@ void Player::Update() {
 		SpecialShot();
 	}
 
+	// カメラシェイクが有効ならカメラシェイクさせる
+	if (enableCameraShake_) {
+		CameraShake();
+	}
+
+	// UIの更新処理
+	UIUpdate();
 	// 調整項目を反映
 	ApplyGlobalVariables();
 
@@ -394,6 +431,11 @@ void Player::Update() {
 	ImGui::DragInt("ChangeCoolTime", &changeCoolTime_, 1.0f);
 	ImGui::DragInt("DefaultChangeCoolTime", &kChangeCoolTime_, 1.0f);
 
+	ImGui::DragFloat2("shakeStrength", &testShakeStrength_.x, 0.1f);
+	ImGui::DragFloat("shakeTime", &testShakeTime_, 0.1f);
+	if (ImGui::Button("cameraShake")) {
+		PlayCameraShake(testShakeStrength_, testShakeTime_);
+	}
 	ImGui::DragFloat3("wT", &worldTransform_.translation_.x, 1.0f);
 	ImGui::DragInt("HP", &hp);
 
@@ -414,12 +456,21 @@ void Player::SpriteDraw() {
 	// 照準描画
 	spriteReticle_->Draw();
 
-	// 十字ボタンUI描画
-	spriteDpad_->Draw();
-	spriteDpadArrow_->Draw();
-	spriteDpadUP_->Draw();
-	spriteDpadLeft_->Draw();
-	spriteDpadRight_->Draw();
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+			// 十字ボタンUI描画
+			spriteDpad_->Draw();
+			spriteDpadArrow_->Draw(); // 十字ボタン選択矢印描画
+			spriteDpadUP_->Draw(); // 十字上ボタンUI描画
+			spriteDpadLeft_->Draw(); // 十字左ボタンUI描画
+			spriteDpadRight_->Draw(); // 十字右ボタンUI描画
+		}
+	}
+
+	// オーブ変換テキストUIの描画
+	spriteChangeOrbText_->Draw();
 
 	// 所持オーブが1個でもあったら
 	if ((int)havingOrbs_.size() > 0) {
@@ -727,48 +778,12 @@ void Player::Reload() {
 }
 
 void Player::SpecialShot() {
-	// UIの設定
-	for (int i = 0; i < 3; i++) {
-		// スプライトの生成
-		spriteHavingOrbs_[i]->SetPosition(
-		    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * i),
-		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)});
-		// サイズ設定
-		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
-
-		// とりあえずの色設定
-		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-		// 特殊射撃の予定をリセット
-		specialShotBulletPlans_ = PlayerBullet::None;
-		// 特殊射撃の強さをリセット
-		specialShotStrength_ = 1;
-
-	}
-
-	// 選択UIの座標調整
-	spriteSelectedOrbs_->SetPosition(
-	    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * selectedChangeOrb_),
-	     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * selectedChangeOrb_)});
 
 	// 所持しているオーブ数を確認
 	int havingOrbCount = (int)havingOrbs_.size();
 	for (int i = 0; i < havingOrbCount; i++) {
 		// 該当するオーブの色を取得
 		PlayerBullet::BulletType haveOrb = havingOrbs_[i];
-		switch (haveOrb) {
-		case PlayerBullet::Fire: // 赤の場合
-			// スプライトの色を設定
-			spriteHavingOrbs_[i]->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
-			
-			break;
-		case PlayerBullet::Ice: // 青の場合
-			// スプライトの色を設定
-			spriteHavingOrbs_[i]->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
-			break;
-		case PlayerBullet::Thunder: // 黄の場合
-			spriteHavingOrbs_[i]->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
-			break;
-		}
 
 		// 特殊射撃がもともと同じだったら
 		if (specialShotBulletPlans_ == haveOrb) {
@@ -823,10 +838,17 @@ void Player::SpecialShot() {
 				shotPos = shotPos + shotPosOffset_;
 				shotVelocity = ReticleWorldPos - shotPos;
 				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
-
+				// 壁用テクスチャ
+				std::vector<uint32_t> wallTextureHandles = {
+				    textureHandles_[TextureManager::IceWall], // 氷壁テクスチャ
+				    textureHandles_[TextureManager::IceWallDamage1], // 氷壁ダメージ1段階目
+				    textureHandles_[TextureManager::IceWallDamage2], // 氷壁ダメージ2段階目
+				    
+				};
 				// 生成した弾を初期化
 				newBullet->Initialize(
 				    modelBullet_,               // 3Dモデル
+				    wallTextureHandles,			// 壁用テクスチャリスト
 				    shotPos,                    // 初期位置
 				    viewProjection_->rotation_, // 初期角度
 				    shotVelocity,               // 弾速
@@ -845,6 +867,18 @@ void Player::SpecialShot() {
 
 		// 変換するオーブの選択処理
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {	
+
+			// 変換するオーブの種類を選択
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && !pressDpadUp_) {
+				if (selectedChangeType_ < PlayerBullet::Thunder) {
+					// 変換タイプを次のに設定
+					selectedChangeType_++;
+				} else {
+					// 変換タイプをリセット
+					selectedChangeType_ = PlayerBullet::Fire;
+				}
+			}
+
 			// 十字右
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
 				// 選択しているオーブが最大値を上回っていたら
@@ -868,98 +902,155 @@ void Player::SpecialShot() {
 				}
 			}
 
-			// 全てのUIを非選択状態に
-			spriteDpadUP_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-			spriteDpadLeft_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-			spriteDpadRight_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-
-			// 上ボタンのスプライトを変更
-			spriteDpadUP_->SetTextureHandle(textureHandles_[6]);
-			// 左ボタンのスプライトを変更
-			spriteDpadLeft_->SetTextureHandle(textureHandles_[11]);
-			// 右ボタンのスプライトを変更
-			spriteDpadRight_->SetTextureHandle(textureHandles_[12]);
-
-		}
-		else {
-
-			// 上ボタンのスプライトを変更
-			spriteDpadUP_->SetTextureHandle(textureHandles_[6]);
-			spriteDpadLeft_->SetTextureHandle(textureHandles_[7]);
-			spriteDpadRight_->SetTextureHandle(textureHandles_[8]);
-
-			// 変換するオーブの種類を選択
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-				// 変換タイプを炎に設定
-				selectedChangeType_ = PlayerBullet::Fire;
-
-				// 矢印UIの角度を設定
-				spriteDpadArrow_->SetRotation(0.0f);
+			// オーブの数が1以上なら
+			if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
+				// 選択したオーブを別のオーブに変換する
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+					// 所持しているオーブリストの指定された位置に新しいオーブを挿入
+					havingOrbs_.insert(
+					    havingOrbs_.begin() + selectedChangeOrb_,
+					    (PlayerBullet::BulletType)selectedChangeType_);
+					// 変換に使用したオーブを削除
+					havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
+					// 変換クールタイムを設定
+					changeCoolTime_ = kChangeCoolTime_;
+				}
+			} else {
+				if (changeCoolTime_ > 0) {
+					// 変換クールタイムデクリメント
+					changeCoolTime_--;
+				}
 			}
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-				// 変換タイプを氷に設定
-				selectedChangeType_ = PlayerBullet::Ice;
-
-				// 矢印UIの角度を設定
-				spriteDpadArrow_->SetRotation(-(float)std::numbers::pi / 2.0f);
-			}
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-				// 変換タイプを雷に設定
-				selectedChangeType_ = PlayerBullet::Thunder;
-
-				// 矢印UIの角度を設定
-				spriteDpadArrow_->SetRotation((float)std::numbers::pi / 2.0f);
-			}
-
-			switch (selectedChangeType_) {
-			case PlayerBullet::Fire:
-				// 炎弾UIを選択状態に
-				spriteDpadUP_->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
-				// スプライトの色を設定
-				spriteDpadLeft_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				spriteDpadRight_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				break;
-			case PlayerBullet::Ice:
-				// 炎弾UIを選択状態に
-				spriteDpadLeft_->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
-				// スプライトの色を設定
-				spriteDpadUP_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				spriteDpadRight_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				break;
-			case PlayerBullet::Thunder:
-				// 炎弾UIを選択状態に
-				spriteDpadRight_->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
-				// スプライトの色を設定
-				spriteDpadLeft_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				spriteDpadUP_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-				break;
-			default:
-				break;
-
 		}
+	}
+}
 
-		}
+void Player::PlayCameraShake(Vector2 shakeStrength, float shakeTime) {
+	// 引数の値をメンバ変数に代入
+	shakeStrength_ = shakeStrength;
+	shakeTime_ = shakeTime;
 
+	// 演出用tをリセット
+	shakeT_ = 0.0f;
+	// カメラ振動有効
+	enableCameraShake_ = true;
+}
+
+void Player::CameraShake() {
+	// 指定秒数カメラシェイク
+	if (shakeT_ <= shakeTime_) {
+		// カメラシェイクをイージングで表現
+		handOverCameraShakeStrength_.x = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.x, shakeStrength_.x, 2), 0.0f, shakeTime_);
+		handOverCameraShakeStrength_.y = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.y, shakeStrength_.y, 2), 0.0f, shakeTime_);
+		// 演出t加算
+		shakeT_ += 1.0f / 60.0f;
+	} else {
+		// カメラシェイク強さリセット
+		handOverCameraShakeStrength_ = {0.0f, 0.0f};
+		enableCameraShake_ = false;
+	}
+}
+
+void Player::UIUpdate() {
+
+	// UIの設定
+	for (int i = 0; i < 3; i++) {
+		// スプライトの生成
+		spriteHavingOrbs_[i]->SetPosition(
+		    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * i),
+		     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * i)});
+		// サイズ設定
+		spriteHavingOrbs_[i]->SetSize(spriteHavingOrbsSize_);
+
+		// とりあえずの色設定
+		spriteHavingOrbs_[i]->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		// 特殊射撃の予定をリセット
+		specialShotBulletPlans_ = PlayerBullet::None;
+		// 特殊射撃の強さをリセット
+		specialShotStrength_ = 1;
 	}
 
-	// オーブの数が1以上なら
-	if (havingOrbCount > 0 && changeCoolTime_ <= 0) {
-		// 選択したオーブを別のオーブに変換する
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
-			// 所持しているオーブリストの指定された位置に新しいオーブを挿入
-			havingOrbs_.insert(havingOrbs_.begin() + selectedChangeOrb_, selectedChangeType_);
-			// 変換に使用したオーブを削除
-			havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
-			// 変換クールタイムを設定
-			changeCoolTime_ = kChangeCoolTime_;
+	// 所持しているオーブ数を確認
+	int havingOrbCount = (int)havingOrbs_.size();
+	for (int i = 0; i < havingOrbCount; i++) {
+		// 該当するオーブの色を取得
+		PlayerBullet::BulletType haveOrb = havingOrbs_[i];
+		switch (haveOrb) {
+		case PlayerBullet::Fire: // 赤の場合
+			// スプライトの色を設定
+			spriteHavingOrbs_[i]->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
+			break;
+		case PlayerBullet::Ice: // 青の場合
+			// スプライトの色を設定
+			spriteHavingOrbs_[i]->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
+			break;
+		case PlayerBullet::Thunder: // 黄の場合
+			spriteHavingOrbs_[i]->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
+			break;
 		}
+	}
+
+	// 選択UIの座標調整
+	spriteSelectedOrbs_->SetPosition(
+	    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * selectedChangeOrb_),
+	     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * selectedChangeOrb_)});
+
+	// 変換テキストUIの座標調整
+	spriteChangeOrbText_->SetPosition(spriteChangeOrbUI_.position_);
+
+	// 変換するオーブの種類によってスプライトを変化
+	switch (selectedChangeType_) {
+	case PlayerBullet::Fire:
+		// 炎弾UIを選択状態に
+		spriteDpadUP_->SetTextureHandle(textureHandles_[TextureManager::FireBullet]);
+		spriteDpadUP_->SetColor({1.0f, 0.0f, 0.05f, 1.0f});
+		break;
+	case PlayerBullet::Ice:
+		// 氷弾UIを選択状態に
+		spriteDpadUP_->SetTextureHandle(textureHandles_[TextureManager::IceBullet]);
+		spriteDpadUP_->SetColor({0.15f, 0.7f, 1.0f, 1.0f});
+		break;
+	case PlayerBullet::Thunder:
+		// 雷弾UIを選択状態に
+		spriteDpadUP_->SetTextureHandle(textureHandles_[TextureManager::ThunderBullet]);
+		spriteDpadUP_->SetColor({1.0f, 0.8f, 0.025f, 1.0f});
+		break;
+	default:
+		break;
+	}
+
+	// オーブが２つ以上ある場合矢印を
+	if (havingOrbCount >= 2) {
+		// 矢印UIを明るい状態に
+		spriteDpadLeft_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		spriteDpadRight_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	} 
 	else {
-		if (changeCoolTime_ > 0) {
-			// 変換クールタイムデクリメント
-			changeCoolTime_--;
+		// 矢印UIを暗い状態に
+		spriteDpadLeft_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
+		spriteDpadRight_->SetColor({0.45f, 0.45f, 0.45f, 1.0f});
+	}
+
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	if (input_->GetJoystickState(0, joyState)) {
+		// RBホールド
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+			// テキストUIのテクスチャを変更
+			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
+			// テクスチャ描画範囲設定
+			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
+		} else {
+			// テキストUIのテクスチャを変更
+			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::RBHoldText]);	
+			// テクスチャ描画範囲設定
+			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {512.0f, 128.0f});	
+
 		}
 	}
+
 }
 
 void Player::ApplyGlobalVariables() {

@@ -8,6 +8,20 @@ struct Vector3 final {
 	float z; // z軸
 
 	// 演算子オーバーロード(+)
+	Vector3 operator=(const Vector3* v) const {
+		// 結果格納用
+		Vector3 result;
+
+		// 計算処理
+		result.x = v->x;
+		result.y = v->y;
+		result.z = v->z;
+
+		// 計算結果の返却
+		return result;
+	}
+
+	// 演算子オーバーロード(+)
 	Vector3 operator+(const Vector3 v) const {
 		// 結果格納用
 		Vector3 result;
