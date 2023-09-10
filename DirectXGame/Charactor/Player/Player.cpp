@@ -61,7 +61,16 @@ void Player::Initialize(
 
 	// 体力スプライト初期化
 	spriteHeartUI_.textureHandle_ = textureHandles_[TextureManager::Heart];
-	spriteHeartUI_.position_ = {200.0f, 650.0f};
+	spriteHeartUI_.position_ = {50.0f, 50.0f};
+	spriteHeartUI_.size_ = {64.0f, 64.0f};
+	for (int i = 0; i < (int)StartHp; i++) {
+		spriteHeart_[i].reset(Sprite::Create(
+		    spriteHeartUI_.textureHandle_, 
+			{spriteHeartUI_.position_.x + ((spriteHeartUI_.size_.x) * i), spriteHeartUI_.position_.y}, 
+			{1.0f, 1.0f, 1.0f, 1.0f},
+		    {0.5f, 0.5f}));
+		spriteHeart_[i]->SetSize(spriteHeartUI_.size_);
+	}
 
 	// 十字ボタンUIの初期化
 	spriteDpadUI_.textureHandle_ = textureHandles_[TextureManager::Dpad];
@@ -344,6 +353,7 @@ void Player::Initialize(
 	obb->Initialize(GetWorldPosition(), worldTransform_.translation_, Vector3(3.0f,3.0f,3.0f));
 	colliderShape_ = obb;
 	
+	#pragma region 調整項目クラス
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名設定
@@ -366,13 +376,15 @@ void Player::Initialize(
 	globalVariables->AddItem(groupName, "MaxMagazineSize", kMaxMagazine_); // 最大弾数設定
 	globalVariables->AddItem(groupName, "MaxReloadTime", kMaxReloadTime_); // リロードにかかる時間
 	globalVariables->AddItem(
-		groupName, "SpriteHavingOrbsStartPos", spriteHavingOrbsStartPos_); // 所持オーブ描画UIの開始座標
+	    groupName, "SpriteHavingOrbsStartPos",
+	    spriteHavingOrbsStartPos_); // 所持オーブ描画UIの開始座標
 	globalVariables->AddItem(
-		groupName, "SpriteHavingOrbsSize", spriteHavingOrbsSize_); // 所持オーブ描画UIの大きさ
+	    groupName, "SpriteHavingOrbsSize", spriteHavingOrbsSize_); // 所持オーブ描画UIの大きさ
 	globalVariables->AddItem(
-		groupName, "SpriteHavingOrbsLineSpace", spriteHavingOrbsLineSpace_); // 所持オーブ描画UIの行間
-	
-	//バレットダメージ
+	    groupName, "SpriteHavingOrbsLineSpace",
+	    spriteHavingOrbsLineSpace_); // 所持オーブ描画UIの行間
+
+	// バレットダメージ
 	globalVariables->AddItem(
 	    groupName, "BulletDamageNone", int(bulletDamage_[PlayerBullet::BulletType::None]));
 	globalVariables->AddItem(
@@ -386,7 +398,7 @@ void Player::Initialize(
 	    groupName, "CollisionInvincibilityTime", int(collisionInvincibilityTime_));
 
 	colliderShape_->AddToGlobalVariables(groupName);
-
+#pragma endregion
 }
 
 void Player::Update() {
@@ -578,15 +590,17 @@ void Player::SpriteDraw() {
 	XINPUT_STATE joyState;
 	if (input_->GetJoystickState(0, joyState)) {
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			// 十字ボタンUI描画
-			spriteDpad_->Draw();
-			spriteDpadArrow_->Draw(); // 十字ボタン選択矢印描画
-			spriteDpadUP_->Draw(); // 十字上ボタンUI描画
-			spriteDpadLeft_->Draw(); // 十字左ボタンUI描画
-			spriteDpadRight_->Draw(); // 十字右ボタンUI描画
-			spriteChangeOrbText2_->Draw(); // オーブ変換テキスト2
+			
 		}
 	}
+
+	// 十字ボタンUI描画
+	spriteDpad_->Draw();
+	spriteDpadArrow_->Draw();      // 十字ボタン選択矢印描画
+	spriteDpadUP_->Draw();         // 十字上ボタンUI描画
+	spriteDpadLeft_->Draw();       // 十字左ボタンUI描画
+	spriteDpadRight_->Draw();      // 十字右ボタンUI描画
+	spriteChangeOrbText2_->Draw(); // オーブ変換テキスト2
 
 	// 変換に必要な敵数
 	spriteNeedChangeOrbEnemyCountText_->Draw();
@@ -601,6 +615,11 @@ void Player::SpriteDraw() {
 	specialShotText_->Draw();
 	spriteSpecialShotPlan_->Draw();
 	spriteSpecialShotMagnification_->Draw();
+
+	// 現在の体力描画
+	for (int i = 0; i < hp; i++) {
+		spriteHeart_[i]->Draw();
+	}
 
 	// オーブ変換テキストUIの描画
 	spriteChangeOrbText_->Draw();
@@ -1017,57 +1036,53 @@ void Player::SpecialShot() {
 			}
 		}
 
-		// 変換するオーブの選択処理
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {	
-
-			// 変換するオーブの種類を選択
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && !pressDpadUp_) {
-				if (selectedChangeType_ < PlayerBullet::Thunder) {
-					// 変換タイプを次のに設定
-					selectedChangeType_++;
-				} else {
-					// 変換タイプをリセット
-					selectedChangeType_ = PlayerBullet::Fire;
-				}
+		// 変換するオーブの種類を選択
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && !pressDpadUp_) {
+			if (selectedChangeType_ < PlayerBullet::Thunder) {
+				// 変換タイプを次のに設定
+				selectedChangeType_++;
+			} else {
+				// 変換タイプをリセット
+				selectedChangeType_ = PlayerBullet::Fire;
 			}
+		}
 
-			// 十字右
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
-				// 選択しているオーブが最大値を上回っていたら
-				if (selectedChangeOrb_ >= havingOrbCount - 1) {
-					// 最初に戻る
-					selectedChangeOrb_ = 0;
-				} else {
-					selectedChangeOrb_++;
-				}
+		// 十字右
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
+			// 選択しているオーブが最大値を上回っていたら
+			if (selectedChangeOrb_ >= havingOrbCount - 1) {
+				// 最初に戻る
+				selectedChangeOrb_ = 0;
+			} else {
+				selectedChangeOrb_++;
 			}
-			// 十字左
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
-				// 選択しているオーブがをした回っていたら
-				if (selectedChangeOrb_ <= 0) {
-					// 最初に戻る
-					if (havingOrbCount > 0) {
-						selectedChangeOrb_ = havingOrbCount - 1;
-					}
-				} else {
-					selectedChangeOrb_--;
+		}
+		// 十字左
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
+			// 選択しているオーブがをした回っていたら
+			if (selectedChangeOrb_ <= 0) {
+				// 最初に戻る
+				if (havingOrbCount > 0) {
+					selectedChangeOrb_ = havingOrbCount - 1;
 				}
+			} else {
+				selectedChangeOrb_--;
 			}
+		}
 
-			// オーブの数が1以上なら
-			if (havingOrbCount > 0 && needChangeOrbEnemyCount_ <= 0) {
-				// 選択したオーブを別のオーブに変換する
-				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
-					if (havingOrbs_[selectedChangeOrb_] != selectedChangeType_) {
-						// 所持しているオーブリストの指定された位置に新しいオーブを挿入
-						havingOrbs_.insert(
-						    havingOrbs_.begin() + selectedChangeOrb_,
-						    (PlayerBullet::BulletType)selectedChangeType_);
-						// 変換に使用したオーブを削除
-						havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
-						// 変換に必要な敵数をリセット
-						needChangeOrbEnemyCount_ = kNeedChangeOrbEnemyCount_;
-					}
+		// オーブの数が1以上なら
+		if (havingOrbCount > 0 && needChangeOrbEnemyCount_ <= 0) {
+			// 選択したオーブを別のオーブに変換する
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+				if (havingOrbs_[selectedChangeOrb_] != selectedChangeType_) {
+					// 所持しているオーブリストの指定された位置に新しいオーブを挿入
+					havingOrbs_.insert(
+					    havingOrbs_.begin() + selectedChangeOrb_,
+					    (PlayerBullet::BulletType)selectedChangeType_);
+					// 変換に使用したオーブを削除
+					havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
+					// 変換に必要な敵数をリセット
+					needChangeOrbEnemyCount_ = kNeedChangeOrbEnemyCount_;
 				}
 			}
 		}
@@ -1291,24 +1306,13 @@ void Player::UIUpdate() {
 			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
 		}
 
-		// RBホールド
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			// テキストUIのテクスチャを変更
-			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
-			// テクスチャ描画範囲設定
-			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
-			spriteChangeOrbText_->SetPosition({230.0f, 475.0f}); // 座標
-			spriteChangeOrbText_->SetSize({352.0f, 88.0f});     // 大きさ
-		} else {
-			// テキストUIのテクスチャを変更
-			spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::RBHoldText]);	
-			// テクスチャ描画範囲設定
-			spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {512.0f, 128.0f});	
+		// テキストUIのテクスチャを変更
+		spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
+		// テクスチャ描画範囲設定
+		spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
+		spriteChangeOrbText_->SetPosition({230.0f, 475.0f}); // 座標
+		spriteChangeOrbText_->SetSize({352.0f, 88.0f});      // 大きさ
 
-			spriteChangeOrbText_->SetPosition({195.0f, 485.0f}); // 座標
-			spriteChangeOrbText_->SetSize({256.0f, 64.0f});      // 大きさ
-
-		}
 		// 左トリガー
 		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_) {
 			// ボタンを押すとテクスチャを変更
