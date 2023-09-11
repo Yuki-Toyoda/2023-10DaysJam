@@ -772,9 +772,22 @@ void Player::AddOrbs(PlayerBullet::BulletType orbType) {
 	int havingOrbCount = (int)havingOrbs_.size();
 	// 所持しているオーブの数が３つ以上の時
 	if (havingOrbCount >= kMaxHavingOrbs_) {
+
+		if (havingOrbs_[0] != orbType) {
+			// オーブ追加音を鳴らす
+			audio_->PlayWave(audioHandles_[Audio::AddOrb]);
+		}
+
 		// 所持している最初のオーブを削除
 		havingOrbs_.erase(havingOrbs_.begin());
 	}
+
+	// 
+	if (havingOrbCount < kMaxHavingOrbs_) {
+		// オーブ追加音を鳴らす
+		audio_->PlayWave(audioHandles_[Audio::AddOrb]);
+	} 
+
 	// 引数のオーブを追加
 	havingOrbs_.push_back(orbType);
 }
@@ -808,6 +821,9 @@ void Player::OnCollisionEnemy() {
 	hp--;
 	invincibilityTimer_ = collisionInvincibilityTime_;
 	isInvincible_ = true;
+
+	// ダメージ音を鳴らす
+	audio_->PlayWave(audioHandles_[Audio::Damage]);
 
 	//カメラシェイク
 	Vector2 shakeStrength = { 5.0f,5.0f}; // カメラシェイク強さ
@@ -1211,10 +1227,33 @@ void Player::SpecialShot() {
 				// 変換タイプをリセット
 				selectedChangeType_ = PlayerBullet::Fire;
 			}
+
+			// 選択した特殊射撃のタイプを元に
+			switch (selectedChangeType_) {
+			case PlayerBullet::Fire:
+				// 炎弾
+				// オーブ選択音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::ChoiceFireBullet]);
+				break;
+			case PlayerBullet::Ice:
+				// 氷弾
+				// オーブ選択音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::ChoiceIceBullet]);
+				break;
+			case PlayerBullet::Thunder:
+				// 雷弾
+				// オーブ選択音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::DeployEndThunderArea]);
+				break;
+			}
 		}
 
 		// 十字右
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
+			if (havingOrbCount >= 2) {
+				// オーブ選択音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::ChoiceOrb]);
+			}
 			// 選択しているオーブが最大値を上回っていたら
 			if (selectedChangeOrb_ >= havingOrbCount - 1) {
 				// 最初に戻る
@@ -1225,6 +1264,10 @@ void Player::SpecialShot() {
 		}
 		// 十字左
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
+			if (havingOrbCount >= 2) {
+				// オーブ選択音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::ChoiceOrb]);
+			}
 			// 選択しているオーブがをした回っていたら
 			if (selectedChangeOrb_ <= 0) {
 				// 最初に戻る
@@ -1241,6 +1284,8 @@ void Player::SpecialShot() {
 			// 選択したオーブを別のオーブに変換する
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
 				if (havingOrbs_[selectedChangeOrb_] != selectedChangeType_) {
+					// オーブ変換成功を鳴らす
+					audio_->PlayWave(audioHandles_[Audio::ChangeOrbSuccess]);
 					// 所持しているオーブリストの指定された位置に新しいオーブを挿入
 					havingOrbs_.insert(
 					    havingOrbs_.begin() + selectedChangeOrb_,
@@ -1249,6 +1294,9 @@ void Player::SpecialShot() {
 					havingOrbs_.erase(havingOrbs_.begin() + selectedChangeOrb_ + 1);
 					// 変換に必要な敵数をリセット
 					needChangeOrbEnemyCount_ = kNeedChangeOrbEnemyCount_;
+				} else {
+					// オーブ変換失敗音を鳴らす
+					audio_->PlayWave(audioHandles_[Audio::ChangeOrbFail]);
 				}
 			}
 		}
@@ -1338,8 +1386,12 @@ void Player::UIUpdate() {
 	    {spriteHavingOrbsStartPos_.x + (spriteHavingOrbsLineSpace_.x * selectedChangeOrb_),
 	     spriteHavingOrbsStartPos_.y + (spriteHavingOrbsLineSpace_.y * selectedChangeOrb_)});
 
-	// 変換テキストUIの座標調整
-	spriteChangeOrbText_->SetPosition(spriteChangeOrbUI_.position_);
+	// テキストUIのテクスチャを変更
+	spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
+	// テクスチャ描画範囲設定
+	spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
+	spriteChangeOrbText_->SetPosition({230.0f, 475.0f}); // 座標
+	spriteChangeOrbText_->SetSize({352.0f, 88.0f});      // 大きさ
 
 	// 変換するオーブの種類によってスプライトを変化
 	switch (selectedChangeType_) {
@@ -1486,13 +1538,6 @@ void Player::UIUpdate() {
 		} else {
 			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
 		}
-
-		// テキストUIのテクスチャを変更
-		spriteChangeOrbText_->SetTextureHandle(textureHandles_[TextureManager::changeOrbText]);
-		// テクスチャ描画範囲設定
-		spriteChangeOrbText_->SetTextureRect({0.0f, 0.0f}, {1280.0f, 256.0f});
-		spriteChangeOrbText_->SetPosition({230.0f, 475.0f}); // 座標
-		spriteChangeOrbText_->SetSize({352.0f, 88.0f});      // 大きさ
 
 		// 左トリガー
 		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_) {

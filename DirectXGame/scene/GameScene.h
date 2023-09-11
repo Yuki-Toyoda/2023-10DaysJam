@@ -258,7 +258,9 @@ private: // メンバ変数
 	uint32_t soundHandleFootStep_[2]; // 歩行音
 	uint32_t soundHandleJump_; // ジャンプ音
 	uint32_t soundHandleLanding_; // 着地音
+	uint32_t soundHandlePlayerDamage_; // ダメージ音
 	uint32_t soundHandleShot_; // 通常射撃音
+	uint32_t soundHandleAddOrb_; // オーブ追加音
 	uint32_t soundHandleSpecialShot_; // 特殊射撃音
 	uint32_t soundHandleFireShot_; // 炎弾着弾音
 	uint32_t soundHandleDeployIceWall_; // 氷弾展開音
@@ -267,7 +269,11 @@ private: // メンバ変数
 	uint32_t soundHandleDeployStartThunderArea_; // 雷エリア展開開始音
 	uint32_t soundHandleDeployThunderArea_; // 雷エリア展開音
 	uint32_t soundHandleDeployEndThunderArea_; // 雷エリア展開終了音
-
+	uint32_t soundHandleDeployOrbChoice_; // オーブ選択音
+	uint32_t soundHandleDeployChangeOrbSuccess_; // オーブ変換成功音
+	uint32_t soundHandleDeployChangeOrbFail_; // オーブ変換失敗音
+	uint32_t soundHandleDeployChoiceFireBullet_; // 炎弾選択音
+	uint32_t soundHandleDeployChoiceIceBullet_; // 氷弾選択音
 	// エフェクトマネージャー
 	EffectManager* effectManager_ = nullptr;
 
