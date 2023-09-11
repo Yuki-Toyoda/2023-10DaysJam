@@ -124,7 +124,7 @@ private: //衝突処理
 	/// <summary>
 	/// 氷との衝突処理
 	/// </summary>
-	void OnCollisionIce();
+	void OnCollisionIce(Collider* collision);
 
 	/// <summary>
 	/// エネミーとの衝突処理

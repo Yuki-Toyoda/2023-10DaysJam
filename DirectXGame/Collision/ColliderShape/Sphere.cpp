@@ -78,10 +78,15 @@ void Sphere::ApplyGlobalVariables(const char* groupName) {
 
 Vector3 Sphere::LengthSphere(Vector3 rotation) { 
 
-	Matrix4x4 rotateMatrix = MyMath::MakeRotateXYZMatrix(rotation);
+	//Matrix4x4 rotateMatrix = MyMath::MakeRotateXYZMatrix(rotation);
 
-	Vector3 unit =
-	    MyMath::Normalize(MyMath::TransformNormal(Vector3(1.0f, 1.0f, 1.0f), rotateMatrix));
+	//Vector3 unit =
+	//    MyMath::Normalize(MyMath::TransformNormal(Vector3(1.0f, 1.0f, 1.0f), rotateMatrix));
+
+	Vector3 unit;
+	unit.z = std::cosf(rotation.y) * std::cosf(rotation.x); // コサイン
+	unit.x = std::sinf(rotation.y) * std::cosf(rotation.x);
+	unit.y = -std::sinf(rotation.x) * std::cosf(rotation.z);
 
 	return unit * radius_;
 

@@ -756,7 +756,7 @@ void Player::Setup() {
 void Player::OnCollision(Collider* collision) { 
 	
 	if (collision->GetTag() == TagPlayerBulletIce) {
-		OnCollisionIce();
+		OnCollisionIce(collision);
 	} else if (collision->GetTag() == TagEnemy || 
 		collision->GetTag() == TagBossEnemy ||
 	    collision->GetTag() == TagEnemyBullet) {
@@ -803,16 +803,194 @@ void Player::SubtractNeedChangeOrbEnemyCount_() {
 	}
 }
 
-void Player::OnCollisionIce() {
+void Player::OnCollisionIce(Collider* collision) {
 
-	float reflection = -10.0f;
-	float accelerationDown = 1.0f / 2.0f;
+	/*
+	if (accelerationIce_.x == 0.0f) {
+	    float reflection = -10.0f;
+	    float accelerationDown = 1.0f / 2.0f;
 
-	worldTransform_.translation_ = preTranslation_;
-	accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
-	accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
-	worldTransform_.UpdateMatrix();
+	    worldTransform_.translation_ = preTranslation_;
+	    if (!isGround_) {
+	        worldTransform_.translation_.y = height_;
+	    }
+	    accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
+	    accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
+	    worldTransform_.UpdateMatrix();
+	}
+	*/
+
+	Vector3* iceOtientatuons = collision->GetColliderShape()->GetOtientatuons();
+
+	Vector3 size_ = collision->GetColliderShape()->GetSize();
+
+	//頂点
+	Vector3 vertex[8];
+
+	vertex[0] = {
+	    (-size_.x * iceOtientatuons[0].x + size_.y * iceOtientatuons[1].x +
+	                 -size_.z * iceOtientatuons[2].x),
+	    (-size_.x * iceOtientatuons[0].y + size_.y * iceOtientatuons[1].y +
+	                 -size_.z * iceOtientatuons[2].y),
+	    (-size_.x * iceOtientatuons[0].z + size_.y * iceOtientatuons[1].z +
+	                 -size_.z * iceOtientatuons[2].z)};
+
+	vertex[1] = {
+	   (-size_.x * iceOtientatuons[0].x + size_.y * iceOtientatuons[1].x +
+	                 size_.z * iceOtientatuons[2].x),
+	    (-size_.x * iceOtientatuons[0].y + size_.y * iceOtientatuons[1].y +
+	                 size_.z * iceOtientatuons[2].y),
+	    (-size_.x * iceOtientatuons[0].z + size_.y * iceOtientatuons[1].z +
+	                 size_.z * iceOtientatuons[2].z)};
+
+	vertex[2] = {
+	    (size_.x * iceOtientatuons[0].x + size_.y * iceOtientatuons[1].x +
+	                 -size_.z * iceOtientatuons[2].x),
+	    (size_.x * iceOtientatuons[0].y + size_.y * iceOtientatuons[1].y +
+	                 -size_.z * iceOtientatuons[2].y),
+	    (size_.x * iceOtientatuons[0].z + size_.y * iceOtientatuons[1].z +
+	                 -size_.z * iceOtientatuons[2].z)};
+
+	vertex[3] = {
+	    (size_.x * iceOtientatuons[0].x + size_.y * iceOtientatuons[1].x +
+	                 size_.z * iceOtientatuons[2].x),
+	    (size_.x * iceOtientatuons[0].y + size_.y * iceOtientatuons[1].y +
+	                 size_.z * iceOtientatuons[2].y),
+	    (size_.x * iceOtientatuons[0].z + size_.y * iceOtientatuons[1].z +
+	                 size_.z * iceOtientatuons[2].z)};
+
+	vertex[4] = {
+	    (-size_.x * iceOtientatuons[0].x + -size_.y * iceOtientatuons[1].x +
+	                 -size_.z * iceOtientatuons[2].x),
+	    (-size_.x * iceOtientatuons[0].y + -size_.y * iceOtientatuons[1].y +
+	                 -size_.z * iceOtientatuons[2].y),
+	    (-size_.x * iceOtientatuons[0].z + -size_.y * iceOtientatuons[1].z +
+	                 -size_.z * iceOtientatuons[2].z)};
+
+	vertex[5] = {
+	    (-size_.x * iceOtientatuons[0].x + -size_.y * iceOtientatuons[1].x +
+	                 size_.z * iceOtientatuons[2].x),
+	    (-size_.x * iceOtientatuons[0].y + -size_.y * iceOtientatuons[1].y +
+	                 size_.z * iceOtientatuons[2].y),
+	    (-size_.x * iceOtientatuons[0].z + -size_.y * iceOtientatuons[1].z +
+	                 size_.z * iceOtientatuons[2].z)};
+
+	vertex[6] = {
+	    (size_.x * iceOtientatuons[0].x + -size_.y * iceOtientatuons[1].x +
+	                 -size_.z * iceOtientatuons[2].x),
+	    (size_.x * iceOtientatuons[0].y + -size_.y * iceOtientatuons[1].y +
+	                 -size_.z * iceOtientatuons[2].y),
+	    (size_.x * iceOtientatuons[0].z + -size_.y * iceOtientatuons[1].z +
+	                 -size_.z * iceOtientatuons[2].z)};
+
+	vertex[7] = {
+	    (size_.x * iceOtientatuons[0].x + -size_.y * iceOtientatuons[1].x +
+	                 size_.z * iceOtientatuons[2].x),
+	    (size_.x * iceOtientatuons[0].y + -size_.y * iceOtientatuons[1].y +
+	                 size_.z * iceOtientatuons[2].y),
+	    (size_.x * iceOtientatuons[0].z + -size_.y * iceOtientatuons[1].z +
+	                 size_.z * iceOtientatuons[2].z)};
+
+	Vector3 useVertex[6][4]{
+	    {vertex[2], vertex[3], vertex[7], vertex[6]},
+        {vertex[1], vertex[0], vertex[4], vertex[5]},
+	    {vertex[0], vertex[1], vertex[3], vertex[2]},
+        {vertex[6], vertex[7], vertex[5], vertex[4]},
+	    {vertex[5], vertex[7], vertex[3], vertex[1]},
+        {vertex[0], vertex[2], vertex[6], vertex[4]},
+	};
+
+	// 氷から平面
+	Vector3 icePlaneNormal[6] = {};
+	icePlaneNormal[0] = iceOtientatuons[0];
+	icePlaneNormal[1] = iceOtientatuons[0] * -1;
+	icePlaneNormal[2] = iceOtientatuons[1];
+	icePlaneNormal[3] = iceOtientatuons[1] * -1;
+	icePlaneNormal[4] = iceOtientatuons[2];
+	icePlaneNormal[5] = iceOtientatuons[2] * -1;
+	float iceDistance[6] = {};
+	iceDistance[0] = collision->GetColliderShape()->GetSize().x;
+	iceDistance[1] = collision->GetColliderShape()->GetSize().x;
+	iceDistance[2] = collision->GetColliderShape()->GetSize().y;
+	iceDistance[3] = collision->GetColliderShape()->GetSize().y;
+	iceDistance[4] = collision->GetColliderShape()->GetSize().z;
+	iceDistance[5] = collision->GetColliderShape()->GetSize().z;
+
+	//線分作成
+	Vector3 origin = {0.0f,0.0f,0.0f};
+	Vector3 diff = colliderShape_->GetCenter() - collision->GetColliderShape()->GetCenter();
+	size_t num = 0;
 	
+	for (size_t i = 0; i < 6; i++) {
+
+		// 垂直判定のため、法線と線の内積を求める
+		float dot = MyMath::Dot(icePlaneNormal[i], diff);
+
+		// 衝突しているかも
+		if (dot != 0.0f) {
+
+			// tを求める
+			float t = (iceDistance[i] - MyMath::Dot(origin, icePlaneNormal[i])) / dot;
+
+			if (t >= 0 && t <= 1.0f) {
+
+				//平面の中か
+				Vector3 v01 = useVertex[i][1] - useVertex[i][0];
+				Vector3 v12 = useVertex[i][2] - useVertex[i][1];
+				Vector3 v23 = useVertex[i][3] - useVertex[i][2];
+				Vector3 v30 = useVertex[i][0] - useVertex[i][3];
+
+				Vector3 v1p = origin + (diff * t) - useVertex[i][1];
+				Vector3 v2p = origin + (diff * t) - useVertex[i][2];
+				Vector3 v3p = origin + (diff * t) - useVertex[i][3];
+				Vector3 v0p = origin + (diff * t) - useVertex[i][0];
+
+				Vector3 cross01 = MyMath::Cross(v01, v1p);
+				Vector3 cross12 = MyMath::Cross(v12, v2p);
+				Vector3 cross23 = MyMath::Cross(v23, v3p);
+				Vector3 cross30 = MyMath::Cross(v30, v0p);
+				
+				if (MyMath::Dot(cross01, icePlaneNormal[i]) >= 0.0f &&
+				    MyMath::Dot(cross12, icePlaneNormal[i]) >= 0.0f &&
+				    MyMath::Dot(cross23, icePlaneNormal[i]) >= 0.0f &&
+				    MyMath::Dot(cross30, icePlaneNormal[i]) >= 0.0f) {
+
+					num = i;
+					break;
+				}
+			}
+
+		}
+
+	}
+
+	//平面とObb
+	float r = 0.0f;
+	Vector3* playerOtientatuons = collision->GetColliderShape()->GetOtientatuons();
+	float playersize[3] = {
+	    collision->GetColliderShape()->GetSize().x * 0.6f / 25.0f,
+	    collision->GetColliderShape()->GetSize().y * 0.6f / 10.0f,
+	    collision->GetColliderShape()->GetSize().z * 0.5f,
+	};
+	for (size_t i = 0; i < 3; i++) {
+		r += std::fabsf(MyMath::Dot(playerOtientatuons[i] * playersize[i], icePlaneNormal[num]));
+	}
+
+	//平面とobbの距離
+	Vector3 playerPos = colliderShape_->GetCenter();
+	Vector3 planePos =
+	    collision->GetColliderShape()->GetCenter() + (icePlaneNormal[num] * iceDistance[num]);
+
+	float s = MyMath::Dot(playerPos - planePos, icePlaneNormal[num]);
+	float distance = 0.0f;
+	if (s > 0) {
+		distance = r - std::fabsf(s);
+	} else {
+		distance = r + std::fabsf(s);
+	}
+
+	worldTransform_.translation_ = worldTransform_.translation_ + (icePlaneNormal[num] * distance);
+
 }
 
 void Player::OnCollisionEnemy() {
