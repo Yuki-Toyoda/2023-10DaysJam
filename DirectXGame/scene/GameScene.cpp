@@ -257,17 +257,29 @@ void GameScene::Initialize() {
 
 	//テクスチャハンドル
 	std::vector<uint32_t> enemyTextureHandles = {
-		TextureManager::GetInstance()->Load("./Resources/white1x1.png"),
-		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyFire.png"),
-		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyIce.png"),
-		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyThunder.png"),
+		TextureManager::Load("./Resources/white1x1.png"),
+		TextureManager::Load("./Resources/Enemy/EnemyFire.png"),
+		TextureManager::Load("./Resources/Enemy/EnemyIce.png"),
+		TextureManager::Load("./Resources/Enemy/EnemyThunder.png"),
 	};
+
+	// スプライト
+	// ボスHP
+	Vector2 spritePos =
+	    Vector2(float(WinApp::kWindowWidth) / 4.0f + 100.0f, float(WinApp::kWindowHeight) * 3.0f / 4.0f);
+	bossHpTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
+	bossHpSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+
+	// ボスHPフレーム
+	bossHpFrameTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
+	bossHpFrameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(
 	    std::vector<Model*>{modelEnemy_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
-	    std::vector<Model*>{modelEnemyDeathEffect_.get()});
+	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(), bossHpFrameSprite_.get());
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
@@ -757,6 +769,7 @@ void GameScene::MainDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	player_->SpriteDraw(); // プレイヤー
+	enemyManager_->SpriteDraw(); //エネミー
 
 	// フェードインアウト
 	FadeInOutDraw();
