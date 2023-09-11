@@ -7,6 +7,7 @@
 #include "../config/GlobalVariables.h"
 #include "Collision/ColliderShape/OBB.h"
 #include "Ambient/Field.h"
+#include <Effect/EffectManager.h>
 
 /// <summary>
 /// 初期化
@@ -14,7 +15,8 @@
 /// <param name="models">モデルデータ配列</param>
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
     Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
-    std::list<BossEnemy*>* bossEnemies) {
+    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels,
+    bool isTutorial) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -34,12 +36,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	enemyType_ = enemyType;
 
 	//状態
-	enemyState_ = Wait;
+	enemyState_ = Appear;
 
-	// ボスとの距離
-	distanceToBoss_ = 0.0f;
-	// ボスとの回転角
-	rotationToBoss_ = {0.0f,0.0f,0.0f};
 	targetWorldTransform.Initialize();
 
 	// 突進準備用
@@ -65,6 +63,22 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	//雷弾無敵タイム
 	thunderInvincibilityTime_ = 40;
 
+	// 振動強さ
+	shakeStrength_ = {0.0f,0.0f,0.0f};
+	// シェイク有効トリガー
+	enableShake_ = false;
+	// シェイク演出用t
+	shakeT_ = 0.0f;
+	// シェイク演出時間
+	shakeTime_ = 0.0f;
+
+	modelWorldTransform_.Initialize();
+	modelWorldTransform_.parent_ = &worldTransform_;
+	modelWorldTransform_.UpdateMatrix();
+
+	// タイマー
+	appearTimer_ = appearTime_;
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
@@ -78,6 +92,10 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	player_ = player;
 	// ボス
 	bossEnemies_ = bossEnemies;
+	// エネミー死亡エフェクトのモデル
+	deathEffectModels_ = deathEffectModels;
+	// チュートリアルか
+	isTutorial_ = isTutorial;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -111,6 +129,9 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 void Enemy::Update() {
 
 	switch (enemyState_) {
+	case Enemy::Appear:
+		Appearing();
+		break;
 	case Enemy::Wait:
 		Waiting();
 		break;
@@ -122,6 +143,10 @@ void Enemy::Update() {
 		break;
 	case Enemy::Rush:
 		Rushing();
+		break;
+	case Enemy::Tutorial:
+		TutorialMove();
+		break;
 	default:
 		break;
 	}
@@ -157,6 +182,15 @@ void Enemy::Update() {
 	//コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
+	//モデルトランスフォーム更新
+	// シェイク
+	if (enableShake_) {
+		modelWorldTransform_.translation_ = ModelShake();
+	} else {
+		modelWorldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	}
+	modelWorldTransform_.UpdateMatrix();
+
 	//サンダーと当たったかをfalseに
 	isCollisionThunder = false;
 
@@ -169,7 +203,7 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& viewProjection) {
 
 	for (Model* model : models_) {
-		model->Draw(worldTransform_, viewProjection, textureHandle_);
+		 model->Draw(modelWorldTransform_, viewProjection, textureHandle_);
 	}
 
 }
@@ -330,6 +364,23 @@ void Enemy::Rushing() {
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+
+}
+
+void Enemy::Appearing() {
+
+	if (--appearTimer_ == 0) {
+		if (isTutorial_) {
+			enemyState_ = Tutorial;
+		} else {
+			enemyState_ = Wait;
+		}
+	}
+
+	float t = float(appearTime_ - appearTimer_) /  float(appearTime_);
+	worldTransform_.scale_.x = MyMath::EaseOut(t, 0.0f, 1.0f);
+	worldTransform_.scale_.y = MyMath::EaseOut(t, 0.0f, 1.0f);
+	worldTransform_.scale_.z = MyMath::EaseOut(t, 0.0f, 1.0f);
 
 }
 
@@ -500,6 +551,8 @@ void Enemy::Dead() {
 	//死亡フラグをたてる
 	isDead_ = true;
 	enemyManager_->SetEnemyCount(enemyManager_->GetEnemyCount() - 1);
+	EffectManager::GetInstance()->PlayEnemyDeathEffect(
+	    deathEffectModels_, textureHandle_, worldTransform_.translation_);
 
 }
 
@@ -513,9 +566,74 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 	if (hp_ <= 0) {
 		Dead();
 	} else {
+		//無敵
 		isInvincible_ = true;
 		invincibilityTimer_ = InvincibilityTime;
+		//シェイク
+		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
 	}
+
+}
+
+void Enemy::PlayModelShake(Vector3 shakeStrength, float shakeTime) {
+	// 引数の値をメンバ変数に代入
+	shakeStrength_ = shakeStrength;
+	shakeTime_ = shakeTime;
+
+	// 演出用tをリセット
+	shakeT_ = 0.0f;
+	// カメラ振動有効
+	enableShake_ = true;
+
+}
+
+Vector3 Enemy::ModelShake() {
+
+	Vector3 shakeWorldTransformTranslation;
+	// 指定秒数シェイク
+	if (shakeT_ <= shakeTime_) {
+		// シェイクをイージングで表現
+		shakeWorldTransformTranslation.x = MyMath::EaseOut(shakeT_, MyMath::RandomF(-shakeStrength_.x, shakeStrength_.x, 2), 0.0f, shakeTime_);
+		shakeWorldTransformTranslation.y = MyMath::EaseOut(shakeT_, MyMath::RandomF(-shakeStrength_.y, shakeStrength_.y, 2), 0.0f, shakeTime_);
+		shakeWorldTransformTranslation.z = MyMath::EaseOut(shakeT_, MyMath::RandomF(-shakeStrength_.z, shakeStrength_.z, 2), 0.0f, shakeTime_);
+		// 演出t加算
+		shakeT_ += 1.0f / 60.0f;
+	} else {
+		// カメラシェイク強さリセット
+		shakeWorldTransformTranslation = {0.0f, 0.0f, 0.0f};
+		enableShake_ = false;
+	}
+
+	return shakeWorldTransformTranslation;
+
+}
+
+void Enemy::TutorialMove() {
+
+	// 移動固定
+	Move();
+
+	// 氷の跳ね返り
+	velocity_ = velocity_ + accelerationIce_;
+	if (accelerationIce_.x != 0.0f) {
+		Vector3 preAccel = accelerationIce_;
+		accelerationIce_ = accelerationIce_ + accelerationIceDown_;
+		if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
+		    accelerationIce_.z * preAccel.z < 0.0f) {
+			accelerationIce_.x = 0.0f;
+			accelerationIce_.y = 0.0f;
+			accelerationIce_.z = 0.0f;
+		}
+	}
+
+	// 雷の減速
+	if (isCollisionThunder) {
+		velocity_ = velocity_ * decelerationMagnification;
+	}
+
+	// 座標を移動させる(1フレーム分の移動量を足しこむ)
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+
 
 }
 

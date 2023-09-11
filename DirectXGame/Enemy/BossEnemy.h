@@ -99,6 +99,16 @@ public: // メンバ関数
 	/// </summary>
 	void TranslationLimit();
 
+	/// <summary>
+	/// モデルを揺らす開始
+	/// </summary>
+	void PlayModelShake(Vector3 shakeStrength, float shakeTime);
+
+	/// <summary>
+	/// モデルを揺らす
+	/// </summary>
+	Vector3 ModelShake();
+
 public: // 衝突処理
 
 	/// <summary>
@@ -166,6 +176,12 @@ public: //アクセッサ
 	/// </summary>
 	/// <returns></returns>
 	bool GetIsInvincible() { return isInvincible_; }
+
+	/// <summary>
+	/// hpゲッター
+	/// </summary>
+	/// <returns></returns>
+	int32_t GetHp() { return hp_; }
 
 public: // 自分の情報
 	/// <summary>
@@ -281,5 +297,17 @@ private: // メンバ変数
 	bool isCollisionThunder = false;
 	// 減速倍率
 	float decelerationMagnification = 0.5f;
+
+	// 振動強さ
+	Vector3 shakeStrength_;
+	// シェイク有効トリガー
+	bool enableShake_;
+	// シェイク演出用t
+	float shakeT_;
+	// シェイク演出時間
+	float shakeTime_;
+
+	// モデル
+	WorldTransform modelWorldTransform_;
 
 };

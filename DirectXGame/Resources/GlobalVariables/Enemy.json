@@ -6,9 +6,9 @@
         "MoveSpeed": 0.5,
         "MoveToPlayerSpeed": 0.5,
         "OBBSize": [
-            2.5,
-            2.5,
-            12.5
+            5.0,
+            5.0,
+            25.0
         ],
         "RushSpeed": 5.0,
         "ThunderInvincibilityTime": 40

@@ -87,7 +87,7 @@ void EnemySpawner::Spawn() {
 		enemyTypeNext_ = Enemy::None;
 	}
 
-	enemyManager_->AddEnemy(pos,enemyTypeNext_);
+	enemyManager_->AddEnemy(pos,enemyTypeNext_,false);
 	// 生成クールタイム
 	generateCooltime_ = generateCooltimeMax_;
 

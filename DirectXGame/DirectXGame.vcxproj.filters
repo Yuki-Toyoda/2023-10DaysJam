@@ -56,7 +56,7 @@
     <Filter Include="Effect\Fuck">
       <UniqueIdentifier>{1d35cf52-993e-4304-8448-2d0bcf57be61}</UniqueIdentifier>
     </Filter>
-       <Filter Include="Charactor\Enemy">
+    <Filter Include="Charactor\Enemy">
       <UniqueIdentifier>{0940c18c-2112-4713-82ee-590467e7862f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Charactor\Enemy\BossEnemy">
@@ -175,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="Collision\ColliderShape\Sphere.cpp">
       <Filter>Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect\EnemyDeathEffect.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -350,6 +353,9 @@
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="Effect\DebrisEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect\EnemyDeathEffect.h">
       <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>

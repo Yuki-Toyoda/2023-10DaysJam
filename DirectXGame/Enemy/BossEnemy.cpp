@@ -62,6 +62,9 @@ void BossEnemy::Initialize(
 	// 衝突無敵タイマー
 	collisionInvincibilityTime_ = 20;
 
+	// 雷弾無敵タイマー
+	thunderInvincibilityTime_ = 40;
+
 	// 射撃クールタイム
 	shotAttackCooltime_ = 0;
 
@@ -77,6 +80,19 @@ void BossEnemy::Initialize(
 			unitTtransformData_[i][j] = Vector3(0.0f, 0.0f, 0.0f);
 		}
 	}
+
+	// 振動強さ
+	shakeStrength_ = {0.0f, 0.0f, 0.0f};
+	// シェイク有効トリガー
+	enableShake_ = false;
+	// シェイク演出用t
+	shakeT_ = 0.0f;
+	// シェイク演出時間
+	shakeTime_ = 0.0f;
+
+	modelWorldTransform_.Initialize();
+	modelWorldTransform_.parent_ = &worldTransform_;
+	modelWorldTransform_.UpdateMatrix();
 
 	// エネミーマネージャー
 	enemyManager_ = enemyManager;
@@ -188,6 +204,15 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 	// コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
+	// モデルトランスフォーム更新
+	// シェイク
+	if (enableShake_) {
+		modelWorldTransform_.translation_ = ModelShake();
+	} else {
+		modelWorldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	}
+	modelWorldTransform_.UpdateMatrix();
+
 	// サンダーと当たったかをfalseに
 	isCollisionThunder = false;
 
@@ -200,7 +225,7 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 void BossEnemy::Draw(const ViewProjection& viewProjection) {
 
 	for (Model* model : models_) {
-		model->Draw(worldTransform_, viewProjection);
+		model->Draw(modelWorldTransform_, viewProjection);
 	}
 }
 
@@ -225,7 +250,9 @@ void BossEnemy::OnCollision(Collider* collision) {
 		CollisionBulletThunder();
 		break;
 	case TagEnemy:
-		CollisionEnemy();
+		if (collision->GetEnemy()->GetEnemyState() != Enemy::Appear) {
+			CollisionEnemy();
+		}
 		break;
 	default:
 		break;
@@ -622,10 +649,7 @@ void BossEnemy::ShotAttack() {
 
 }
 
-void BossEnemy::Dead() {
-
-
-}
+void BossEnemy::Dead() {}
 
 void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
@@ -639,6 +663,8 @@ void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 	} else {
 		isInvincible_ = true;
 		invincibilityTimer_ = InvincibilityTime;
+		// シェイク
+		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
 	}
 
 }
@@ -655,6 +681,43 @@ void BossEnemy::TranslationLimit() {
 	
 	worldTransform_.translation_.z =
 	    std::clamp(worldTransform_.translation_.z, field->GetMin().z, field->GetMax().z);
+
+}
+
+void BossEnemy::PlayModelShake(Vector3 shakeStrength, float shakeTime) {
+
+	// 引数の値をメンバ変数に代入
+	shakeStrength_ = shakeStrength;
+	shakeTime_ = shakeTime;
+
+	// 演出用tをリセット
+	shakeT_ = 0.0f;
+	// カメラ振動有効
+	enableShake_ = true;
+
+}
+
+Vector3 BossEnemy::ModelShake() { 
+
+	Vector3 shakeWorldTransformTranslation;
+	// 指定秒数シェイク
+	if (shakeT_ <= shakeTime_) {
+		// シェイクをイージングで表現
+		shakeWorldTransformTranslation.x = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.x, shakeStrength_.x, 2), 0.0f, shakeTime_);
+		shakeWorldTransformTranslation.y = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.y, shakeStrength_.y, 2), 0.0f, shakeTime_);
+		shakeWorldTransformTranslation.z = MyMath::EaseOut(
+		    shakeT_, MyMath::RandomF(-shakeStrength_.z, shakeStrength_.z, 2), 0.0f, shakeTime_);
+		// 演出t加算
+		shakeT_ += 1.0f / 60.0f;
+	} else {
+		// カメラシェイク強さリセット
+		shakeWorldTransformTranslation = {0.0f, 0.0f, 0.0f};
+		enableShake_ = false;
+	}
+
+	return shakeWorldTransformTranslation;
 
 }
 

@@ -23,11 +23,13 @@ public: //サブクラス
 	};
 
 	// 状態
-	enum EnemyState {
+	enum EnemyState { 
+		Appear,
 		Wait,
 		Follow,
 		PreRush,
-		Rush
+		Rush,
+		Tutorial
 	};
 
 
@@ -40,7 +42,7 @@ public: //メンバ関数
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
 	    Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
-	    std::list<BossEnemy*>* bossEnemies);
+	    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels, bool isTutorial);
 
 	/// <summary>
 	/// 更新
@@ -95,6 +97,11 @@ public: //メンバ関数
 	void Rushing();
 
 	/// <summary>
+	/// 登場
+	/// </summary>
+	void Appearing();
+
+	/// <summary>
 	/// 待ち
 	/// </summary>
 	void Waiting();
@@ -123,6 +130,21 @@ public: //メンバ関数
 	/// HP変動
 	/// </summary>
 	void HpFluctuation(int32_t damage, uint32_t InvincibilityTime);
+
+	/// <summary>
+	/// モデルを揺らす開始
+	/// </summary>
+	void PlayModelShake(Vector3 shakeStrength, float shakeTime);
+
+	/// <summary>
+	/// モデルを揺らす
+	/// </summary>
+	Vector3 ModelShake();
+
+	/// <summary>
+	/// チュートリアル移動
+	/// </summary>
+	void TutorialMove();
 
 public: //衝突処理
 	
@@ -232,10 +254,6 @@ private: //メンバ変数
 	
 	//追従するボス
 	BossEnemy* JoiningBossEnemy_ = nullptr;
-	// ボスとの距離
-	float distanceToBoss_;
-	// ボスとの回転角
-	Vector3 rotationToBoss_;
 	// 目指すワールドトランスフォーム
 	WorldTransform targetWorldTransform;
 
@@ -276,5 +294,29 @@ private: //メンバ変数
 
 	//上昇
 	const float risingHeight = 40.0f;
+
+	// 振動強さ
+	Vector3 shakeStrength_;
+	// シェイク有効トリガー
+	bool enableShake_;
+	// シェイク演出用t
+	float shakeT_;
+	// シェイク演出時間
+	float shakeTime_;
+
+	//モデル
+	WorldTransform modelWorldTransform_;
+
+	//登場アニメーション
+	//タイマー
+	uint32_t appearTimer_;
+    // タイム
+    const uint32_t appearTime_ = 40;
+
+	//エネミー死亡エフェクトのモデル
+	std::vector<Model*> deathEffectModels_;
+
+	//チュートリアルか
+	bool isTutorial_; 
 
 };

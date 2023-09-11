@@ -212,6 +212,7 @@ void GameScene::Initialize() {
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 	modelBossEnemy_.reset(Model::CreateFromOBJ("BossFish", true)); // ボスエネミー
 	modelEnemyBullet_.reset(Model::CreateFromOBJ("EnemyBullet", true)); // エネミーバレット
+	modelEnemyDeathEffect_.reset(Model::CreateFromOBJ("EnemyDeathEffect", true)); // エネミーの死亡エフェクト
 
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
@@ -245,16 +246,29 @@ void GameScene::Initialize() {
 
 	//テクスチャハンドル
 	std::vector<uint32_t> enemyTextureHandles = {
-		TextureManager::GetInstance()->Load("./Resources/white1x1.png"),
-		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyFire.png"),
-		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyIce.png"),
-		TextureManager::GetInstance()->Load("./Resources/Enemy/EnemyThunder.png"),
+		TextureManager::Load("./Resources/white1x1.png"),
+		TextureManager::Load("./Resources/Enemy/EnemyFire.png"),
+		TextureManager::Load("./Resources/Enemy/EnemyIce.png"),
+		TextureManager::Load("./Resources/Enemy/EnemyThunder.png"),
 	};
+
+	// スプライト
+	// ボスHP
+	Vector2 spritePos =
+	    Vector2(float(WinApp::kWindowWidth) / 4.0f + 100.0f, float(WinApp::kWindowHeight) / 8.0f);
+	bossHpTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
+	bossHpSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+
+	// ボスHPフレーム
+	bossHpFrameTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
+	bossHpFrameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(
 	    std::vector<Model*>{modelEnemy_.get()}, enemyTextureHandles,
-	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()});
+	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
+	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(), bossHpFrameSprite_.get());
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
@@ -296,7 +310,6 @@ void GameScene::Update() {
 	// ゲームパッドの状態取得
 	preJoyState = joyState;
 	input_->GetJoystickState(0, joyState);
-	
 
 	switch (currentScene_) {
 	case GameScene::Title:
@@ -322,15 +335,67 @@ void GameScene::Update() {
 
 	//フェードインアウト
 	FadeInOutUpdate();
+
+		#ifdef _DEBUG
+
+	ImGui::Begin("SceneDebug");
+	//現在のシーン
+	switch (currentScene_) {
+	case GameScene::Title:
+		ImGui::Text("Title");
+		ImGui::Text("A->Main");
+		ImGui::Text("B->Tutorial");
+		break;
+	case GameScene::Tutorial:
+		ImGui::Text("Tutorial");
+		break;
+	case GameScene::Main:
+		ImGui::Text("Main");
+		break;
+	case GameScene::GameClear:
+		ImGui::Text("GameClear");
+		ImGui::Text("A->Main");
+		ImGui::Text("B->Title");
+		break;
+	case GameScene::GameOver:
+		ImGui::Text("GameOver");
+		ImGui::Text("A->Main");
+		ImGui::Text("B->Title");
+		break;
+	default:
+		break;
+	}
+	//フェードインアウト情報
+	if (isFadeIn_) {
+		ImGui::Text("FadeIn");
+	} else if (isFadeOut_) {
+		ImGui::Text("FadeOut");
+	} else {
+		ImGui::Text("Not a fade");
+	}
+	ImGui::End();
+
+#endif // _DEBUG
 	
 
 }
 
-void GameScene::TitleUpdate() {}
+void GameScene::TitleUpdate() {
 
-void GameScene::TutorialUpdate() {
+	// Aボタンでゲーム本編へ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+		FadeInOutSetUp(Main);
+	}
+	// Bボタンでチュートリアルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		FadeInOutSetUp(Tutorial);
+	}
 
 }
+
+void GameScene::TutorialUpdate() {}
 
 void GameScene::MainUpdate() {
 
@@ -386,6 +451,19 @@ void GameScene::MainUpdate() {
 	// 当たり判定
 	collisionManager->CheakAllCollision();
 
+
+	// ゲームクリアか?
+	theGameIsOver = true;
+	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+		if (bossEnemy->GetHp() > 0) {
+			theGameIsOver = false;
+			break;
+		}
+	}
+	if (theGameIsOver) {
+		FadeInOutSetUp(GameClear);
+	}
+
 	//ゲームオーバーか?
 	if (player_->GetHp() <= 0) {
 		FadeInOutSetUp(GameOver);
@@ -406,14 +484,32 @@ void GameScene::MainUpdate() {
 
 }
 
-void GameScene::GameClearUpdate() {}
+void GameScene::GameClearUpdate() {
 
-void GameScene::GameOverUpdate() {
-
-	//Aボタンでタイトルへ
+	// Aボタンでゲーム本編へ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
 	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
 		FadeInOutSetUp(Main);
+	}
+	// Bボタンでタイトルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		FadeInOutSetUp(Title);
+	}
+
+}
+
+void GameScene::GameOverUpdate() {
+
+	// Aボタンでゲーム本編へ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+		FadeInOutSetUp(Main);
+	}
+	// Bボタンでタイトルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		FadeInOutSetUp(Title);
 	}
 
 }
@@ -469,17 +565,9 @@ void GameScene::FadeInOutUpdate() {
 void GameScene::TitleSetup() {}
 
 void GameScene::TutorialSetup() {
-	// チュートリアルの段階リセット
-	tutorialSteps_ = Move;
 
-	// カメラ
-	camera_->SetUp();
-	// プレイヤー
-	player_->Setup();
-	// エフェクトマネージャー
-	effectManager_->Initialize();
-	// エネミーマネージャー
-	enemyManager_->Reset();
+	enemyManager_->Delete();
+	enemyManager_->SetEnemyCount(0);
 
 }
 
@@ -675,6 +763,7 @@ void GameScene::MainDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	player_->SpriteDraw(); // プレイヤー
+	enemyManager_->SpriteDraw(); //エネミー
 
 	// フェードインアウト
 	FadeInOutDraw();

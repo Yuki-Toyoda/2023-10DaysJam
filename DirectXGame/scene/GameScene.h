@@ -205,6 +205,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelBossEnemy_;
 	// エネミーバレットモデル
 	std::unique_ptr<Model> modelEnemyBullet_;
+	// エネミー死亡エフェクトモデル
+	std::unique_ptr<Model> modelEnemyDeathEffect_;
 
 	// 破片モデル
 	std::unique_ptr<Model> modelDebris_;
@@ -277,7 +279,16 @@ private: // メンバ変数
 	uint32_t soundHandleDeployChangeOrbSuccess_; // オーブ変換成功音
 	uint32_t soundHandleDeployChangeOrbFail_;    // オーブ変換失敗音
 	uint32_t soundHandleDeployChoiceFireBullet_; // 炎弾選択音
-	uint32_t soundHandleDeployChoiceIceBullet_;  // 氷弾選択音
+	uint32_t soundHandleDeployChoiceIceBullet_; // 氷弾選択音
+
+	//スプライト
+	// ボスHP
+	std::unique_ptr<Sprite> bossHpSprite_;
+	uint32_t bossHpTextureHandle_ = 0u;
+
+	// ボスHPフレーム
+	std::unique_ptr<Sprite> bossHpFrameSprite_;
+	uint32_t bossHpFrameTextureHandle_ = 0u;
 
 	// エフェクトマネージャー
 	EffectManager* effectManager_ = nullptr;

@@ -2,6 +2,7 @@
 #include "ViewProjection.h"
 #include <Model.h>
 #include <vector>
+#include "Sprite.h"
 
 #include "Enemy.h"
 #include "EnemyBullet.h"
@@ -29,7 +30,9 @@ public: // メンバ変数
 	/// </summary>
 	void Initialize(
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
-	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels);
+	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
+	    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite,
+	    Sprite* bossHpFrameSprite);
 
 	/// <summary>
 	/// 更新
@@ -47,9 +50,17 @@ public: // メンバ変数
 	void ColliderDraw();
 
 	/// <summary>
+	/// スプライト描画
+	/// </summary>
+	void SpriteDraw();
+
+	/// <summary>
 	/// エネミー追加
 	/// </summary>
-	void AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext);
+	/// <param name="position">位置</param>
+	/// <param name="enemyTypeNext">エネミーの属性</param>
+	/// <param name="isTutorial">チュートリアルか</param>
+	void AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bool isTutorial);
 
 	/// <summary>
 	/// エネミー削除
@@ -176,5 +187,18 @@ private: // メンバ変数
 	uint32_t initialHp_[4];
 	//ボス初期Hp
 	uint32_t bossInitialHp_;
+
+	// エネミー死亡エフェクトのモデル
+	std::vector<Model*> deathEffectModels_;
+
+	//UIスプライト
+	//ボスHP
+	Sprite* bossHpSprite_;
+
+	//ボスHPフレーム
+	Sprite* bossHpFrameSprite_;
+
+	//サイズ
+	Vector2 bossHpSpriteSize_;
 
 };

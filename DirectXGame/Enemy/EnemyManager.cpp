@@ -1,5 +1,6 @@
 #include "EnemyManager.h"
 #include "../config/GlobalVariables.h"
+#include <WinApp.h>
 
 EnemyManager* EnemyManager::GetInstance() {
 	static EnemyManager instance;
@@ -8,7 +9,8 @@ EnemyManager* EnemyManager::GetInstance() {
 
 void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
-    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels) {
+    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
+    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite, Sprite* bossHpFrameSprite) {
 	
 	//モデル
 	models_ = models;
@@ -48,6 +50,26 @@ void EnemyManager::Initialize(
 	//ボスエネミーモデル
 	bossModels_ = bossModels;
 
+	// エネミー死亡エフェクトのモデル
+	deathEffectModels_ = deathEffectModels;
+
+	
+	// UIスプライト
+	// ボスHP
+	bossHpSprite_ = bossHpSprite;
+
+	// ボスHPフレーム
+	bossHpFrameSprite_ = bossHpFrameSprite;
+	//サイズ
+	bossHpSpriteSize_ = Vector2(float(WinApp::kWindowWidth) / 2.0f - 200.0f, 30.0f);
+	// hpゲージ
+	bossHpSprite_->SetSize(bossHpSpriteSize_);
+	bossHpSprite_->SetColor(Vector4(0.8f, 0.2f, 0.2f, 1.0f));
+	// ボスHPフレーム
+	bossHpFrameSprite_->SetSize(bossHpSpriteSize_);
+	bossHpFrameSprite_->SetColor(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+
+
 	// エネミースポナーの追加
 	spawnerNumber_ = 0;
 	AddEnemySpawner();
@@ -79,6 +101,13 @@ void EnemyManager::Update() {
 	// ボスエネミー更新
 	for (BossEnemy* bossEnemy : bossEnemies_) {
 		bossEnemy->Update(&enemies_);
+
+		// hpゲージ
+		Vector2 bossHpSpriteSize = {
+		    MyMath::Linear(
+		        float(bossEnemy->GetHp()) / float(bossInitialHp_), 0.0f, bossHpSpriteSize_.x),
+		    bossHpSpriteSize_.y};
+		bossHpSprite_->SetSize(bossHpSpriteSize);
 	}
 
 	ApplyGlobalVariables();
@@ -119,16 +148,24 @@ void EnemyManager::ColliderDraw() {
 
 }
 
-void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext) {
+void EnemyManager::SpriteDraw() {
+
+	// ボスHPフレーム
+	bossHpFrameSprite_->Draw();
+	//hpゲージ
+	bossHpSprite_->Draw();
+
+}
+
+void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bool isTutorial) {
 	
 	if (enemyCount_ < enemyMax) {
 		Enemy* enemy = new Enemy();
 
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
-		    initialHp_[enemyTypeNext], this,
-		    player_,
-		    &bossEnemies_);
+		    initialHp_[enemyTypeNext], this, player_, &bossEnemies_, deathEffectModels_,
+		    isTutorial);
 		enemies_.push_back(enemy);
 		enemyCount_++;
 	}
