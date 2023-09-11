@@ -157,15 +157,15 @@ void EnemyManager::SpriteDraw() {
 
 }
 
-void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext) {
+void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bool isTutorial) {
 	
 	if (enemyCount_ < enemyMax) {
 		Enemy* enemy = new Enemy();
 
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
-		    initialHp_[enemyTypeNext], this,
-		    player_, &bossEnemies_, deathEffectModels_);
+		    initialHp_[enemyTypeNext], this, player_, &bossEnemies_, deathEffectModels_,
+		    isTutorial);
 		enemies_.push_back(enemy);
 		enemyCount_++;
 	}

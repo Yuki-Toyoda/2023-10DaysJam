@@ -57,7 +57,10 @@ public: // メンバ変数
 	/// <summary>
 	/// エネミー追加
 	/// </summary>
-	void AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext);
+	/// <param name="position">位置</param>
+	/// <param name="enemyTypeNext">エネミーの属性</param>
+	/// <param name="isTutorial">チュートリアルか</param>
+	void AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bool isTutorial);
 
 	/// <summary>
 	/// エネミー削除

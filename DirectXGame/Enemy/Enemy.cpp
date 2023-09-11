@@ -15,7 +15,8 @@
 /// <param name="models">モデルデータ配列</param>
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
     Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
-    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels) {
+    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels,
+    bool isTutorial) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -93,6 +94,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	bossEnemies_ = bossEnemies;
 	// エネミー死亡エフェクトのモデル
 	deathEffectModels_ = deathEffectModels;
+	// チュートリアルか
+	isTutorial_ = isTutorial;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -140,6 +143,8 @@ void Enemy::Update() {
 		break;
 	case Enemy::Rush:
 		Rushing();
+	case Enemy::Tutorial:
+		TutorialMove();
 	default:
 		break;
 	}
@@ -363,7 +368,11 @@ void Enemy::Rushing() {
 void Enemy::Appearing() {
 
 	if (--appearTimer_ == 0) {
-		enemyState_ = Wait;
+		if (isTutorial_) {
+			enemyState_ = Tutorial;
+		} else {
+			enemyState_ = Wait;
+		}
 	}
 
 	float t = float(appearTime_ - appearTimer_) /  float(appearTime_);
@@ -594,6 +603,35 @@ Vector3 Enemy::ModelShake() {
 	}
 
 	return shakeWorldTransformTranslation;
+
+}
+
+void Enemy::TutorialMove() {
+
+	// 移動固定
+	Move();
+
+	// 氷の跳ね返り
+	velocity_ = velocity_ + accelerationIce_;
+	if (accelerationIce_.x != 0.0f) {
+		Vector3 preAccel = accelerationIce_;
+		accelerationIce_ = accelerationIce_ + accelerationIceDown_;
+		if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
+		    accelerationIce_.z * preAccel.z < 0.0f) {
+			accelerationIce_.x = 0.0f;
+			accelerationIce_.y = 0.0f;
+			accelerationIce_.z = 0.0f;
+		}
+	}
+
+	// 雷の減速
+	if (isCollisionThunder) {
+		velocity_ = velocity_ * decelerationMagnification;
+	}
+
+	// 座標を移動させる(1フレーム分の移動量を足しこむ)
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+
 
 }
 
