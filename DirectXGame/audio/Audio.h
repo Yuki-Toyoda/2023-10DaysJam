@@ -13,6 +13,36 @@
 /// オーディオ
 /// </summary>
 class Audio {
+public: // サブクラス
+
+	// プレイヤーの効果音リスト
+	enum playerAudios {
+		FootStep1,         // 歩行音1
+		FootStep2,         // 歩行音2
+		Jump,			   // ジャンプ音
+		Land,			   // 着地音
+		Shot,              // 通常射撃
+		SpecialShot,       // 特殊射撃
+		FireBulletLanding, // 炎弾着弾
+		DeployIceWall, // 氷弾展開
+		DamageIceWall, // 氷弾ダメージ
+		DestroyIceWall, // 氷弾破壊
+		DeployStartThunderArea, // 雷エリア展開開始音
+		DeployThunderArea, // 雷エリア展開音
+		DeployEndThunderArea, // 雷エリア展開終了音
+	};
+
+	// 弾の効果音リスト
+	enum PlayerBulletAudios {
+		FireBullet, // 炎弾着弾
+		IceBulletDeploy, // 氷弾展開
+		IceBulletDamage, // 氷弾ダメージ
+		IceBulletDestroy, // 氷弾破壊
+		ThunderBulletStart, // 雷エリア展開開始音
+		ThunderBulletDeploy, // 雷エリア展開音
+		ThunderBulletDeployEnd, // 雷エリア展開終了音
+	};
+
 public:
 	// サウンドデータの最大数
 	static const int kMaxSoundData = 256;

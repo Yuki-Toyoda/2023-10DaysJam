@@ -5,6 +5,7 @@
 #include "Charactor/Player/PlayerBullet/PlayerBullet.h"
 #include "ViewProjection.h"
 #include "../input/Input.h"
+#include "../audio/Audio.h"
 #include "../math/MyMath.h"
 #include "WinApp.h"
 #include "Sprite.h"
@@ -29,10 +30,12 @@ public: // メンバ関数
 	/// <param name="modelsPlayer">プレイヤーモデル</param>
 	/// <param name="modelsBullet">弾モデル</param>
 	/// <param name="textureHandles">テクスチャ達</param>
+	/// <param name="audioHandles">効果音達</param>
 	void Initialize(
 	    const std::vector<Model*>& modelsPlayer,
 	    const std::vector<Model*>& modelsBullet, 
-		const std::vector<uint32_t>& textureHandles);
+		const std::vector<uint32_t>& textureHandles,
+		const std::vector<uint32_t>& audioHandles);
 
 	/// <summary>
 	/// 更新関数
@@ -190,6 +193,8 @@ private: // メンバ関数
 
 	// 入力検知用
 	Input* input_ = nullptr;
+	// 音用
+	Audio* audio_ = nullptr;
 
 	// Aボタントリガー判定
 	bool pressAButton_;
@@ -228,6 +233,9 @@ private: // メンバ関数
 
 	// テクスチャリスト
 	std::vector<uint32_t> textureHandles_;
+
+	// 効果音リスト
+	std::vector<uint32_t> audioHandles_;
 
 	// 照準スプライト
 	std::unique_ptr<Sprite> spriteReticle_;
@@ -296,6 +304,15 @@ private: // メンバ関数
 	float kFallAcceleration_;
 	// 接地中か
 	bool isGround_;
+	// 接地サウンド再生トリガー
+	bool isPlayLandSound_;
+
+	// 足音の再生間隔
+	int32_t playFootStepSELate_;
+	// 足音の再生間隔
+	int32_t kPlayFootStepSELate_ = 20;
+	// 二つの効果音の内どちらを再生するか
+	bool playFootStep2_;
 
 	// ジャンプできるか
 	bool canJump_;

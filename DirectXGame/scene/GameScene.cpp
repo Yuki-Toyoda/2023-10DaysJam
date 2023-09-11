@@ -163,6 +163,39 @@ void GameScene::Initialize() {
 	    textureHandleIceWallTex[2], // 氷壁3段階目
 	};
 
+	// 効果音
+	soundHandleFootStep_[0] = audio_->LoadWave("/Audio/SE/FootStep1.wav"); // 歩行音1
+	soundHandleFootStep_[1] = audio_->LoadWave("/Audio/SE/FootStep2.wav"); // 歩行音2
+	soundHandleJump_ = audio_->LoadWave("/Audio/SE/Jump.wav"); // ジャンプ音
+	soundHandleLanding_ = audio_->LoadWave("/Audio/SE/Landing.wav"); // 着地音
+	soundHandleShot_ = audio_->LoadWave("/Audio/SE/Shot.wav"); // 通常射撃
+	soundHandleSpecialShot_ = audio_->LoadWave("/Audio/SE/SpecialShot.wav"); // 特殊射撃
+	soundHandleFireShot_ = audio_->LoadWave("/Audio/SE/FireBullet.wav");    // 炎弾着弾音
+	soundHandleDeployIceWall_ = audio_->LoadWave("/Audio/SE/DeployIceWall.wav"); // 氷弾展開音
+	soundHandleDamageIceWall_ = audio_->LoadWave("/Audio/SE/DamageIceWall.wav"); // 氷弾ダメージ音
+	soundHandleDestroyIceWall_ = audio_->LoadWave("/Audio/SE/DestroyIceWall.wav"); // 氷弾破壊音
+	soundHandleDeployStartThunderArea_ =
+	    audio_->LoadWave("/Audio/SE/DeployStartThunderArea.wav"); // 雷エリア展開開始音
+	soundHandleDeployThunderArea_ = audio_->LoadWave("/Audio/SE/DeployThunderArea.wav"); // 雷エリア展開音
+	soundHandleDeployEndThunderArea_ =
+	    audio_->LoadWave("/Audio/SE/DeployEndThunderArea.wav"); // 雷エリア展開終了音
+
+	std::vector<uint32_t> playerAudioHandles = {
+		soundHandleFootStep_[0], // 歩行音1
+	    soundHandleFootStep_[1], // 歩行音2
+	    soundHandleJump_, // ジャンプ
+	    soundHandleLanding_, // 着地
+	    soundHandleShot_, // 通常射撃音
+		soundHandleSpecialShot_, // 特殊射撃音
+	    soundHandleFireShot_, // 炎弾着弾音
+	    soundHandleDeployIceWall_, // 氷弾展開音
+	    soundHandleDamageIceWall_, // 氷弾ダメージ音
+	    soundHandleDestroyIceWall_, // 氷壁破壊音
+	    soundHandleDeployStartThunderArea_, // 雷エリア展開開始音
+	    soundHandleDeployThunderArea_, // 雷エリア展開音
+	    soundHandleDeployEndThunderArea_, // 雷エリア展開終了音
+	};
+
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();
 	// 取得したエフェクトマネージャーの初期化
@@ -190,7 +223,8 @@ void GameScene::Initialize() {
 	camera_->Intialize(); // カメラ
 	skyDome_->Intialize(modelSkyDome_.get()); // 天球
 	ground_->Intialize(modelGround_.get()); // 地面
-	player_->Initialize(playerModels, playerBulletModels, playerTextureHandles); // プレイヤー
+	player_->Initialize(
+	    playerModels, playerBulletModels, playerTextureHandles, playerAudioHandles); // プレイヤー
 
 	// カメラの追従対象
 	camera_->SetTarget(player_->GetWorldTransform());

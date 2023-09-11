@@ -2,20 +2,24 @@
 #include "../../config/GlobalVariables.h"
 #include "TextureManager.h"
 #include "Collision/ColliderShape/OBB.h"
+#include "Audio.h"
 #include <Ambient/Field.h>
 
 void Player::Initialize(
     const std::vector<Model*>& modelsPlayer, const std::vector<Model*>& modelsBullet,
-    const std::vector<uint32_t>& textureHandles) {
-
+    const std::vector<uint32_t>& textureHandles, const std::vector<uint32_t>& audioHandles) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(modelsPlayer);
+
+	audio_ = Audio::GetInstance();
 
 	// 弾モデル読み込み
 	modelBullet_ = modelsBullet;
 
 	// テクスチャ受け取り
 	textureHandles_ = textureHandles;
+	// 効果音受け取り
+	audioHandles_ = audioHandles;
 
 	// 入力情報取得
 	input_ = Input::GetInstance();
@@ -66,10 +70,10 @@ void Player::Initialize(
 	spriteHeartUI_.size_ = {64.0f, 64.0f};
 	for (int i = 0; i < (int)StartHp; i++) {
 		spriteHeart_[i].reset(Sprite::Create(
-		    spriteHeartUI_.textureHandle_, 
-			{spriteHeartUI_.position_.x + ((spriteHeartUI_.size_.x) * i), spriteHeartUI_.position_.y}, 
-			{1.0f, 1.0f, 1.0f, 1.0f},
-		    {0.5f, 0.5f}));
+		    spriteHeartUI_.textureHandle_,
+		    {spriteHeartUI_.position_.x + ((spriteHeartUI_.size_.x) * i),
+		     spriteHeartUI_.position_.y},
+		    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 		spriteHeart_[i]->SetSize(spriteHeartUI_.size_);
 	}
 
@@ -82,56 +86,55 @@ void Player::Initialize(
 	    {0.5f, 0.5f}));
 	// 十字ボタン矢印UI
 	spriteDpadArrow_.reset(Sprite::Create(
-	    textureHandles_[TextureManager::DpadArrow_P], spriteDpadUI_.position_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	    textureHandles_[TextureManager::DpadArrow_P], spriteDpadUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	// 上ボタンUI
 	spriteDpadUP_.reset(Sprite::Create(
-	    textureHandles_[TextureManager::FireBullet], 
-		{spriteDpadUI_.position_.x, spriteDpadUI_.position_.y - 96.0f},
-	    {1.0f, 0.0f, 0.05f, 1.0f}, {0.5f, 0.5f}));
+	    textureHandles_[TextureManager::FireBullet],
+	    {spriteDpadUI_.position_.x, spriteDpadUI_.position_.y - 96.0f}, {1.0f, 0.0f, 0.05f, 1.0f},
+	    {0.5f, 0.5f}));
 	spriteDpadUP_->SetSize({64.0f, 64.0f});
 	// 左ボタンUI
 	spriteDpadLeft_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::selectArrow_L],
-	    {spriteDpadUI_.position_.x - 96.0f, spriteDpadUI_.position_.y},
-	    {0.65f, 0.65f, 0.65f, 1.0f}, {0.5f, 0.5f}));
+	    {spriteDpadUI_.position_.x - 96.0f, spriteDpadUI_.position_.y}, {0.65f, 0.65f, 0.65f, 1.0f},
+	    {0.5f, 0.5f}));
 	spriteDpadLeft_->SetSize({64.0f, 64.0f});
 	// 右ボタンUI
 	spriteDpadRight_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::selectArrow_R],
-	    {spriteDpadUI_.position_.x + 96.0f, spriteDpadUI_.position_.y},
-	    {0.65f, 0.65f, 0.65f, 1.0f}, {0.5f, 0.5f}));
+	    {spriteDpadUI_.position_.x + 96.0f, spriteDpadUI_.position_.y}, {0.65f, 0.65f, 0.65f, 1.0f},
+	    {0.5f, 0.5f}));
 	spriteDpadRight_->SetSize({64.0f, 64.0f});
 
 	// オーブ変換テキストの初期化
 	spriteChangeOrbUI_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
-	spriteChangeOrbUI_.position_ = {220.0f, 485.0f}; // 座標
-	spriteChangeOrbUI_.size_ = {256.0f, 64.0f}; // 大きさ
+	spriteChangeOrbUI_.position_ = {220.0f, 485.0f};                                 // 座標
+	spriteChangeOrbUI_.size_ = {256.0f, 64.0f};                                      // 大きさ
 	spriteChangeOrbText_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::RBHoldText],
-	    {spriteChangeOrbUI_.position_.x, spriteChangeOrbUI_.position_.y},
-	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	    {spriteChangeOrbUI_.position_.x, spriteChangeOrbUI_.position_.y}, {1.0f, 1.0f, 1.0f, 1.0f},
+	    {0.5f, 0.5f}));
 	spriteChangeOrbText_->SetSize(spriteChangeOrbUI_.size_);
 
 	// オーブ変換テキスト2のリセット
 	spriteChangeOrbUI2_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
-	spriteChangeOrbUI2_.position_ = {1125.0f, 125.0f};                                 // 座標
+	spriteChangeOrbUI2_.position_ = {1125.0f, 125.0f};                                // 座標
 	spriteChangeOrbUI2_.size_ = {256.0f, 32.0f};                                      // 大きさ
 	spriteChangeOrbText2_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::changeOrbText2],
 	    {spriteChangeOrbUI2_.position_.x, spriteChangeOrbUI2_.position_.y},
-	    {1.0f, 1.0f, 1.0f, 1.0f},
-	    {0.5f, 0.5f}));
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteChangeOrbText2_->SetSize(spriteChangeOrbUI2_.size_);
 
 	// オーブ変換に必要な敵数テキスト
 	spriteNeedChangeOrbEnemyCountTextUI_.textureHandle_ =
 	    textureHandles_[TextureManager::NeedEnemyCountText]; // テクスチャ
-	spriteNeedChangeOrbEnemyCountTextUI_.position_ = {1050.0f, 175.0f}; 
-	spriteNeedChangeOrbEnemyCountTextUI_.size_ = {384.0f, 64.0f}; 
+	spriteNeedChangeOrbEnemyCountTextUI_.position_ = {1050.0f, 175.0f};
+	spriteNeedChangeOrbEnemyCountTextUI_.size_ = {384.0f, 64.0f};
 	spriteNeedChangeOrbEnemyCountText_.reset(Sprite::Create(
 	    spriteNeedChangeOrbEnemyCountTextUI_.textureHandle_,
-	    spriteNeedChangeOrbEnemyCountTextUI_.position_,
-	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	    spriteNeedChangeOrbEnemyCountTextUI_.position_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteNeedChangeOrbEnemyCountText_->SetSize(spriteNeedChangeOrbEnemyCountTextUI_.size_);
 
 	// オーブ変換に必要な敵数
@@ -140,19 +143,17 @@ void Player::Initialize(
 	spriteNeedChangeOrbEnemyCountUI_.position_ = {
 	    spriteNeedChangeOrbEnemyCountTextUI_.position_.x +
 	        (spriteNeedChangeOrbEnemyCountTextUI_.size_.x / 2.0f),
-	    spriteNeedChangeOrbEnemyCountTextUI_.position_.y}; // 座標
+	    spriteNeedChangeOrbEnemyCountTextUI_.position_.y};   // 座標
 	spriteNeedChangeOrbEnemyCountUI_.size_ = {64.0f, 64.0f}; // 大きさ
 	spriteNeedChangeOrbEnemyCount_.reset(Sprite::Create(
-	    spriteNeedChangeOrbEnemyCountUI_.textureHandle_, 
-		spriteNeedChangeOrbEnemyCountUI_.position_,
+	    spriteNeedChangeOrbEnemyCountUI_.textureHandle_, spriteNeedChangeOrbEnemyCountUI_.position_,
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteNeedChangeOrbEnemyCount_->SetSize(spriteNeedChangeOrbEnemyCountUI_.size_);
 
 	// 右トリガースプライト
-	spriteRightTriggerUI_.textureHandle_ =
-	    textureHandles_[TextureManager::RT_N]; // テクスチャ
-	spriteRightTriggerUI_.position_ = {1000.0f, 525.0f}; // 座標
-	spriteRightTriggerUI_.size_ = {96.0f, 96.0f};       // 大きさ
+	spriteRightTriggerUI_.textureHandle_ = textureHandles_[TextureManager::RT_N]; // テクスチャ
+	spriteRightTriggerUI_.position_ = {1000.0f, 525.0f};                          // 座標
+	spriteRightTriggerUI_.size_ = {96.0f, 96.0f};                                 // 大きさ
 	spriteRightTrigger_.reset(Sprite::Create(
 	    spriteRightTriggerUI_.textureHandle_, spriteRightTriggerUI_.position_,
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
@@ -181,7 +182,7 @@ void Player::Initialize(
 
 	// 特殊射撃テキストの初期化
 	spriteSpecialShotTextUI_.textureHandle_ = textureHandles_[TextureManager::SpecialShotText];
-	spriteSpecialShotTextUI_.size_ = {256.0f, 64.0f};                                  // 大きさ
+	spriteSpecialShotTextUI_.size_ = {256.0f, 64.0f}; // 大きさ
 	spriteSpecialShotTextUI_.position_ = {
 	    spriteLeftTriggerUI_.position_.x + (spriteSpecialShotTextUI_.size_.x / 2.0f) +
 	        (spriteLeftTriggerUI_.size_.x / 2.0f),
@@ -192,16 +193,15 @@ void Player::Initialize(
 	specialShotText_->SetSize(spriteSpecialShotTextUI_.size_);
 
 	// 現在の特殊射撃スプライトの初期化
-	spriteNowSpecialShotPlanUI_.textureHandle_ = textureHandles_[TextureManager::None]; // テクスチャ
+	spriteNowSpecialShotPlanUI_.textureHandle_ =
+	    textureHandles_[TextureManager::None]; // テクスチャ
 	spriteNowSpecialShotPlanUI_.position_ = {
 	    spriteSpecialShotTextUI_.position_.x + (spriteSpecialShotTextUI_.size_.x / 1.5f),
 	    spriteSpecialShotTextUI_.position_.y};          // 座標
 	spriteNowSpecialShotPlanUI_.size_ = {96.0f, 96.0f}; // 大きさ
 	spriteSpecialShotPlan_.reset(Sprite::Create(
-	    spriteNowSpecialShotPlanUI_.textureHandle_,
-	    spriteNowSpecialShotPlanUI_.position_,
-	    {1.0f, 1.0f, 1.0f, 1.0f},
-	    {0.5f, 0.5f}));
+	    spriteNowSpecialShotPlanUI_.textureHandle_, spriteNowSpecialShotPlanUI_.position_,
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteSpecialShotPlan_->SetSize(spriteNowSpecialShotPlanUI_.size_);
 
 	// 現在の特殊射撃倍率スプライトの初期化
@@ -209,11 +209,11 @@ void Player::Initialize(
 	    textureHandles_[TextureManager::Texturex1]; // テクスチャ
 	spriteSpecialShotMagnificationUI_.position_ = {
 	    spriteNowSpecialShotPlanUI_.position_.x + (spriteNowSpecialShotPlanUI_.size_.x / 1.25f),
-	    spriteNowSpecialShotPlanUI_.position_.y + 20.0f};             // 座標
+	    spriteNowSpecialShotPlanUI_.position_.y + 20.0f};     // 座標
 	spriteSpecialShotMagnificationUI_.size_ = {64.0f, 64.0f}; // 大きさ
 	spriteSpecialShotMagnification_.reset(Sprite::Create(
-	    spriteSpecialShotMagnificationUI_.textureHandle_, spriteSpecialShotMagnificationUI_.position_,
-	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	    spriteSpecialShotMagnificationUI_.textureHandle_,
+	    spriteSpecialShotMagnificationUI_.position_, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteSpecialShotMagnification_->SetSize(spriteSpecialShotMagnificationUI_.size_);
 
 	// 身長高さ
@@ -232,6 +232,15 @@ void Player::Initialize(
 	kFallAcceleration_ = 0.098f;
 	// 接地している
 	isGround_ = false;
+	// 接地サウンド再生トリガーリセット
+	isPlayLandSound_ = false;
+
+	// 足音の再生間隔
+	kPlayFootStepSELate_ = 20;
+	// 足音再生間隔をリセット
+	playFootStepSELate_ = kPlayFootStepSELate_;
+	// 二つの効果音の内どちらを再生するか
+	playFootStep2_ = false;
 
 	// ジャンプ不可能に
 	canJump_ = false;
@@ -288,9 +297,8 @@ void Player::Initialize(
 	// 変換するオーブを示すスプライトのリセット
 	spriteSelectedOrbs_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::selectOrb],
-	    {spriteHavingOrbsStartPos_.x,
-	     spriteHavingOrbsStartPos_.y},
-	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+	    {spriteHavingOrbsStartPos_.x, spriteHavingOrbsStartPos_.y}, {1.0f, 1.0f, 1.0f, 1.0f},
+	    {0.5f, 0.5f}));
 	// スプライトのサイズ設定
 	spriteSelectedOrbs_->SetSize({80.0f, 80.0f});
 	// 特殊射撃で撃つ予定の弾のリセット
@@ -319,7 +327,7 @@ void Player::Initialize(
 	bulletDamage_[3] = 1;
 
 	// 体力
-	hp = StartHp; 
+	hp = StartHp;
 
 	// 無敵か
 	isInvincible_ = false;
@@ -346,15 +354,15 @@ void Player::Initialize(
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0x00000001);
-	//タグ
+	// タグ
 	tag_ = TagPlayer;
 
 	// コライダーの形
 	OBB* obb = new OBB();
-	obb->Initialize(GetWorldPosition(), worldTransform_.translation_, Vector3(3.0f,3.0f,3.0f));
+	obb->Initialize(GetWorldPosition(), worldTransform_.translation_, Vector3(3.0f, 3.0f, 3.0f));
 	colliderShape_ = obb;
-	
-	#pragma region 調整項目クラス
+
+#pragma region 調整項目クラス
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	// グループ名設定
@@ -588,14 +596,6 @@ void Player::Draw(const ViewProjection& viewProjection) {
 void Player::SpriteDraw() {
 	// 照準描画
 	spriteReticle_->Draw();
-
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			
-		}
-	}
 
 	// 十字ボタンUI描画
 	spriteDpad_->Draw();
@@ -846,6 +846,30 @@ void Player::Move() {
 			}
 		}
 
+		// 移動している状態かつ地面に接地している時
+		if ((move.x > 0 || move.x < 0 || move.z > 0 || move.z < 0) &&
+		    worldTransform_.translation_.y == height_) {
+			if (playFootStepSELate_ < 0) {
+				if (!playFootStep2_) {
+					audio_->PlayWave(audioHandles_[Audio::FootStep1]);
+					playFootStep2_ = true;
+					// 足音再生間隔をリセット
+					playFootStepSELate_ = kPlayFootStepSELate_;
+				} else {
+					audio_->PlayWave(audioHandles_[Audio::FootStep2]);
+					playFootStep2_ = false;
+					// 足音再生間隔をリセット
+					playFootStepSELate_ = kPlayFootStepSELate_;
+				}
+			} else {
+				// 再生間隔デクリメント
+				playFootStepSELate_--;
+			}
+		} else {
+			// 足音再生間隔をリセット
+			playFootStepSELate_ = kPlayFootStepSELate_;
+		}
+
 		// 移動
 		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
 		// プレイヤーの向きを移動方向に合わせる
@@ -855,6 +879,8 @@ void Player::Move() {
 
 	// 接地していないなら
 	if (!isGround_) {
+		// 着地音再生トリガーfalse
+		isPlayLandSound_ = false;
 		// 最大落下速度を超過するまで
 		if (fallSpeed_ >= kMaxFallSpeed_) {
 			// 落下速度加算
@@ -866,6 +892,14 @@ void Player::Move() {
 	} else {
 		// 接地しているなら落下速度初期化
 		fallSpeed_ = 0.0f;
+
+		// 着地音を一度だけ鳴らす
+		if (!isPlayLandSound_) {
+			// 着地音を鳴らす
+			audio_->PlayWave(audioHandles_[Audio::Land]);
+			isPlayLandSound_ = true;
+		}
+
 	}
 
 	// １フレーム落下した後の座標を一時的に計算
@@ -882,7 +916,6 @@ void Player::Move() {
 		// 落下スピード加算
 		worldTransform_.translation_.y += fallSpeed_;
 	}
-
 }
 
 void Player::Jump() { 
@@ -893,6 +926,8 @@ void Player::Jump() {
 		if (input_->GetJoystickState(0, joyState)) {
 			// Aボタンが押されたら
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A && !pressAButton_) {
+				// ジャンプ音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::Jump]);
 				// ジャンプさせる
 				jumpSpeed_ = kMaxJumpHeight_;
 				// ジャンプ不可に
@@ -1000,6 +1035,10 @@ void Player::Shot() {
 
 				// 射撃クールタイムリセット
 				fireCoolTime_ = kMaxFireCoolTime_;
+
+				// 射撃音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::Shot]);
+
 			}
 		}
 	}
@@ -1124,10 +1163,23 @@ void Player::SpecialShot() {
 				    textureHandles_[TextureManager::IceWallDamage2], // 氷壁ダメージ2段階目
 				    
 				};
+
+				// 効果音達
+				std::vector<uint32_t> playerBulletAudioHandles = {
+				    audioHandles_[Audio::FireBulletLanding], // 炎弾効果音
+				    audioHandles_[Audio::DeployIceWall],     // 氷弾展開音
+				    audioHandles_[Audio::DamageIceWall],     // 氷弾ダメージ音
+				    audioHandles_[Audio::DestroyIceWall],    // 氷弾破壊音
+				    audioHandles_[Audio::DeployStartThunderArea], // 雷エリア展開開始音
+				    audioHandles_[Audio::DeployThunderArea], // 雷エリア展開音
+				    audioHandles_[Audio::DeployEndThunderArea],   // 雷エリア展開終了音
+				};
+
 				// 生成した弾を初期化
 				newBullet->Initialize(
 				    modelBullet_,               // 3Dモデル
 				    wallTextureHandles,			// 壁用テクスチャリスト
+				    playerBulletAudioHandles,   // 弾の効果音リスト
 				    shotPos,                    // 初期位置
 				    viewProjection_->rotation_, // 初期角度
 				    shotVelocity,               // 弾速
@@ -1143,6 +1195,9 @@ void Player::SpecialShot() {
 
 				// 特殊射撃の予定をリセット
 				specialShotBulletPlans_ = PlayerBullet::None;
+
+				// 特殊射撃音を鳴らす
+				audio_->PlayWave(audioHandles_[Audio::SpecialShot]);
 
 			}
 		}

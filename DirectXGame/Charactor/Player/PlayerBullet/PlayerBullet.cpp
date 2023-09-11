@@ -14,6 +14,9 @@ void PlayerBullet::Initialize(
 	// ワールド座標初期化
 	worldTransform_.Initialize();
 
+	// 音再生インスタンス取得
+	audio_ = Audio::GetInstance();
+
 	// 引数の値をメンバ変数に代入
 	worldTransform_.translation_ = startPos;
 	worldTransform_.rotation_ = startotation;
@@ -44,8 +47,8 @@ void PlayerBullet::Initialize(
 
 void PlayerBullet::Initialize(
     const std::vector<Model*>& models, const std::vector<uint32_t>& textureHandles,
-    Vector3 startPos, Vector3 startotation, Vector3 velocity, BulletType bulletType,
-    int32_t bulletStrength) {
+    const std::vector<uint32_t>& audioHandles, Vector3 startPos, Vector3 startotation,
+    Vector3 velocity, BulletType bulletType, int32_t bulletStrength) {
 	// 基底クラス初期化
 	BaseCharacter::Initialize(models);
 
@@ -53,9 +56,14 @@ void PlayerBullet::Initialize(
 	models_ = models;
 	// テクスチャ受け取り
 	textureHandles_ = textureHandles;
+	// 効果音受け取り
+	audioHandles_ = audioHandles;
 
 	// ワールド座標初期化
 	worldTransform_.Initialize();
+
+	// 音再生インスタンス取得
+	audio_ = Audio::GetInstance();
 
 	// 引数の値をメンバ変数に代入
 	worldTransform_.translation_ = startPos;
@@ -152,7 +160,7 @@ void PlayerBullet::Initialize(
 
 	// 反射係数
 	reflectionCoefficient = 0.8f;
-	
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffe);
 	// 衝突対象を自分の属性以外に設定
@@ -162,8 +170,6 @@ void PlayerBullet::Initialize(
 	OBB* obb = new OBB();
 	obb->Initialize(GetWorldPosition(), worldTransform_.rotation_, worldTransform_.scale_);
 	colliderShape_ = obb;
-
-
 }
 
 void PlayerBullet::Update() {
@@ -246,6 +252,9 @@ void PlayerBullet::FireBulletUpdate() {
 			// 床と衝突
 			isHit_ = true;
 
+			// 爆発音を再生
+			audio_->PlayWave(audioHandles_[Audio::FireBullet]);
+
 			std::vector<Model*> EffectModels = {
 				models_[4]
 			};                             // エフェクト用モデルリストの生成
@@ -302,6 +311,10 @@ void PlayerBullet::IceBulletUpdate() {
 			SetCollisionAttribute(0xfffffff7);
 			// 衝突対象を自分の属性以外に設定
 			SetCollisionMask(0x00000008);
+
+			// 展開音を再生
+			audio_->PlayWave(audioHandles_[Audio::IceBulletDeploy]);
+
 		} else {
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
@@ -399,6 +412,10 @@ void PlayerBullet::IceBulletUpdate() {
 						        worldTransform_.translation_.z,
 						    },
 						    2.0f);
+
+						// ダメージ音を再生
+						audio_->PlayWave(audioHandles_[Audio::IceBulletDamage]);
+
 						// 次の演出へ
 						actionWayPointTexture_++;
 					}
@@ -420,6 +437,10 @@ void PlayerBullet::IceBulletUpdate() {
 						        worldTransform_.translation_.z,
 						    },
 						    2.5f);
+
+						// ダメージ音を再生
+						audio_->PlayWave(audioHandles_[Audio::IceBulletDamage]);
+
 						// 次の演出へ
 						actionWayPointTexture_++;
 					}
@@ -443,6 +464,9 @@ void PlayerBullet::IceBulletUpdate() {
 				        worldTransform_.translation_.z,
 				    },
 				    3.0f);
+
+				// 破壊音を再生
+				audio_->PlayWave(audioHandles_[Audio::IceBulletDestroy]);
 
 				// 演出tをリセット
 				animT_ = 0.0f;
@@ -493,8 +517,12 @@ void PlayerBullet::ThunderBulletUpdate() {
 			fallSpeed_ = 0.0f;
 			// 床と衝突
 			isHit_ = true;
+
+			// 展開開始音再生
+			audio_->PlayWave(audioHandles_[Audio::ThunderBulletStart]);
+
 		} 
-		else {
+		else {			
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
 			if (fallSpeed_ <= kMaxFallSpeed_) {
@@ -514,6 +542,14 @@ void PlayerBullet::ThunderBulletUpdate() {
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
+
+				// 再生されていなければ展開音を再生する
+				if (!audio_->IsPlaying(voiceHandleDeployThunderArea_) ||
+				    voiceHandleDeployThunderArea_ == -1) {
+					voiceHandleDeployThunderArea_ =
+					    audio_->PlayWave(audioHandles_[Audio::ThunderBulletDeploy]);
+				}
+
 				deployAreaStagingTime_ = 0.35f;
 				// 演出tをリセット
 				animT_ = 0.0f;
@@ -544,6 +580,13 @@ void PlayerBullet::ThunderBulletUpdate() {
 				    {70.0f * (1.0f + 0.35f * (bulletStrength_ - 1)),
 				     70.0f * (1.0f + 0.35f * (bulletStrength_ - 1))});
 
+				// 再生されていなければ展開音を再生する
+				if (!audio_->IsPlaying(voiceHandleDeployThunderArea_) ||
+				    voiceHandleDeployThunderArea_ == -1) {
+					voiceHandleDeployThunderArea_ =
+					    audio_->PlayWave(audioHandles_[Audio::ThunderBulletDeploy]);
+				}
+
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 次の演出へ
@@ -560,9 +603,24 @@ void PlayerBullet::ThunderBulletUpdate() {
 				    deployAreaSize_.x + MyMath::RandomF(-shakeRange_, shakeRange_, 2);
 				// サイズ変更
 				worldTransform_.scale_ = {RandomRadius, deployAreaSize_.y, RandomRadius};
+				
+				// 再生されていなければ展開音を再生する
+				if (!audio_->IsPlaying(voiceHandleDeployThunderArea_) ||
+				    voiceHandleDeployThunderArea_ == -1) {
+					voiceHandleDeployThunderArea_ =
+					    audio_->PlayWave(audioHandles_[Audio::ThunderBulletDeploy]);
+				}
+
 				// 演出用tを加算
 				animT_ += 1.0f / 60.0f;
 			} else {
+
+				// 展開音は止める
+				Audio::GetInstance()->StopWave(voiceHandleDeployThunderArea_);
+
+				// 展開終了音再生
+				audio_->PlayWave(audioHandles_[Audio::ThunderBulletDeployEnd]);
+
 				// 演出tをリセット
 				animT_ = 0.0f;
 				// 次の演出へ

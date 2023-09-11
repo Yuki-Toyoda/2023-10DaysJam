@@ -254,6 +254,20 @@ private: // メンバ変数
 	// 氷壁用テクスチャ
 	uint32_t textureHandleIceWallTex[3] = {0u};
 
+	// 効果音
+	uint32_t soundHandleFootStep_[2]; // 歩行音
+	uint32_t soundHandleJump_; // ジャンプ音
+	uint32_t soundHandleLanding_; // 着地音
+	uint32_t soundHandleShot_; // 通常射撃音
+	uint32_t soundHandleSpecialShot_; // 特殊射撃音
+	uint32_t soundHandleFireShot_; // 炎弾着弾音
+	uint32_t soundHandleDeployIceWall_; // 氷弾展開音
+	uint32_t soundHandleDamageIceWall_; // 氷弾ダメージ音
+	uint32_t soundHandleDestroyIceWall_; // 氷弾破壊音
+	uint32_t soundHandleDeployStartThunderArea_; // 雷エリア展開開始音
+	uint32_t soundHandleDeployThunderArea_; // 雷エリア展開音
+	uint32_t soundHandleDeployEndThunderArea_; // 雷エリア展開終了音
+
 	// エフェクトマネージャー
 	EffectManager* effectManager_ = nullptr;
 
