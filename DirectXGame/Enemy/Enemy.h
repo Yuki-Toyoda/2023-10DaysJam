@@ -124,6 +124,16 @@ public: //メンバ関数
 	/// </summary>
 	void HpFluctuation(int32_t damage, uint32_t InvincibilityTime);
 
+	/// <summary>
+	/// モデルを揺らす開始
+	/// </summary>
+	void PlayModelShake(Vector3 shakeStrength, float shakeTime);
+
+	/// <summary>
+	/// モデルを揺らす
+	/// </summary>
+	Vector3 ModelShake();
+
 public: //衝突処理
 	
 	/// <summary>
@@ -276,5 +286,17 @@ private: //メンバ変数
 
 	//上昇
 	const float risingHeight = 40.0f;
+
+	// 振動強さ
+	Vector3 shakeStrength_;
+	// シェイク有効トリガー
+	bool enableShake_;
+	// シェイク演出用t
+	float shakeT_;
+	// シェイク演出時間
+	float shakeTime_;
+
+	//モデル
+	WorldTransform modelWorldTransform_;
 
 };

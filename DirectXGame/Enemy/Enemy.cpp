@@ -65,6 +65,19 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	//雷弾無敵タイム
 	thunderInvincibilityTime_ = 40;
 
+	// 振動強さ
+	shakeStrength_ = {0.0f,0.0f,0.0f};
+	// シェイク有効トリガー
+	enableShake_ = false;
+	// シェイク演出用t
+	shakeT_ = 0.0f;
+	// シェイク演出時間
+	shakeTime_ = 0.0f;
+
+	modelWorldTransform_.Initialize();
+	modelWorldTransform_.parent_ = &worldTransform_;
+	modelWorldTransform_.UpdateMatrix();
+
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
 	// 衝突対象を自分の属性以外に設定
@@ -157,6 +170,15 @@ void Enemy::Update() {
 	//コライダー更新
 	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_, colliderShape_->GetSize());
 
+	//モデルトランスフォーム更新
+	// シェイク
+	if (enableShake_) {
+		modelWorldTransform_.translation_ = ModelShake();
+	} else {
+		modelWorldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	}
+	modelWorldTransform_.UpdateMatrix();
+
 	//サンダーと当たったかをfalseに
 	isCollisionThunder = false;
 
@@ -169,7 +191,7 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& viewProjection) {
 
 	for (Model* model : models_) {
-		model->Draw(worldTransform_, viewProjection, textureHandle_);
+		 model->Draw(modelWorldTransform_, viewProjection, textureHandle_);
 	}
 
 }
@@ -513,9 +535,45 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 	if (hp_ <= 0) {
 		Dead();
 	} else {
+		//無敵
 		isInvincible_ = true;
 		invincibilityTimer_ = InvincibilityTime;
+		//シェイク
+		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
 	}
+
+}
+
+void Enemy::PlayModelShake(Vector3 shakeStrength, float shakeTime) {
+	// 引数の値をメンバ変数に代入
+	shakeStrength_ = shakeStrength;
+	shakeTime_ = shakeTime;
+
+	// 演出用tをリセット
+	shakeT_ = 0.0f;
+	// カメラ振動有効
+	enableShake_ = true;
+
+}
+
+Vector3 Enemy::ModelShake() {
+
+	Vector3 shakeWorldTransformTranslation;
+	// 指定秒数シェイク
+	if (shakeT_ <= shakeTime_) {
+		// シェイクをイージングで表現
+		shakeWorldTransformTranslation.x = MyMath::EaseOut(shakeT_, MyMath::RandomF(-shakeStrength_.x, shakeStrength_.x, 2), 0.0f, shakeTime_);
+		shakeWorldTransformTranslation.y = MyMath::EaseOut(shakeT_, MyMath::RandomF(-shakeStrength_.y, shakeStrength_.y, 2), 0.0f, shakeTime_);
+		shakeWorldTransformTranslation.z = MyMath::EaseOut(shakeT_, MyMath::RandomF(-shakeStrength_.z, shakeStrength_.z, 2), 0.0f, shakeTime_);
+		// 演出t加算
+		shakeT_ += 1.0f / 60.0f;
+	} else {
+		// カメラシェイク強さリセット
+		shakeWorldTransformTranslation = {0.0f, 0.0f, 0.0f};
+		enableShake_ = false;
+	}
+
+	return shakeWorldTransformTranslation;
 
 }
 
