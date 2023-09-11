@@ -575,7 +575,12 @@ void GameScene::FadeInOutUpdate() {
 
 void GameScene::TitleSetup() {}
 
-void GameScene::TutorialSetup() {}
+void GameScene::TutorialSetup() {
+
+	enemyManager_->Delete();
+	enemyManager_->SetEnemyCount(0);
+
+}
 
 void GameScene::MainSetup() {
 
