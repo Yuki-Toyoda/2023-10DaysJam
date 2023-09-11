@@ -77,3 +77,15 @@ void EffectManager::PlayDebrisEffect(
 	// 生成したエフェクトをリストに追加
 	effets_.push_back(newEffect);
 }
+
+void EffectManager::PlayEnemyDeathEffect(
+    std::vector<Model*> models, uint32_t textureHandle, Vector3 translate) {
+
+	// 新しいエフェクトのインスタンスを生成
+	EnemyDeathEffect* newEffect = new EnemyDeathEffect();
+	// 生成したエフェクトの初期化
+	newEffect->initialize(models, textureHandle, translate);
+	// 生成したエフェクトをリストに追加
+	effets_.push_back(newEffect);
+
+}

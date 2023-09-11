@@ -89,6 +89,14 @@ public: // エフェクトの再生関数
 	    std::vector<Model*> models, Vector3 translation, const Vector3* occurrenceTranslate,
 	    const Vector3* occurrenceRotation, float time, Vector2 occurrenceRange);
 
+	/// <summary>
+	/// エネミー死亡エフェクト再生関数
+	/// </summary>
+	/// <param name="models">描画モデル</param>
+	/// <param name="textureHandle">テクスチャハンドル</param>
+	/// <param name="translate">初期座標</param>
+	void PlayEnemyDeathEffect(std::vector<Model*> models, uint32_t textureHandle, Vector3 translate);
+
 private: // メンバ変数
 
 	// エフェクトリスト

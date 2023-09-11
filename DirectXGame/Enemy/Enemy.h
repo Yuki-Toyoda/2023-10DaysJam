@@ -301,7 +301,7 @@ private: //メンバ変数
 	//モデル
 	WorldTransform modelWorldTransform_;
 
-	//登場アニメーションAppearpear
+	//登場アニメーション
 	//タイマー
 	uint32_t appearTimer_;
     // タイム

@@ -125,6 +125,7 @@
     <ClCompile Include="Collision\Collision.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
     <ClCompile Include="config\GlobalVariables.cpp" />
+    <ClCompile Include="Effect\EnemyDeathEffect.cpp" />
     <ClCompile Include="Enemy\BossEnemy.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\EnemyBullet.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Collision\Collision.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
     <ClInclude Include="config\GlobalVariables.h" />
+    <ClInclude Include="Effect\EnemyDeathEffect.h" />
     <ClInclude Include="Enemy\BossEnemy.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\EnemyBullet.h" />

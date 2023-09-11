@@ -7,6 +7,7 @@
 #include "../config/GlobalVariables.h"
 #include "Collision/ColliderShape/OBB.h"
 #include "Ambient/Field.h"
+#include <Effect/EffectManager.h>
 
 /// <summary>
 /// 初期化
@@ -537,6 +538,7 @@ void Enemy::Dead() {
 	//死亡フラグをたてる
 	isDead_ = true;
 	enemyManager_->SetEnemyCount(enemyManager_->GetEnemyCount() - 1);
+	EffectManager::GetInstance()->PlayEnemyDeathEffect(models_,textureHandle_,worldTransform_.translation_);
 
 }
 
