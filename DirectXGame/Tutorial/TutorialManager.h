@@ -19,12 +19,32 @@ private: // サブクラス
 		FireBullet, // 炎弾
 		IceBullet, // 氷弾
 		ThunderBullet, // 雷弾
-		OrbReinforcement,
-		ChangeOrb,
-		TutorialEnd
+		OrbReinforcement, // オーブ許強化
+		ChangeOrb, // オーブ変換
+		TutorialEnd // チュートリアル終了
 	};
 
+private:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	TutorialManager();
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~TutorialManager();
 public: // メンバ関数
+
+	// コピーコンストラクタ無効
+	TutorialManager(const TutorialManager& obj) = delete;
+	// 代入演算子無効
+	TutorialManager& operator=(const TutorialManager& obj) = delete;
+
+	/// <summary>
+	/// インスタンス取得
+	/// </summary>
+	/// <returns>クラスのインスタンス</returns>
+	static TutorialManager* GetInstance();
 
 	/// <summary>
 	/// 初期化関数
@@ -52,9 +72,12 @@ public: // アクセッサ等
 	/// チュートリアル終了状態のゲッター
 	/// </summary>
 	/// <returns>チュートリアル終了状態</returns>
-	bool GetTutorialEnd() { return isTutorialEnd_; }
+	bool GetTutorialEnd() { return isEndTutorial; }
 
 private: // メンバ関数
+
+	// 入力検知用
+	Input* input_ = nullptr;
 
 	// モデルリスト
 	std::vector<Model*> models_;
@@ -67,7 +90,7 @@ private: // メンバ関数
 	int tutorialSteps_;
 
 	// チュートリアル終了トリガー
-	bool isTutorialEnd_;
+	bool isEndTutorial;
 
 	// チュートリアル画像表示トリガー
 	bool displayTutorialImage_;

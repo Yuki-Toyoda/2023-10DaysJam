@@ -22,6 +22,7 @@
 
 // クラスの前方宣言
 class EffectManager;
+class TutorialManager;
 
 /// <summary>
 /// ゲームシーン
@@ -260,6 +261,11 @@ private: // メンバ変数
 	// 氷壁用テクスチャ
 	uint32_t textureHandleIceWallTex[3] = {0u};
 	
+	// コントローラー非接続テクスチャ
+	uint32_t textureHandleDisconectController_ = 0u;
+	// コントローラー非接続スプライト
+	std::unique_ptr<Sprite> disconectControllerUI_;
+
 	// 効果音
 	uint32_t soundHandleFootStep_[2];            // 歩行音
 	uint32_t soundHandleJump_;                   // ジャンプ音
@@ -292,6 +298,8 @@ private: // メンバ変数
 
 	// エフェクトマネージャー
 	EffectManager* effectManager_ = nullptr;
+	// チュートリアルマネージャー
+	TutorialManager* tutorialManager_ = nullptr;
 
 	// デバックカメラ
 	std::unique_ptr<DebugCamera> debugCamera_;
