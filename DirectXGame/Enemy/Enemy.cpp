@@ -143,8 +143,10 @@ void Enemy::Update() {
 		break;
 	case Enemy::Rush:
 		Rushing();
+		break;
 	case Enemy::Tutorial:
 		TutorialMove();
+		break;
 	default:
 		break;
 	}

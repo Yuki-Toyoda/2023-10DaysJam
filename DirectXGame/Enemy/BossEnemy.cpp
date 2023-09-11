@@ -250,7 +250,9 @@ void BossEnemy::OnCollision(Collider* collision) {
 		CollisionBulletThunder();
 		break;
 	case TagEnemy:
-		CollisionEnemy();
+		if (collision->GetEnemy()->GetEnemyState() != Enemy::Appear) {
+			CollisionEnemy();
+		}
 		break;
 	default:
 		break;

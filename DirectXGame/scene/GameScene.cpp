@@ -266,7 +266,7 @@ void GameScene::Initialize() {
 	// スプライト
 	// ボスHP
 	Vector2 spritePos =
-	    Vector2(float(WinApp::kWindowWidth) / 4.0f + 100.0f, float(WinApp::kWindowHeight) * 3.0f / 4.0f);
+	    Vector2(float(WinApp::kWindowWidth) / 4.0f + 100.0f, float(WinApp::kWindowHeight) / 8.0f);
 	bossHpTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
 	bossHpSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
 
