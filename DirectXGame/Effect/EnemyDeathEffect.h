@@ -37,6 +37,6 @@ private: // メンバ変数
 	//タイマー
 	uint32_t timer_;
 	//タイム
-	const uint32_t time_ = 60;
+	const uint32_t time_ = 20;
 
 };

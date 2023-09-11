@@ -15,7 +15,7 @@
 /// <param name="models">モデルデータ配列</param>
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
     Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
-    std::list<BossEnemy*>* bossEnemies) {
+    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -91,6 +91,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	player_ = player;
 	// ボス
 	bossEnemies_ = bossEnemies;
+	// エネミー死亡エフェクトのモデル
+	deathEffectModels_ = deathEffectModels;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -538,7 +540,8 @@ void Enemy::Dead() {
 	//死亡フラグをたてる
 	isDead_ = true;
 	enemyManager_->SetEnemyCount(enemyManager_->GetEnemyCount() - 1);
-	EffectManager::GetInstance()->PlayEnemyDeathEffect(models_,textureHandle_,worldTransform_.translation_);
+	EffectManager::GetInstance()->PlayEnemyDeathEffect(
+	    deathEffectModels_, textureHandle_, worldTransform_.translation_);
 
 }
 

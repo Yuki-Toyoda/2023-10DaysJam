@@ -8,7 +8,8 @@ EnemyManager* EnemyManager::GetInstance() {
 
 void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
-    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels) {
+    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
+    const std::vector<Model*>& deathEffectModels) {
 	
 	//モデル
 	models_ = models;
@@ -47,6 +48,9 @@ void EnemyManager::Initialize(
 
 	//ボスエネミーモデル
 	bossModels_ = bossModels;
+
+	// エネミー死亡エフェクトのモデル
+	deathEffectModels_ = deathEffectModels;
 
 	// エネミースポナーの追加
 	spawnerNumber_ = 0;
@@ -127,8 +131,7 @@ void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext) {
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
 		    initialHp_[enemyTypeNext], this,
-		    player_,
-		    &bossEnemies_);
+		    player_, &bossEnemies_, deathEffectModels_);
 		enemies_.push_back(enemy);
 		enemyCount_++;
 	}

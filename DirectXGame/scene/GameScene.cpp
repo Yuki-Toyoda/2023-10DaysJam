@@ -223,6 +223,7 @@ void GameScene::Initialize() {
 	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
 	modelBossEnemy_.reset(Model::CreateFromOBJ("BossFish", true)); // ボスエネミー
 	modelEnemyBullet_.reset(Model::CreateFromOBJ("EnemyBullet", true)); // エネミーバレット
+	modelEnemyDeathEffect_.reset(Model::CreateFromOBJ("EnemyDeathEffect", true)); // エネミーの死亡エフェクト
 
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
@@ -265,7 +266,8 @@ void GameScene::Initialize() {
 	//エネミーマネージャー
 	enemyManager_->Initialize(
 	    std::vector<Model*>{modelEnemy_.get()}, enemyTextureHandles,
-	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()});
+	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
+	    std::vector<Model*>{modelEnemyDeathEffect_.get()});
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);

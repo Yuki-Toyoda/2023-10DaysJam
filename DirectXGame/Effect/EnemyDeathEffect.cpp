@@ -1,5 +1,6 @@
 #include "EnemyDeathEffect.h"
 #include <numbers>
+#include "MyMath.h"
 
 void EnemyDeathEffect::initialize(
     std::vector<Model*> models, uint32_t textureHandle, Vector3 translate) {
@@ -15,11 +16,18 @@ void EnemyDeathEffect::initialize(
 		worldTransformParticle_[i].translation_ = translate;
 	
 		// 粒子の速度
-		float speed = 1.0f;
-		if (i % 8 == 0) {
-			rotate.y = 0.0f;
+		float speed = 5.0f;
+		if (i / 8 == 0) {
+			rotate.x = 0.0f;
+			rotate.y += float(std::numbers::pi) / 4.0f;
+		} else if (i / 8 == 1) {
 			rotate.x += float(std::numbers::pi) / 4.0f;
+			rotate.y = 0.0f;
+		} else if (i / 8 == 2) {
+			rotate.x = float(std::numbers::pi) / 4.0f;
+			rotate.y += float(std::numbers::pi) / 4.0f;
 		} else {
+			rotate.x = float(std::numbers::pi) / -4.0f;
 			rotate.y += float(std::numbers::pi) / 4.0f;
 		}
 		velocityParticle_[i].z +=
@@ -40,18 +48,25 @@ void EnemyDeathEffect::initialize(
 
 void EnemyDeathEffect::Update() {
 
+	//サイズ変更準備
+	float t = float(timer_) / float(time_);
+
 	// 粒子ごとに更新
 	for (int i = 0; i < kMaxParticleCount_; i++) {
 		// 粒子を移動
 		worldTransformParticle_[i].translation_ =
 		    worldTransformParticle_[i].translation_ + velocityParticle_[i];
 	
+		worldTransformParticle_[i].scale_.x = MyMath::Linear(t, 0.0f, 1.0f);
+		worldTransformParticle_[i].scale_.y = MyMath::Linear(t, 0.0f, 1.0f);
+		worldTransformParticle_[i].scale_.z = MyMath::Linear(t, 0.0f, 1.0f);
+
 		// ワールド行列の更新
 		worldTransformParticle_[i].UpdateMatrix();
-	
+
 	}
 
-	//タイマー処理
+	// タイマー処理
 	if (--timer_ == 0) {
 		isEnd_ = true;
 	}

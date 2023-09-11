@@ -41,7 +41,7 @@ public: //メンバ関数
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
 	    Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
-	    std::list<BossEnemy*>* bossEnemies);
+	    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels);
 
 	/// <summary>
 	/// 更新
@@ -306,5 +306,8 @@ private: //メンバ変数
 	uint32_t appearTimer_;
     // タイム
     const uint32_t appearTime_ = 40;
+
+	//エネミー死亡エフェクトのモデル
+	std::vector<Model*> deathEffectModels_;
 
 };

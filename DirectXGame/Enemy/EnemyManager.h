@@ -29,7 +29,8 @@ public: // メンバ変数
 	/// </summary>
 	void Initialize(
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
-	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels);
+	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
+	    const std::vector<Model*>& deathEffectModels);
 
 	/// <summary>
 	/// 更新
@@ -176,5 +177,8 @@ private: // メンバ変数
 	uint32_t initialHp_[4];
 	//ボス初期Hp
 	uint32_t bossInitialHp_;
+
+	// エネミー死亡エフェクトのモデル
+	std::vector<Model*> deathEffectModels_;
 
 };

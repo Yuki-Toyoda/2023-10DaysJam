@@ -193,6 +193,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelBossEnemy_;
 	// エネミーバレットモデル
 	std::unique_ptr<Model> modelEnemyBullet_;
+	// エネミー死亡エフェクトモデル
+	std::unique_ptr<Model> modelEnemyDeathEffect_;
 
 	// 破片モデル
 	std::unique_ptr<Model> modelDebris_;
