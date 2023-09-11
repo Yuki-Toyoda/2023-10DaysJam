@@ -34,12 +34,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	enemyType_ = enemyType;
 
 	//状態
-	enemyState_ = Wait;
+	enemyState_ = Appear;
 
-	// ボスとの距離
-	distanceToBoss_ = 0.0f;
-	// ボスとの回転角
-	rotationToBoss_ = {0.0f,0.0f,0.0f};
 	targetWorldTransform.Initialize();
 
 	// 突進準備用
@@ -77,6 +73,9 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	modelWorldTransform_.Initialize();
 	modelWorldTransform_.parent_ = &worldTransform_;
 	modelWorldTransform_.UpdateMatrix();
+
+	// タイマー
+	appearTimer_ = appearTime_;
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffd);
@@ -124,6 +123,9 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 void Enemy::Update() {
 
 	switch (enemyState_) {
+	case Enemy::Appear:
+		Appearing();
+		break;
 	case Enemy::Wait:
 		Waiting();
 		break;
@@ -352,6 +354,19 @@ void Enemy::Rushing() {
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+
+}
+
+void Enemy::Appearing() {
+
+	if (--appearTimer_ == 0) {
+		enemyState_ = Wait;
+	}
+
+	float t = float(appearTime_ - appearTimer_) /  float(appearTime_);
+	worldTransform_.scale_.x = MyMath::EaseOut(t, 0.0f, 1.0f);
+	worldTransform_.scale_.y = MyMath::EaseOut(t, 0.0f, 1.0f);
+	worldTransform_.scale_.z = MyMath::EaseOut(t, 0.0f, 1.0f);
 
 }
 

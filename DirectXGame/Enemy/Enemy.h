@@ -23,7 +23,8 @@ public: //サブクラス
 	};
 
 	// 状態
-	enum EnemyState {
+	enum EnemyState { 
+		Appear,
 		Wait,
 		Follow,
 		PreRush,
@@ -93,6 +94,11 @@ public: //メンバ関数
 	/// 突進
 	/// </summary>
 	void Rushing();
+
+	/// <summary>
+	/// 登場
+	/// </summary>
+	void Appearing();
 
 	/// <summary>
 	/// 待ち
@@ -242,10 +248,6 @@ private: //メンバ変数
 	
 	//追従するボス
 	BossEnemy* JoiningBossEnemy_ = nullptr;
-	// ボスとの距離
-	float distanceToBoss_;
-	// ボスとの回転角
-	Vector3 rotationToBoss_;
 	// 目指すワールドトランスフォーム
 	WorldTransform targetWorldTransform;
 
@@ -298,5 +300,11 @@ private: //メンバ変数
 
 	//モデル
 	WorldTransform modelWorldTransform_;
+
+	//登場アニメーションAppearpear
+	//タイマー
+	uint32_t appearTimer_;
+    // タイム
+    const uint32_t appearTime_ = 40;
 
 };
