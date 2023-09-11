@@ -1,6 +1,11 @@
 {
     "Player": {
+        "BulletDamageFire": 3,
+        "BulletDamageIce": 1,
+        "BulletDamageNone": 1,
+        "BulletDamageThunder": 1,
         "BulletSpeed": 20.0,
+        "CollisionInvincibilityTime": 20,
         "DistanceToReticleObject": 150.0,
         "FallAcceleration": 0.09799999743700027,
         "Height": 20.0,
@@ -11,6 +16,11 @@
         "MaxMagazineSize": 15,
         "MaxReloadTime": 60,
         "MoveSpeed": 3.0,
+        "OBBSize": [
+            3.0,
+            3.0,
+            3.0
+        ],
         "ShotPosOffset": [
             0.0,
             -2.5,

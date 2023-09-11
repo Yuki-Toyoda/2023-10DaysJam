@@ -176,7 +176,9 @@
     <ClCompile Include="Collision\ColliderShape\Sphere.cpp">
       <Filter>Collider</Filter>
     </ClCompile>
-    <ClCompile Include="Effect\EnemyDeathEffect.cpp" />
+    <ClCompile Include="Effect\EnemyDeathEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect\ExplosiveEffect.h">
@@ -353,7 +355,9 @@
     <ClInclude Include="Effect\DebrisEffect.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Effect\EnemyDeathEffect.h" />
+    <ClInclude Include="Effect\EnemyDeathEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
