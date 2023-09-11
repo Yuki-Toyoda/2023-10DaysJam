@@ -84,10 +84,6 @@ void Player::Initialize(
 	spriteDpad_.reset(Sprite::Create(
 	    spriteDpadUI_.textureHandle_, spriteDpadUI_.position_, {1.0f, 1.0f, 1.0f, 1.0f},
 	    {0.5f, 0.5f}));
-	// 十字ボタン矢印UI
-	spriteDpadArrow_.reset(Sprite::Create(
-	    textureHandles_[TextureManager::DpadArrow_P], spriteDpadUI_.position_,
-	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	// 上ボタンUI
 	spriteDpadUP_.reset(Sprite::Create(
 	    textureHandles_[TextureManager::FireBullet],
@@ -108,21 +104,23 @@ void Player::Initialize(
 	spriteDpadRight_->SetSize({64.0f, 64.0f});
 
 	// オーブ変換テキストの初期化
-	spriteChangeOrbUI_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
+	spriteChangeOrbUI_.textureHandle_ =
+	    textureHandles_[TextureManager::changeOrbText]; // テクスチャ
 	spriteChangeOrbUI_.position_ = {220.0f, 485.0f};                                 // 座標
 	spriteChangeOrbUI_.size_ = {256.0f, 64.0f};                                      // 大きさ
 	spriteChangeOrbText_.reset(Sprite::Create(
-	    textureHandles_[TextureManager::RBHoldText],
+	    textureHandles_[TextureManager::changeOrbText],
 	    {spriteChangeOrbUI_.position_.x, spriteChangeOrbUI_.position_.y}, {1.0f, 1.0f, 1.0f, 1.0f},
 	    {0.5f, 0.5f}));
 	spriteChangeOrbText_->SetSize(spriteChangeOrbUI_.size_);
 
 	// オーブ変換テキスト2のリセット
-	spriteChangeOrbUI2_.textureHandle_ = textureHandles_[TextureManager::RBHoldText]; // テクスチャ
+	spriteChangeOrbUI2_.textureHandle_ =
+	    textureHandles_[TextureManager::changeOrbText2]; // テクスチャ
 	spriteChangeOrbUI2_.position_ = {1125.0f, 125.0f};                                // 座標
 	spriteChangeOrbUI2_.size_ = {256.0f, 32.0f};                                      // 大きさ
 	spriteChangeOrbText2_.reset(Sprite::Create(
-	    textureHandles_[TextureManager::changeOrbText2],
+	    spriteChangeOrbUI2_.textureHandle_,
 	    {spriteChangeOrbUI2_.position_.x, spriteChangeOrbUI2_.position_.y},
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 	spriteChangeOrbText2_->SetSize(spriteChangeOrbUI2_.size_);
@@ -599,7 +597,6 @@ void Player::SpriteDraw() {
 
 	// 十字ボタンUI描画
 	spriteDpad_->Draw();
-	spriteDpadArrow_->Draw();      // 十字ボタン選択矢印描画
 	spriteDpadUP_->Draw();         // 十字上ボタンUI描画
 	spriteDpadLeft_->Draw();       // 十字左ボタンUI描画
 	spriteDpadRight_->Draw();      // 十字右ボタンUI描画

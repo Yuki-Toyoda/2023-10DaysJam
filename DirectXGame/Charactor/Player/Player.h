@@ -245,8 +245,6 @@ private: // メンバ関数
 	// 十字ボタンUI
 	UI spriteDpadUI_;
 	std::unique_ptr<Sprite> spriteDpad_;
-	// 十字ボタン矢印UI
-	std::unique_ptr<Sprite> spriteDpadArrow_;
 	// 十字ボタンUI
 	std::unique_ptr<Sprite> spriteDpadUP_; // 上
 	std::unique_ptr<Sprite> spriteDpadLeft_; // 左

@@ -30,14 +30,8 @@ public: // サブクラス
 
 		// ボタン用テクスチャ
 		Dpad,        // 十字ボタン
-		DpadArrow_N, // 十字ボタン矢印
-		DpadArrow_P, // 十字ボタン矢印押下時
-		XButton_N,   // Xボタン
-		XButton_P,   // Xボタン押下時
 		RT_N,        // RTトリガー
 		RT_P,        // RTトリガー押下時
-		RB_N,        // RBトリガー
-		RB_P,        // RBトリガー押下時
 		LT_N,        // LTトリガー
 		LT_P,        // LTトリガー押下時
 
@@ -52,7 +46,6 @@ public: // サブクラス
 		selectOrb, // オーブ選択
 		selectArrow_L, // オーブ選択左矢印
 		selectArrow_R, // オーブ選択右矢印
-		RBHoldText, // RBホールドテキスト
 		changeOrbText, // 選択オーブテキスト
 		changeOrbText2, // 選択オーブテキスト2
 		NeedEnemyCountText, // 変換に必要な敵数テキスト

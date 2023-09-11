@@ -27,7 +27,6 @@ class EffectManager;
 /// ゲームシーン
 /// </summary>
 class GameScene {
-
 public: //サブクラス
 	enum SceneName {
 		Title,
@@ -35,6 +34,19 @@ public: //サブクラス
 		Main,
 		GameClear,
 		GameOver,
+	};
+
+	// チュートリアル段階
+	enum TutorialSteps {
+		Move,
+		NormalShot,
+		Orbs,
+		FireBullet,
+		IceBullet,
+		ThunderBullet,
+		OrbReinforcement,
+		ChangeOrb,
+		TutorialEnd
 	};
 
 public: // メンバ関数
@@ -209,14 +221,8 @@ private: // メンバ変数
 
 	// ボタン用テクスチャ達
 	uint32_t texturehandleDpad_ = 0u; // 十字ボタン
-	uint32_t texturehandleDpadArrow_N_ = 0u; // 十字ボタン矢印
-	uint32_t texturehandleDpadArrow_P_ = 0u; // 十字ボタン矢印押下時
-	uint32_t texturehandleButton_X_N_ = 0u; // Xボタン
-	uint32_t texturehandleButton_X_P_ = 0u; // Xボタン押下時
 	uint32_t texturehandleButton_RT_N_ = 0u; // RTトリガー
 	uint32_t texturehandleButton_RT_P_ = 0u; // RTトリガー押下時
-	uint32_t texturehandleButton_RB_N_ = 0u; // RBトリガー
-	uint32_t texturehandleButton_RB_P_ = 0u; // RBトリガー押下時
 	uint32_t texturehandleButton_LT_N_ = 0u; // LTトリガー
 	uint32_t texturehandleButton_LT_P_ = 0u; // LTトリガー押下時
 
@@ -236,8 +242,6 @@ private: // メンバ変数
 	// 選択テクスチャ
 	uint32_t textureHandleSelectArrow_L_ = 0u;
 	uint32_t textureHandleSelectArrow_R_ = 0u;
-	// RBホールドテキストテクスチャ
-	uint32_t textureHandleRBHoldText_ = 0u;
 	// オーブ変換テキストテクスチャ
 	uint32_t textureHandleChangeOrbText_ = 0u;
 	uint32_t textureHandleChangeOrbText2_ = 0u;
@@ -253,27 +257,28 @@ private: // メンバ変数
 
 	// 氷壁用テクスチャ
 	uint32_t textureHandleIceWallTex[3] = {0u};
-
+	
 	// 効果音
-	uint32_t soundHandleFootStep_[2]; // 歩行音
-	uint32_t soundHandleJump_; // ジャンプ音
-	uint32_t soundHandleLanding_; // 着地音
-	uint32_t soundHandlePlayerDamage_; // ダメージ音
-	uint32_t soundHandleShot_; // 通常射撃音
-	uint32_t soundHandleAddOrb_; // オーブ追加音
-	uint32_t soundHandleSpecialShot_; // 特殊射撃音
-	uint32_t soundHandleFireShot_; // 炎弾着弾音
-	uint32_t soundHandleDeployIceWall_; // 氷弾展開音
-	uint32_t soundHandleDamageIceWall_; // 氷弾ダメージ音
-	uint32_t soundHandleDestroyIceWall_; // 氷弾破壊音
+	uint32_t soundHandleFootStep_[2];            // 歩行音
+	uint32_t soundHandleJump_;                   // ジャンプ音
+	uint32_t soundHandleLanding_;                // 着地音
+	uint32_t soundHandlePlayerDamage_;           // ダメージ音
+	uint32_t soundHandleShot_;                   // 通常射撃音
+	uint32_t soundHandleAddOrb_;                 // オーブ追加音
+	uint32_t soundHandleSpecialShot_;            // 特殊射撃音
+	uint32_t soundHandleFireShot_;               // 炎弾着弾音
+	uint32_t soundHandleDeployIceWall_;          // 氷弾展開音
+	uint32_t soundHandleDamageIceWall_;          // 氷弾ダメージ音
+	uint32_t soundHandleDestroyIceWall_;         // 氷弾破壊音
 	uint32_t soundHandleDeployStartThunderArea_; // 雷エリア展開開始音
-	uint32_t soundHandleDeployThunderArea_; // 雷エリア展開音
-	uint32_t soundHandleDeployEndThunderArea_; // 雷エリア展開終了音
-	uint32_t soundHandleDeployOrbChoice_; // オーブ選択音
+	uint32_t soundHandleDeployThunderArea_;      // 雷エリア展開音
+	uint32_t soundHandleDeployEndThunderArea_;   // 雷エリア展開終了音
+	uint32_t soundHandleDeployOrbChoice_;        // オーブ選択音
 	uint32_t soundHandleDeployChangeOrbSuccess_; // オーブ変換成功音
-	uint32_t soundHandleDeployChangeOrbFail_; // オーブ変換失敗音
+	uint32_t soundHandleDeployChangeOrbFail_;    // オーブ変換失敗音
 	uint32_t soundHandleDeployChoiceFireBullet_; // 炎弾選択音
-	uint32_t soundHandleDeployChoiceIceBullet_; // 氷弾選択音
+	uint32_t soundHandleDeployChoiceIceBullet_;  // 氷弾選択音
+
 	// エフェクトマネージャー
 	EffectManager* effectManager_ = nullptr;
 
@@ -323,6 +328,9 @@ private: // メンバ変数
 	Vector4 fadeColor_;
 	// フェードサイズ
 	Vector2 fadeSize_;
+
+	// チュートリアルの段階
+	int tutorialSteps_;
 
 	//ゲーム終了したか
 	bool theGameIsOver;

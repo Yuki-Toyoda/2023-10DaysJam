@@ -63,14 +63,8 @@ void GameScene::Initialize() {
 
 	// ボタン用テクスチャ達
 	texturehandleDpad_ = TextureManager::Load("/Image/Button/Dpad.png"); // 十字ボタン
-	texturehandleDpadArrow_N_ = TextureManager::Load("/Image/Button/DpadArrow_P.png"); // 十字ボタン矢印
-	texturehandleDpadArrow_P_ = TextureManager::Load("/Image/Button/DpadArrow_N.png"); // 十字ボタン矢印押下時
-	texturehandleButton_X_N_ = TextureManager::Load("/Image/Button/button_x_N.png"); // Xボタン
-	texturehandleButton_X_P_ = TextureManager::Load("/Image/Button/button_x_P.png"); // Xボタン押下時
 	texturehandleButton_RT_N_ = TextureManager::Load("/Image/Button/rt_N.png"); // RTトリガー
 	texturehandleButton_RT_P_ = TextureManager::Load("/Image/Button/rt_P.png"); // RTトリガー押下時
-	texturehandleButton_RB_N_ = TextureManager::Load("/Image/Button/rb_N.png"); // RBトリガー
-	texturehandleButton_RB_P_ = TextureManager::Load("/Image/Button/rb_P.png"); // RBトリガー押下時
 	texturehandleButton_LT_N_ = TextureManager::Load("/Image/Button/lt_N.png"); // LTトリガー
 	texturehandleButton_LT_P_ = TextureManager::Load("/Image/Button/lt_P.png"); // LTトリガー押下時
 
@@ -87,8 +81,6 @@ void GameScene::Initialize() {
 	    TextureManager::Load("/Image/Player/selectArrowUI_L.png"); // オーブ選択左矢印
 	textureHandleSelectArrow_R_ =
 	    TextureManager::Load("/Image/Player/selectArrowUI_R.png"); // オーブ選択右矢印
-	textureHandleRBHoldText_ =
-	    TextureManager::Load("/Image/Player/RBHoldUI.png"); // RBホールドテキスト
 	textureHandleChangeOrbText_ = TextureManager::Load("/Image/Player/changeOrbTextUI.png"); // 選択オーブテキスト
 	textureHandleChangeOrbText2_ =
 	    TextureManager::Load("/Image/Player/changeOrbTextUI2.png"); // 選択オーブテキスト
@@ -125,14 +117,8 @@ void GameScene::Initialize() {
 
 		// ボタン用テクスチャ
 		texturehandleDpad_, // 十字ボタン
-		texturehandleDpadArrow_N_, // 十字ボタン矢印
-		texturehandleDpadArrow_P_, // 十字ボタン矢印押下時
-		texturehandleButton_X_N_, // Xボタン
-		texturehandleButton_X_P_, // Xボタン押下時
 		texturehandleButton_RT_N_, // RTトリガー
 		texturehandleButton_RT_P_, // RTトリガー押下時
-		texturehandleButton_RB_N_, // RBトリガー
-		texturehandleButton_RB_P_, // RBトリガー押下時
 		texturehandleButton_LT_N_, // LTトリガー
 		texturehandleButton_LT_P_, // LTトリガー押下時
 
@@ -147,7 +133,6 @@ void GameScene::Initialize() {
 	    textureHandleSelectedOrb_, // オーブ選択
 		textureHandleSelectArrow_L_, // オーブ選択左矢印
 		textureHandleSelectArrow_R_, // オーブ選択右矢印
-	    textureHandleRBHoldText_, // RBホールドテキスト
 	    textureHandleChangeOrbText_, // 選択オーブテキスト
 	    textureHandleChangeOrbText2_, // 選択オーブテキスト2
 	    textureHandleNeedEnemyCountText_, // 変換に必要な敵数テキスト
@@ -161,7 +146,11 @@ void GameScene::Initialize() {
 		textureHandleIceWallTex[0], // 氷壁1段階目
 	    textureHandleIceWallTex[1], // 氷壁2段階目
 	    textureHandleIceWallTex[2], // 氷壁3段階目
-	};
+	}; // プレイヤーテクスチャ群
+
+	std::vector<uint32_t> tutorialTextureHandles{
+		textureHandle1x1_, // 1ｘ1テクスチャ
+	}; // チュートリアルテクスチャ群
 
 	// 効果音
 	soundHandleFootStep_[0] = audio_->LoadWave("/Audio/SE/FootStep1.wav"); // 歩行音1
@@ -339,7 +328,9 @@ void GameScene::Update() {
 
 void GameScene::TitleUpdate() {}
 
-void GameScene::TutorialUpdate() {}
+void GameScene::TutorialUpdate() {
+
+}
 
 void GameScene::MainUpdate() {
 
@@ -477,7 +468,20 @@ void GameScene::FadeInOutUpdate() {
 
 void GameScene::TitleSetup() {}
 
-void GameScene::TutorialSetup() {}
+void GameScene::TutorialSetup() {
+	// チュートリアルの段階リセット
+	tutorialSteps_ = Move;
+
+	// カメラ
+	camera_->SetUp();
+	// プレイヤー
+	player_->Setup();
+	// エフェクトマネージャー
+	effectManager_->Initialize();
+	// エネミーマネージャー
+	enemyManager_->Reset();
+
+}
 
 void GameScene::MainSetup() {
 
