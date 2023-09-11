@@ -168,7 +168,9 @@ void GameScene::Initialize() {
 	soundHandleFootStep_[1] = audio_->LoadWave("/Audio/SE/FootStep2.wav"); // 歩行音2
 	soundHandleJump_ = audio_->LoadWave("/Audio/SE/Jump.wav"); // ジャンプ音
 	soundHandleLanding_ = audio_->LoadWave("/Audio/SE/Landing.wav"); // 着地音
+	soundHandlePlayerDamage_ = audio_->LoadWave("/Audio/SE/PlayerDamage.wav"); // ダメージ音
 	soundHandleShot_ = audio_->LoadWave("/Audio/SE/Shot.wav"); // 通常射撃
+	soundHandleAddOrb_ = audio_->LoadWave("/Audio/SE/AddOrb.wav"); // オーブ追加音
 	soundHandleSpecialShot_ = audio_->LoadWave("/Audio/SE/SpecialShot.wav"); // 特殊射撃
 	soundHandleFireShot_ = audio_->LoadWave("/Audio/SE/FireBullet.wav");    // 炎弾着弾音
 	soundHandleDeployIceWall_ = audio_->LoadWave("/Audio/SE/DeployIceWall.wav"); // 氷弾展開音
@@ -179,13 +181,25 @@ void GameScene::Initialize() {
 	soundHandleDeployThunderArea_ = audio_->LoadWave("/Audio/SE/DeployThunderArea.wav"); // 雷エリア展開音
 	soundHandleDeployEndThunderArea_ =
 	    audio_->LoadWave("/Audio/SE/DeployEndThunderArea.wav"); // 雷エリア展開終了音
+	soundHandleDeployOrbChoice_ =
+	    audio_->LoadWave("/Audio/SE/OrbChoice.wav"); // オーブ選択音
+	soundHandleDeployChangeOrbSuccess_ =
+	    audio_->LoadWave("/Audio/SE/OrbChangeSuccesful.wav"); // オーブ変換成功音
+	soundHandleDeployChangeOrbFail_ =
+	    audio_->LoadWave("/Audio/SE/OrbChangeError.wav"); // オーブ変換失敗音
+	soundHandleDeployChoiceFireBullet_ =
+	    audio_->LoadWave("/Audio/SE/ChoiceFireBullet.wav"); // 炎弾選択音
+	soundHandleDeployChoiceIceBullet_ =
+	    audio_->LoadWave("/Audio/SE/ChoiceIceBullet.wav"); // 氷弾選択音
 
 	std::vector<uint32_t> playerAudioHandles = {
 		soundHandleFootStep_[0], // 歩行音1
 	    soundHandleFootStep_[1], // 歩行音2
 	    soundHandleJump_, // ジャンプ
 	    soundHandleLanding_, // 着地
+	    soundHandlePlayerDamage_, // プレイヤーのダメージ音
 	    soundHandleShot_, // 通常射撃音
+	    soundHandleAddOrb_, // オーブ追加音
 		soundHandleSpecialShot_, // 特殊射撃音
 	    soundHandleFireShot_, // 炎弾着弾音
 	    soundHandleDeployIceWall_, // 氷弾展開音
@@ -194,6 +208,11 @@ void GameScene::Initialize() {
 	    soundHandleDeployStartThunderArea_, // 雷エリア展開開始音
 	    soundHandleDeployThunderArea_, // 雷エリア展開音
 	    soundHandleDeployEndThunderArea_, // 雷エリア展開終了音
+		soundHandleDeployOrbChoice_, // オーブ選択音
+		soundHandleDeployChangeOrbSuccess_, // オーブ変換成功音
+		soundHandleDeployChangeOrbFail_, // オーブ変換失敗音
+	    soundHandleDeployChoiceFireBullet_, // 炎弾選択音
+	    soundHandleDeployChoiceIceBullet_, // 氷弾選択音
 	};
 
 	// エフェクトマネージャーの取得

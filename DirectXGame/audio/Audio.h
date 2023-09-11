@@ -21,7 +21,9 @@ public: // サブクラス
 		FootStep2,         // 歩行音2
 		Jump,			   // ジャンプ音
 		Land,			   // 着地音
+		Damage,			   // ダメージ音
 		Shot,              // 通常射撃
+		AddOrb,			   // オーブ追加音
 		SpecialShot,       // 特殊射撃
 		FireBulletLanding, // 炎弾着弾
 		DeployIceWall, // 氷弾展開
@@ -30,6 +32,11 @@ public: // サブクラス
 		DeployStartThunderArea, // 雷エリア展開開始音
 		DeployThunderArea, // 雷エリア展開音
 		DeployEndThunderArea, // 雷エリア展開終了音
+		ChoiceOrb, // オーブ選択音
+		ChangeOrbSuccess, // オーブ変換成功音
+		ChangeOrbFail, // オーブ変換失敗音
+		ChoiceFireBullet, // 炎弾選択音
+		ChoiceIceBullet, // 氷弾選択音
 	};
 
 	// 弾の効果音リスト

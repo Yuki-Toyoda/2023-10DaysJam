@@ -252,20 +252,6 @@ void PlayerBullet::FireBulletUpdate() {
 			// 床と衝突
 			isHit_ = true;
 
-			// 爆発音を再生
-			audio_->PlayWave(audioHandles_[Audio::FireBullet]);
-
-			std::vector<Model*> EffectModels = {
-				models_[4]
-			};                             // エフェクト用モデルリストの生成
-			// 破片エフェクト再生を指示
-			EffectManager::GetInstance()->PlayExplosiveEffect(
-			    EffectModels, {
-			                      worldTransform_.translation_.x,
-			                      worldTransform_.translation_.y + 2.0f,
-			                      worldTransform_.translation_.z,
-			                  }, 5.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
-
 		} else {
 			// 落下スピード加算
 			velocity_.y += fallSpeed_;
@@ -278,15 +264,38 @@ void PlayerBullet::FireBulletUpdate() {
 		}
 	} 
 	else {
-		// 爆破演出をイージングで行う
-		if (animT_ <= explosiveTime_) {
-			worldTransform_.scale_ = 
-				MyMath::EaseOut(animT_, {0.01f, 0.01f, 0.01f}, explosiveRange_, explosiveTime_);
-			// 演出用tを加算
-			animT_ += 1.0f / 60.0f;
-		} else {
-			// 弾を消去する
-			isDead_ = true;
+
+		std::vector<Model*> EffectModels = {models_[4]}; // エフェクト用モデルリストの生成
+
+		switch (actionWayPoint_) {
+		case PlayerBullet::WayPoint1:
+			
+			// 爆発音を再生
+			audio_->PlayWave(audioHandles_[Audio::FireBullet]);
+
+			// 破片エフェクト再生を指示
+			EffectManager::GetInstance()->PlayExplosiveEffect(
+			    EffectModels,
+			    {
+			        worldTransform_.translation_.x,
+			        worldTransform_.translation_.y + 2.0f,
+			        worldTransform_.translation_.z,
+			    },
+			    5.0f * (1.0f + 0.5f * (bulletStrength_ - 1)));
+			actionWayPoint_++;
+			break;
+		case PlayerBullet::WayPoint2:
+			// 爆破演出をイージングで行う
+			if (animT_ <= explosiveTime_) {
+				worldTransform_.scale_ =
+				    MyMath::EaseOut(animT_, {0.01f, 0.01f, 0.01f}, explosiveRange_, explosiveTime_);
+				// 演出用tを加算
+				animT_ += 1.0f / 60.0f;
+			} else {
+				// 弾を消去する
+				isDead_ = true;
+			}
+			break;
 		}
 	}
 }
