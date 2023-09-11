@@ -167,6 +167,12 @@ public: //アクセッサ
 	/// <returns></returns>
 	bool GetIsInvincible() { return isInvincible_; }
 
+	/// <summary>
+	/// hpゲッター
+	/// </summary>
+	/// <returns></returns>
+	int32_t GetHp() { return hp_; }
+
 public: // 自分の情報
 	/// <summary>
 	/// 自分の情報取得

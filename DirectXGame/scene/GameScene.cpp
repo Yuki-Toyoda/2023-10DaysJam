@@ -288,7 +288,6 @@ void GameScene::Update() {
 	// ゲームパッドの状態取得
 	preJoyState = joyState;
 	input_->GetJoystickState(0, joyState);
-	
 
 	switch (currentScene_) {
 	case GameScene::Title:
@@ -314,11 +313,65 @@ void GameScene::Update() {
 
 	//フェードインアウト
 	FadeInOutUpdate();
+
+		#ifdef _DEBUG
+
+	ImGui::Begin("SceneDebug");
+	//現在のシーン
+	switch (currentScene_) {
+	case GameScene::Title:
+		ImGui::Text("Title");
+		ImGui::Text("A->Main");
+		ImGui::Text("B->Tutorial");
+		break;
+	case GameScene::Tutorial:
+		ImGui::Text("Tutorial");
+		break;
+	case GameScene::Main:
+		ImGui::Text("Main");
+		break;
+	case GameScene::GameClear:
+		ImGui::Text("GameClear");
+		ImGui::Text("A->Main");
+		ImGui::Text("B->Title");
+		break;
+	case GameScene::GameOver:
+		ImGui::Text("GameOver");
+		ImGui::Text("A->Main");
+		ImGui::Text("B->Title");
+		break;
+	default:
+		break;
+	}
+	//フェードインアウト情報
+	if (isFadeIn_) {
+		ImGui::Text("FadeIn");
+	} else if (isFadeOut_) {
+		ImGui::Text("FadeOut");
+	} else {
+		ImGui::Text("Not a fade");
+	}
+	ImGui::End();
+
+#endif // _DEBUG
 	
 
 }
 
-void GameScene::TitleUpdate() {}
+void GameScene::TitleUpdate() {
+
+	// Aボタンでゲーム本編へ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+		FadeInOutSetUp(Main);
+	}
+	// Bボタンでチュートリアルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		FadeInOutSetUp(Tutorial);
+	}
+
+}
 
 void GameScene::TutorialUpdate() {}
 
@@ -376,6 +429,19 @@ void GameScene::MainUpdate() {
 	// 当たり判定
 	collisionManager->CheakAllCollision();
 
+
+	// ゲームクリアか?
+	theGameIsOver = true;
+	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+		if (bossEnemy->GetHp() > 0) {
+			theGameIsOver = false;
+			break;
+		}
+	}
+	if (theGameIsOver) {
+		FadeInOutSetUp(GameClear);
+	}
+
 	//ゲームオーバーか?
 	if (player_->GetHp() <= 0) {
 		FadeInOutSetUp(GameOver);
@@ -396,14 +462,32 @@ void GameScene::MainUpdate() {
 
 }
 
-void GameScene::GameClearUpdate() {}
+void GameScene::GameClearUpdate() {
 
-void GameScene::GameOverUpdate() {
-
-	//Aボタンでタイトルへ
+	// Aボタンでゲーム本編へ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
 	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
 		FadeInOutSetUp(Main);
+	}
+	// Bボタンでタイトルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		FadeInOutSetUp(Title);
+	}
+
+}
+
+void GameScene::GameOverUpdate() {
+
+	// Aボタンでゲーム本編へ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+		FadeInOutSetUp(Main);
+	}
+	// Bボタンでタイトルへ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		FadeInOutSetUp(Title);
 	}
 
 }
