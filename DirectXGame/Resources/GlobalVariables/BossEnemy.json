@@ -7,10 +7,10 @@
         "MoveSpeed": 1.0,
         "MoveTime": 10.0,
         "OBBSize": [
-            10.0,
-            25.0,
-            40.0
+            15.0,
+            37.5,
+            60.0
         ],
-        "ThunderInvincibilityTime": 0
+        "ThunderInvincibilityTime": 40
     }
 }

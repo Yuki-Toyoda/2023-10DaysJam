@@ -62,6 +62,9 @@ void BossEnemy::Initialize(
 	// 衝突無敵タイマー
 	collisionInvincibilityTime_ = 20;
 
+	// 雷弾無敵タイマー
+	thunderInvincibilityTime_ = 40;
+
 	// 射撃クールタイム
 	shotAttackCooltime_ = 0;
 
