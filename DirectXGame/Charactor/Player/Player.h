@@ -93,6 +93,18 @@ public: // アクセッサ等
 	}
 
 	/// <summary>
+	/// 接地状態ゲッター
+	/// </summary>
+	/// <returns>接地状態</returns>
+	bool GetIsGround() { return isGround_; }
+
+	/// <summary>
+	/// ジャンプ可能状態のゲッター
+	/// </summary>
+	/// <returns>ジャンプ可能状態</returns>
+	bool GetCanJump() { return canJump_; }
+
+	/// <summary>
 	/// 衝突時呼び出し関数
 	/// </summary>
 	void OnCollision(Collider* collision) override;

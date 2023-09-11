@@ -5,6 +5,9 @@
 #include "ViewProjection.h"
 #include "Charactor/Player/Player.h"
 
+// クラスの前方宣言
+class EnemyManager;
+
 /// <summary>
 /// チュートリアルマネージャー
 /// </summary>
@@ -74,10 +77,38 @@ public: // アクセッサ等
 	/// <returns>チュートリアル終了状態</returns>
 	bool GetTutorialEnd() { return isEndTutorial; }
 
-private: // メンバ関数
+	/// <summary>
+	///	プレイヤーのセッター
+	/// </summary>
+	/// <param name="player">プレイヤー</param>
+	void SetPlayer(Player* player) {
+		player_ = player;
+	}
+
+private: // その他関数
+
+	/// <summary>
+	/// 移動チュートリアル関数
+	/// </summary>
+	void MoveTutorial();
+
+	/// <summary>
+	/// 通常射撃チュートリアル関数
+	/// </summary>
+	void NormalShotTutorial();
+
+private: // メンバ変数
 
 	// 入力検知用
 	Input* input_ = nullptr;
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	XINPUT_STATE preJoyState;
+
+	// プレイヤー
+	Player* player_;
+	// 敵マネージャー
+	EnemyManager* enemyManager_;
 
 	// モデルリスト
 	std::vector<Model*> models_;
@@ -94,6 +125,13 @@ private: // メンバ関数
 
 	// チュートリアル画像表示トリガー
 	bool displayTutorialImage_;
+
+	// チュートリアル進捗
+	float tutorialGageProgress_;
+	// チュートリアルゲージ最大値
+	const float kMaxTutorialGage_ = 100.0f;
+	// 次のチュートリアルへ
+	bool isNextTutorial_;
 
 	// チュートリアル画像テクスチャ
 	uint32_t textureHandleTutorialImage_;

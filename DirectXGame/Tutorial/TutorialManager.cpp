@@ -1,5 +1,6 @@
 #include "TutorialManager.h"
 #include "WinApp.h"
+#include "Enemy/EnemyManager.h"
 
 TutorialManager::TutorialManager() {}
 
@@ -24,6 +25,12 @@ void TutorialManager::Initialize(
 
 	// 入力取得
 	input_ = Input::GetInstance();
+	// ゲームパッドの状態取得
+	input_->GetJoystickState(0, joyState);
+	preJoyState = joyState;
+
+	// 敵マネージャーのインスタンス取得
+	enemyManager_ = EnemyManager::GetInstance();
 
 	// 進捗リセット
 	tutorialSteps_ = Move;
@@ -33,6 +40,11 @@ void TutorialManager::Initialize(
 
 	// チュートリアル画像表示トリガーリセット
 	displayTutorialImage_ = false;
+
+	// チュートリアル進捗ゲージリセット
+	tutorialGageProgress_ = 0;
+	// 次のチュートリアルトリガーリセット
+	isNextTutorial_ = false;
 
 	// 最初の画像を読み込み
 	textureHandleTutorialImage_ =
@@ -81,40 +93,82 @@ void TutorialManager::Initialize(
 }
 
 void TutorialManager::Update() {
+
 	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
-		// チュートリアル段階によって切り替え
-		switch (tutorialSteps_) {
-		case TutorialManager::Move:
+	preJoyState = joyState;
+	input_->GetJoystickState(0, joyState);
 
-			break;
-		case TutorialManager::NormalShot:
+	// チュートリアル段階によって切り替え
+	switch (tutorialSteps_) {
+	case TutorialManager::Move:
+		// 移動チュートリアル
+		MoveTutorial();
+		break;
+	case TutorialManager::NormalShot:
+		// 移動チュートリアル
+		NormalShotTutorial();
+		break;
+	case TutorialManager::Orbs:
 
-			break;
-		case TutorialManager::Orbs:
+		break;
+	case TutorialManager::FireBullet:
 
-			break;
-		case TutorialManager::FireBullet:
+		break;
+	case TutorialManager::IceBullet:
 
-			break;
-		case TutorialManager::IceBullet:
+		break;
+	case TutorialManager::ThunderBullet:
 
-			break;
-		case TutorialManager::ThunderBullet:
+		break;
+	case TutorialManager::OrbReinforcement:
 
-			break;
-		case TutorialManager::OrbReinforcement:
+		break;
+	case TutorialManager::ChangeOrb:
 
-			break;
-		case TutorialManager::ChangeOrb:
+		break;
+	case TutorialManager::TutorialEnd:
 
-			break;
-		case TutorialManager::TutorialEnd:
+		break;
+	}
 
-			break;
+	// チュートリアルゲージ進捗が指定の値以上になったら制限する
+	if (tutorialGageProgress_ > kMaxTutorialGage_) {
+		tutorialGageProgress_ = kMaxTutorialGage_;
+	}
+
+	// チュートリアルゲージの更新
+	float tutorialGageT = tutorialGageProgress_ / kMaxTutorialGage_;
+	float gageLength = MyMath::Linear(tutorialGageT, 0.0f, tutorialGageSize_.x);
+	spriteTutorialGage_->SetSize({gageLength, spriteTutorialGage_->GetSize().y});
+
+	// チュートリアルゲージ進捗が完全になったら次のチュートリアルへ進む
+	if (tutorialGageProgress_ == kMaxTutorialGage_) {
+		isNextTutorial_ = true;
+	}
+
+	// チュートリアル終了が終了段階なら
+	if (tutorialSteps_ == TutorialEnd) {
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+		    preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+			// チュートリアル終了
+			isEndTutorial = true;
 		}
 	}
+
+	/// UI関連の更新
+	// チュートリアル進捗ゲージ背景
+	spriteTutorialGageBackGround_->SetSize(tutorialGageSize_);         // 大きさ
+	spriteTutorialGageBackGround_->SetPosition(tutorialGagePosition_); // 座標
+	// チュートリアル進捗ゲージ
+	spriteTutorialGage_->SetPosition(tutorialGagePosition_); // 座標
+	// チュートリアルテキスト背景
+	spriteTutorialTextBackGround_->SetSize(
+	    {tutorialTextSize_.x + 20.0f, tutorialTextSize_.y + 20.0f});   // 大きさ
+	spriteTutorialTextBackGround_->SetPosition(tutorialTextPosition_); // 座標
+	// チュートリアルテキスト
+	spriteTutorialText_->SetSize(tutorialTextSize_);         // 大きさ
+	spriteTutorialText_->SetPosition(tutorialTextPosition_); // 座標
 }
 
 void TutorialManager::SpriteDraw() {
@@ -133,4 +187,83 @@ void TutorialManager::SpriteDraw() {
 	spriteTutorialTextBackGround_->Draw();
 	// チュートリアルテキスト
 	spriteTutorialText_->Draw();
+}
+
+void TutorialManager::MoveTutorial() {
+	// ジョイスティックの状態取得
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+
+		// スティックの入力に応じて移動
+		Vector3 stickVec = {
+		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX,
+		    -(float)joyState.Gamepad.sThumbLY / SHRT_MAX, 0.0f};
+
+		// 正規化
+		stickVec = MyMath::Normalize(stickVec);
+		// ベクトルの長さを求める
+		float stickVecLength = MyMath::Length(stickVec);
+		// ベクトルの長さを少し短く
+		stickVecLength /= 6.0f;
+
+		if (stickVecLength < 0) {
+			stickVecLength *= -1.0f;
+		}
+
+		// 進捗にプラスする
+		tutorialGageProgress_ += stickVecLength;
+
+		// ジャンプすると
+		if (player_->GetIsGround()) {
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+			    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+				// チュートリアルゲージを進める
+				tutorialGageProgress_ += 10.0f;
+			}
+		}
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/2_NormalShotTotorialTextUI.png");
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
+}
+
+void TutorialManager::NormalShotTutorial() {
+	// Rトリガーが押されたら
+	if (joyState.Gamepad.bRightTrigger > 25) {
+		// 進捗にプラスする
+		tutorialGageProgress_ += 0.35f;
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/3_NormalShotTotorialTextUI.png");
+
+		// チュートリアル用敵の出現
+		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
 }

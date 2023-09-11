@@ -165,7 +165,7 @@ void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bo
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
 		    initialHp_[enemyTypeNext], this, player_, &bossEnemies_, deathEffectModels_,
-		    isTutorial);
+		    isTutorial, viewProjection_);
 		enemies_.push_back(enemy);
 		enemyCount_++;
 	}

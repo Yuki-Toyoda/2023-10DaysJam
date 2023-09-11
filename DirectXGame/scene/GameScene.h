@@ -208,6 +208,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelEnemyBullet_;
 	// エネミー死亡エフェクトモデル
 	std::unique_ptr<Model> modelEnemyDeathEffect_;
+	// 敵の上に表示されるマーカー
+	std::unique_ptr<Model> modelEnemyMark_;
 
 	// 破片モデル
 	std::unique_ptr<Model> modelDebris_;

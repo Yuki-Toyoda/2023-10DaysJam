@@ -136,6 +136,14 @@ public: // メンバ変数
 	/// </summary>
 	void SetPlayer(Player* player) { player_ = player; }
 
+	/// <summary>
+	///	移動時のビュープロジェクションのセッター
+	/// </summary>
+	/// <param name="viewProjection">ビュープロジェクション</param>
+	void SetViewProjection(const ViewProjection* viewProjection) {
+		viewProjection_ = viewProjection;
+	}
+
 private: // その他関数
 	/// <summary>
 	/// 調整項目適用関数
@@ -200,5 +208,8 @@ private: // メンバ変数
 
 	//サイズ
 	Vector2 bossHpSpriteSize_;
+
+	// カメラのビュープロジェクション
+	const ViewProjection* viewProjection_ = nullptr;
 
 };

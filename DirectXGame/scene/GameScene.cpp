@@ -50,6 +50,7 @@ void GameScene::Initialize() {
 	modelEnemyBullet_.reset(Model::CreateFromOBJ("EnemyBullet", true)); // エネミーバレット
 	modelEnemyDeathEffect_.reset(
 	    Model::CreateFromOBJ("EnemyDeathEffect", true)); // エネミーの死亡エフェクト
+	modelEnemyMark_.reset(Model::CreateFromOBJ("EnemyMark", true)); // 敵のマーカー
 
 	std::vector<Model*> tutorialModels = {
 	};                             // チュートリアル用モデルリストの生成
@@ -266,6 +267,8 @@ void GameScene::Initialize() {
 	effectManager_->SetViewProjection(camera_->GetViewProjection());
 	// カメラにカメラシェイク強さの変数ポインタを渡す
 	camera_->SetShakeStrength(player_->GetShakeStrength());
+	// チュートリアルマネージャーにプレイヤーをセット
+	tutorialManager_->SetPlayer(player_.get());
 
 	//テクスチャハンドル
 	std::vector<uint32_t> enemyTextureHandles = {
@@ -289,9 +292,10 @@ void GameScene::Initialize() {
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(
-	    std::vector<Model*>{modelEnemy_.get()}, enemyTextureHandles,
+	    std::vector<Model*>{modelEnemy_.get(), modelEnemyMark_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
 	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(), bossHpFrameSprite_.get());
+	enemyManager_->SetViewProjection(camera_->GetViewProjection());
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
@@ -426,13 +430,13 @@ void GameScene::TutorialUpdate() {
 	enemyManager_->DeleteEnemyBullet();
 
 	// 更新処理全般
+	tutorialManager_->Update(); // チュートリアル
 	camera_->Update();          // カメラ
 	skyDome_->Update();         // 天球
 	ground_->Update();          // 地面
 	player_->Update();          // プレイヤー
 	effectManager_->Update();   // エフェクトマネージャー
 	enemyManager_->Update();    // エネミーマネージャー
-	tutorialManager_->Update(); // チュートリアル
 
 	// デバックカメラ有効時
 	if (enableDebugCamera_) {
@@ -478,6 +482,18 @@ void GameScene::TutorialUpdate() {
 	if (tutorialManager_->GetTutorialEnd()) {
 		FadeInOutSetUp(Main);
 	}
+
+	#ifdef _DEBUG
+
+	// フィールドの更新
+	field_->Update();
+
+	ImGui::Begin("Debug");
+	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);
+
+	ImGui::End();
+
+#endif // _DEBUG
 
 }
 

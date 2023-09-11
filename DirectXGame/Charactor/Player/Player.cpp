@@ -690,7 +690,7 @@ void Player::Setup() {
 	// 射撃座標のオフセット
 	shotPosOffset_ = {0.0f, -5.0f, 0.0f};
 	// カメラから照準オブジェクトの距離
-	kDistanceToReticleObject_ = 150.0f;
+	kDistanceToReticleObject_ = 250.0f;
 	// 射撃可能に
 	canShot_ = true;
 	// 弾速設定
@@ -1546,9 +1546,9 @@ void Player::UIUpdate() {
 		}
 
 		if (!canSpecialShot_) {
-			spriteLeftTrigger_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-			specialShotText_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
-			spriteSpecialShotMagnification_->SetColor({0.65f, 0.65f, 0.65f, 1.0f});
+			spriteLeftTrigger_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
+			specialShotText_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
+			spriteSpecialShotMagnification_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
 		} else {
 			spriteLeftTrigger_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 			specialShotText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});

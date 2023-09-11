@@ -16,7 +16,7 @@
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
     Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
     std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels,
-    bool isTutorial) {
+    bool isTutorial, const ViewProjection* viewProjection) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -76,6 +76,11 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	modelWorldTransform_.parent_ = &worldTransform_;
 	modelWorldTransform_.UpdateMatrix();
 
+	// 敵マーカ用トランスフォームリセット
+	worldTransformEnemyMark_.Initialize();
+	worldTransformEnemyMark_.translation_ = modelWorldTransform_.translation_;
+	worldTransformEnemyMark_.translation_.y += 1.0f;
+
 	// タイマー
 	appearTimer_ = appearTime_;
 
@@ -96,6 +101,8 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	deathEffectModels_ = deathEffectModels;
 	// チュートリアルか
 	isTutorial_ = isTutorial;
+	// ビュープロジェクションを受け取る
+	viewProjection_ = viewProjection;
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -194,6 +201,29 @@ void Enemy::Update() {
 	//サンダーと当たったかをfalseに
 	isCollisionThunder = false;
 
+	if (isTutorial_) {
+
+		worldTransformEnemyMark_.translation_ = worldTransform_.translation_;
+		worldTransformEnemyMark_.translation_.y += 25.0f;
+
+		// ビルボード処理
+		// ビュー行列を取得
+		Matrix4x4 viewMatrix = MyMath::Inverse(viewProjection_->matView);
+		// ビュー行列の移動要素を消す
+		viewMatrix.m[3][0] = 0.0f;
+		viewMatrix.m[3][1] = 0.0f;
+		viewMatrix.m[3][2] = 0.0f;
+
+		// ワールド行列の計算
+		Matrix4x4 worldMatrix = MyMath::MakeAffineMatrix(
+		    worldTransformEnemyMark_.scale_, worldTransformEnemyMark_.rotation_,
+		    worldTransformEnemyMark_.translation_);
+		worldTransformEnemyMark_.matWorld_ = viewMatrix * worldMatrix;
+
+		// ワールド座標の転送
+		worldTransformEnemyMark_.TransferMatrix();
+	}
+
 }
 
 /// <summary>
@@ -201,11 +231,10 @@ void Enemy::Update() {
 /// </summary>
 /// <param name="viewProjection">ビュープロジェクション(参照渡し)</param>
 void Enemy::Draw(const ViewProjection& viewProjection) {
-
-	for (Model* model : models_) {
-		 model->Draw(modelWorldTransform_, viewProjection, textureHandle_);
+	if (isTutorial_) {
+		models_[1]->Draw(worldTransformEnemyMark_, viewProjection, textureHandle_);
 	}
-
+	models_[0]->Draw(modelWorldTransform_, viewProjection, textureHandle_);
 }
 
 // 衝突時に呼ばれる関数
