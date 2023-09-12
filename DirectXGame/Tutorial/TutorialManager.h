@@ -27,6 +27,15 @@ private: // サブクラス
 		TutorialEnd // チュートリアル終了
 	};
 
+	// チュートリアル演出用中間地点
+	enum TutorialStagingWayPoint {
+		WayPoint1,
+		WayPoint2,
+		WayPoint3,
+		WayPoint4,
+		WayPoint5,
+	};
+
 private:
 	/// <summary>
 	/// コンストラクタ
@@ -97,6 +106,11 @@ private: // その他関数
 	/// </summary>
 	void NormalShotTutorial();
 
+	/// <summary>
+	/// オーブのチュートリアル
+	/// </summary>
+	void OrbTutorial();
+
 private: // メンバ変数
 
 	// 入力検知用
@@ -119,6 +133,10 @@ private: // メンバ変数
 
 	// チュートリアル段階
 	int tutorialSteps_;
+	// 個々のチュートリアル演出中間地点
+	int tutorialStagingWayPoint_;
+	// チュートリアル演出用t
+	float tutorialT_;
 
 	// チュートリアル終了トリガー
 	bool isEndTutorial;
@@ -137,6 +155,8 @@ private: // メンバ変数
 	uint32_t textureHandleTutorialImage_;
 	// チュートリアルテキストテクスチャ
 	uint32_t textureHandleTutorialText_;
+	// 次のチュートリアルへ促すテクスチャ
+	uint32_t textureHandleNextTutorial_;
 
 	// チュートリアルゲージの座標
 	Vector2 tutorialGagePosition_;
@@ -149,6 +169,8 @@ private: // メンバ変数
 
 	// チュートリアル画像用スプライト
 	std::unique_ptr<Sprite> spriteTutorialImage_;
+	// 次のチュートリアルへ促すスプライト
+	std::unique_ptr<Sprite> spriteNextTutorial_;
 
 	// チュートリアルテキストの座標
 	Vector2 tutorialTextPosition_;

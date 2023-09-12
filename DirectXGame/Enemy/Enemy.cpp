@@ -910,9 +910,9 @@ void Enemy::CollisionBossEnemy(BossEnemy* bossEnemy) {
 }
 
 void Enemy::CollisionPlayer() {
-
-	Dead();
-
+	if (!isTutorial_) {
+		Dead();
+	}
 }
 
 void Enemy::ApplyGlobalVariables() {
