@@ -114,6 +114,11 @@ public: // アクセッサ等
 	/// </summary>
 	/// <param name="orbType">追加するオーブタイプ</param>
 	void AddOrbs(PlayerBullet::BulletType orbType);
+	/// <summary>
+	/// オーブ所持数確認
+	/// </summary>
+	/// <returns>オーブ所持数</returns>
+	int GetHavingOrbCount() { return (int)havingOrbs_.size(); }
 
 	/// <summary>
 	/// カメラシェイク強さのゲッター
@@ -129,7 +134,12 @@ public: // アクセッサ等
 	/// <summary>
 	/// hp取得
 	/// </summary>
-	int32_t GetHp() { return hp; }
+	int32_t GetHp() { return hp_; }
+	/// <summary>
+	/// HPセッター
+	/// </summary>
+	/// <param name="hp">設定するHP</param>
+	void SetHP(int32_t hp) { hp_ = hp; }
 
 private: //衝突処理
 
@@ -406,7 +416,7 @@ private: // メンバ関数
 	Vector3 accelerationIceDown_ = {0.0f, 0.0f, 0.0f};
 
 	//体力
-	int32_t hp; 
+	int32_t hp_; 
 	//初期体力
 	const uint32_t StartHp = 6;
 

@@ -325,7 +325,7 @@ void Player::Initialize(
 	bulletDamage_[3] = 1;
 
 	// 体力
-	hp = StartHp;
+	hp_ = StartHp;
 
 	// 無敵か
 	isInvincible_ = false;
@@ -570,7 +570,7 @@ void Player::Update() {
 		PlayCameraShake(testShakeStrength_, testShakeTime_);
 	}
 	ImGui::DragFloat3("wT", &worldTransform_.translation_.x, 1.0f);
-	ImGui::DragInt("HP", &hp);
+	ImGui::DragInt("HP", &hp_);
 
 	ImGui::DragInt("needChangeOrbEnemyCount_", &needChangeOrbEnemyCount_, 1.0f);
 	if (ImGui::Button("SubtractNeedChangeOrbEnemyCount")) {
@@ -617,15 +617,15 @@ void Player::SpriteDraw() {
 	spriteSpecialShotMagnification_->Draw();
 
 	// 現在の体力描画
-	for (int i = 0; i < hp; i++) {
+	for (int i = 0; i < hp_; i++) {
 		spriteHeart_[i]->Draw();
 	}
 
 	// オーブ変換テキストUIの描画
 	spriteChangeOrbText_->Draw();
 
-	// 所持オーブが1個でもあったら
-	if ((int)havingOrbs_.size() > 0) {
+	// 所持オーブが1個以上でもあったら
+	if ((int)havingOrbs_.size() > 1) {
 		// 変換するオーブを示すスプライト表示
 		spriteSelectedOrbs_->Draw();
 	}
@@ -735,7 +735,7 @@ void Player::Setup() {
 	kChangeCoolTime_ = 120;
 
 	// 体力
-	hp = StartHp;
+	hp_ = StartHp;
 
 	// 無敵か
 	isInvincible_ = false;
@@ -815,7 +815,7 @@ void Player::OnCollisionIce() {
 void Player::OnCollisionEnemy() {
 
 	//ダメージ受ける
-	hp--;
+	hp_--;
 	invincibilityTimer_ = collisionInvincibilityTime_;
 	isInvincible_ = true;
 
@@ -1243,6 +1243,10 @@ void Player::SpecialShot() {
 				audio_->PlayWave(audioHandles_[Audio::DeployEndThunderArea]);
 				break;
 			}
+		}
+
+		if (havingOrbCount <= 1) {
+			selectedChangeOrb_ = 0;
 		}
 
 		// 十字右
