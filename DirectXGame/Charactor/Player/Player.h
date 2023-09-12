@@ -93,6 +93,48 @@ public: // アクセッサ等
 	}
 
 	/// <summary>
+	/// 行動可能状態セッター
+	/// </summary>
+	/// <param name="canAction">行動可能か</param>
+	void SetCanAction(bool canAction) { canAction_ = canAction; }
+
+	/// <summary>
+	/// 根本移動可能状態セッター
+	/// </summary>
+	/// <param name="canMove">移動可能か</param>
+	void SetRootCanMove(bool canMove) { rootCanMove_ = canMove; }
+
+	/// <summary>
+	/// 根本射撃可能状態セッター
+	/// </summary>
+	/// <param name="canShot">射撃可能か</param>
+	void SetRootCanShot(bool canShot) { rootCanShot_ = canShot; }
+
+	/// <summary>
+	/// 特殊射撃可能状態セッター
+	/// </summary>
+	/// <param name="canShot">特殊射撃できるか</param>
+	void SetRootCanSpecialShot(bool canShot) { rootCanSpecialShot_ = canShot; }
+
+	/// <summary>
+	/// オーブ選択可能状態セッター
+	/// </summary>
+	/// <param name="canSelect">オーブ選択可能か</param>
+	void SetRootCanSelectOrb(bool canSelect) { rootCanSelectOrb_ = canSelect; }
+
+	/// <summary>
+	/// オーブの色選択可能状態セッター
+	/// </summary>
+	/// <param name="canChange">色選択可能か</param>
+	void SetRootCanChangeOrbColor(bool canChange) { rootCanChangeOrbColor_ = canChange; }
+
+	/// <summary>
+	/// オーブの変換可能状態セッター
+	/// </summary>
+	/// <param name="canChange"></param>
+	void SetRootCanChangeOrb(bool canChange) { rootCanChangeOrb_ = canChange; }
+
+	/// <summary>
 	/// 接地状態ゲッター
 	/// </summary>
 	/// <returns>接地状態</returns>
@@ -201,10 +243,6 @@ private: // 行動関数
 	/// 射撃関数
 	/// </summary>
 	void Shot();
-	/// <summary>
-	/// リロード関数
-	/// </summary>
-	void Reload();
 
 	/// <summary>
 	/// 特殊射撃
@@ -247,26 +285,11 @@ private: // メンバ関数
 
 	// 入力検知用
 	Input* input_ = nullptr;
+	// ゲームパッドの状態取得
+	XINPUT_STATE joyState;
+	XINPUT_STATE preJoyState;
 	// 音用
 	Audio* audio_ = nullptr;
-
-	// Aボタントリガー判定
-	bool pressAButton_;
-	// Bボタントリガー判定
-	bool pressBButton_;
-	// Xボタントリガー判定
-	bool pressXButton_;
-	// Yボタントリガー判定
-	bool pressYButton_;
-	// 右トリガーのトリガー判定
-	bool pressRTrigger_;
-	// 左トリガーのトリガー判定
-	bool pressLTrigger_;
-	// 十字キーのトリガー判定
-	bool pressDpadUp_; // 上
-	bool pressDpadDown_; // 下
-	bool pressDpadLeft_; // 左
-	bool pressDpadRight_; // 右
 
 	// トリガーデッドゾーン
 	int32_t triggerDeadZone_R_; // 右
@@ -352,6 +375,8 @@ private: // メンバ関数
 	bool rootCanShot_;
 	// 根本的に特殊射撃ができるか
 	bool rootCanSpecialShot_;
+	// 根本的にオーブ変換ができるか
+	bool rootCanChangeOrb_;
 	// 根本的にオーブ選択ができるか
 	bool rootCanSelectOrb_;
 	// 根本的にオーブ色変換ができるか
@@ -402,16 +427,6 @@ private: // メンバ関数
 	float fireCoolTime_;
 	// 射撃レートデフォルト値
 	float kMaxFireCoolTime_;
-	// 現在弾数
-	int32_t magazine_;
-	// 最大弾数
-	int32_t kMaxMagazine_;
-	// リロード中か
-	bool isReloading_;
-	// 現在リロード時間
-	int32_t reloadTime_;
-	// リロード時間
-	int32_t kMaxReloadTime_;
 
 	// 所持しているオーブ
 	std::vector<PlayerBullet::BulletType> havingOrbs_;
@@ -490,6 +505,5 @@ private: // メンバ関数
 
 	#endif // _DEBUG
 #pragma endregion
-
 
 };

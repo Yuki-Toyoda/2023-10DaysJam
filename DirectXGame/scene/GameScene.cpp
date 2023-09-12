@@ -345,7 +345,7 @@ void GameScene::Update() {
 	input_->GetJoystickState(0, joyState);
 
 	// ゲームパッドの状態取得
-	if (input_->GetJoystickState(0, joyState)) {
+	if (input_->GetJoystickState(0, joyState) && !optionManager_->GetIsOpen()) {
 		switch (currentScene_) {
 		case GameScene::Title:
 			TitleUpdate();
@@ -355,13 +355,7 @@ void GameScene::Update() {
 			break;
 		case GameScene::Main:
 			if (!theGameIsOver) {
-				// オプション開くか
-				optionManager_->OpenClose(joyState.Gamepad, preJoyState.Gamepad);
-				if (!optionManager_->GetIsOpen()) {
-					MainUpdate();
-				} else {
-					OptionUpdate();
-				}
+				MainUpdate();
 			}
 			break;
 		case GameScene::GameClear:
@@ -373,6 +367,14 @@ void GameScene::Update() {
 		default:
 			break;
 		}
+	}
+
+	// オプション開くか
+	optionManager_->OpenClose(joyState.Gamepad, preJoyState.Gamepad);
+	if (!optionManager_->GetIsOpen()) {
+
+	} else {
+		OptionUpdate();
 	}
 
 	//フェードインアウト
@@ -635,7 +637,6 @@ void GameScene::GameOverUpdate() {
 }
 
 void GameScene::FadeInOutUpdate() {
-
 	if (isFadeOut_) {
 		if (--fadeTimer_ == 0) {
 			// 次のシーンへ

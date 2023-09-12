@@ -159,6 +159,15 @@ void TutorialManager::SetUp() {
 	textureHandleTutorialText_ =
 	    TextureManager::Load("/Image/Tutorial/1_MoveTutorialTextUI.png"); // 移動テキスト
 
+	// プレイヤーの根本トリガーをセット
+	player_->SetCanAction(true); // 行動可能に
+	player_->SetRootCanMove(true); // 移動は可能
+	player_->SetRootCanShot(false); // 通常射撃を不可能に
+	player_->SetRootCanSpecialShot(false); // 特殊射撃を不可能に
+	player_->SetRootCanSelectOrb(false);   // オーブ選択を不可能に
+	player_->SetRootCanChangeOrbColor(false); // オーブ色選択を不可能に
+	player_->SetRootCanChangeOrb(false);     // オーブ変換を不可能に
+
 }
 
 void TutorialManager::Update() {
@@ -290,35 +299,31 @@ void TutorialManager::SpriteDraw() {
 }
 
 void TutorialManager::MoveTutorial() {
-	// ジョイスティックの状態取得
-	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+	// スティックの入力に応じて移動
+	Vector3 stickVec = {
+	    (float)joyState.Gamepad.sThumbLX / SHRT_MAX, -(float)joyState.Gamepad.sThumbLY / SHRT_MAX,
+	    0.0f};
 
-		// スティックの入力に応じて移動
-		Vector3 stickVec = {
-		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX,
-		    -(float)joyState.Gamepad.sThumbLY / SHRT_MAX, 0.0f};
+	// 正規化
+	stickVec = MyMath::Normalize(stickVec);
+	// ベクトルの長さを求める
+	float stickVecLength = MyMath::Length(stickVec);
+	// ベクトルの長さを少し短く
+	stickVecLength /= 6.0f;
 
-		// 正規化
-		stickVec = MyMath::Normalize(stickVec);
-		// ベクトルの長さを求める
-		float stickVecLength = MyMath::Length(stickVec);
-		// ベクトルの長さを少し短く
-		stickVecLength /= 6.0f;
+	if (stickVecLength < 0) {
+		stickVecLength *= -1.0f;
+	}
 
-		if (stickVecLength < 0) {
-			stickVecLength *= -1.0f;
-		}
+	// 進捗にプラスする
+	tutorialGageProgress_ += stickVecLength;
 
-		// 進捗にプラスする
-		tutorialGageProgress_ += stickVecLength;
-
-		// ジャンプすると
-		if (player_->GetIsGround()) {
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-			    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
-				// チュートリアルゲージを進める
-				tutorialGageProgress_ += 10.0f;
-			}
+	// ジャンプすると
+	if (player_->GetIsGround()) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+			// チュートリアルゲージを進める
+			tutorialGageProgress_ += 10.0f;
 		}
 	}
 
@@ -329,6 +334,9 @@ void TutorialManager::MoveTutorial() {
 		// テクスチャ再度読み込み
 		textureHandleTutorialText_ =
 		    TextureManager::Load("/Image/Tutorial/2_NormalShotTotorialTextUI.png");
+
+		// プレイヤーの通常射撃を可能に
+		player_->SetRootCanShot(true);
 
 		// ゲージ進捗リセット
 		tutorialGageProgress_ = 0.0f;
@@ -381,6 +389,10 @@ void TutorialManager::OrbTutorial() {
 			// チュートリアルのテキスト大きさ画像に合わせて再設定
 			tutorialTextSize_ = {832.0f, 192.0f};
 			tutorialGagePosition_.y = 475.0f;
+
+			// プレイヤーを動けない状態に
+			player_->SetCanAction(false);
+
 			// チュートリアル用画像表示
 			displayTutorialImage_ = true;
 			// 次のチュートリアル段階へ
@@ -396,6 +408,11 @@ void TutorialManager::OrbTutorial() {
 			// テクスチャ再度読み込み
 			textureHandleTutorialText_ =
 			    TextureManager::Load("/Image/Tutorial/5_OrbTutorialTextUI.png");
+
+			// プレイヤーを動ける状態に
+			player_->SetCanAction(true);
+			// プレイヤーの特殊射撃をできるように
+			player_->SetRootCanSpecialShot(true);
 
 			// チュートリアル用画像非表示
 			displayTutorialImage_ = false;
@@ -436,7 +453,7 @@ void TutorialManager::OrbTutorial() {
 	// チュートリアル演出が終端なら
 	if (tutorialStagingWayPoint_ == WayPoint5) {
 		// 進捗を進める
-		tutorialGageProgress_ += 0.35f;
+		tutorialGageProgress_ += 0.45f;
 	}
 
 	// 次のチュートリアルへ進む場合
@@ -454,6 +471,9 @@ void TutorialManager::OrbTutorial() {
 		    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
 		// チュートリアル用画像表示
 		displayTutorialImage_ = true;
+
+		// プレイヤーを動けない状態に
+		player_->SetCanAction(false);
 
 		// チュートリアル個々進捗リセット
 		tutorialStagingWayPoint_ = WayPoint1;
@@ -545,6 +565,9 @@ void TutorialManager::FireBulletTutorial() {
 			// チュートリアル用画像非表示
 			displayTutorialImage_ = false;
 
+			// プレイヤーを動ける状態に
+			player_->SetCanAction(true);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -625,6 +648,9 @@ void TutorialManager::FireBulletTutorial() {
 		    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
 		// チュートリアル用画像表示
 		displayTutorialImage_ = true;
+
+		// プレイヤーを動けない状態に
+		player_->SetCanAction(false);
 
 		// チュートリアル個々進捗リセット
 		tutorialStagingWayPoint_ = WayPoint1;
@@ -724,6 +750,9 @@ void TutorialManager::IceBulletTutorial() {
 			// チュートリアル用画像非表示
 			displayTutorialImage_ = false;
 
+			// プレイヤーを動ける状態に
+			player_->SetCanAction(true);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -802,6 +831,9 @@ void TutorialManager::IceBulletTutorial() {
 		    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
 		// チュートリアル用画像表示
 		displayTutorialImage_ = true;
+
+		// プレイヤーを動けない状態に
+		player_->SetCanAction(false);
 
 		// チュートリアル個々進捗リセット
 		tutorialStagingWayPoint_ = WayPoint1;
@@ -901,6 +933,9 @@ void TutorialManager::ThunderBulletTutorial() {
 			// チュートリアル用画像非表示
 			displayTutorialImage_ = false;
 
+			// プレイヤーを動ける状態に
+			player_->SetCanAction(true);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -980,6 +1015,9 @@ void TutorialManager::ThunderBulletTutorial() {
 		// チュートリアル用画像表示
 		displayTutorialImage_ = true;
 
+		// プレイヤーを動けない状態に
+		player_->SetCanAction(false);
+
 		// チュートリアル個々進捗リセット
 		tutorialStagingWayPoint_ = WayPoint1;
 
@@ -1038,6 +1076,10 @@ void TutorialManager::OrbReinforcementTutorial() {
 
 			// チュートリアル画像を非表示
 			displayTutorialImage_ = false;
+			
+			// プレイヤーを動ける状態に
+			player_->SetCanAction(true);
+
 
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
@@ -1119,6 +1161,9 @@ void TutorialManager::OrbReinforcementTutorial() {
 		// チュートリアル用画像表示
 		displayTutorialImage_ = true;
 
+		// プレイヤーを動けない状態に
+		player_->SetCanAction(false);
+
 		// チュートリアル個々進捗リセット
 		tutorialStagingWayPoint_ = WayPoint1;
 
@@ -1198,6 +1243,17 @@ void TutorialManager::ChangeOrbTutorial() {
 			// チュートリアル画像を非表示
 			displayTutorialImage_ = true;
 
+			// 行動可能に
+			player_->SetCanAction(true);
+			// 移動不可能に
+			player_->SetRootCanMove(false);
+			// 通常射撃不可能に
+			player_->SetRootCanShot(false);
+			// 特殊射撃不可能に
+			player_->SetRootCanSpecialShot(false);
+			// オーブ選択可能に
+			player_->SetRootCanSelectOrb(true);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -1216,6 +1272,11 @@ void TutorialManager::ChangeOrbTutorial() {
 			// テクスチャ再度読み込み
 			textureHandleTutorialText_ =
 			    TextureManager::Load("/Image/Tutorial/ChangeOrbColorTutorialText.png");
+
+			// オーブ選択不可能に
+			player_->SetRootCanSelectOrb(false);
+			// オーブ色変更可能に
+			player_->SetRootCanChangeOrbColor(true);
 
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
@@ -1238,6 +1299,11 @@ void TutorialManager::ChangeOrbTutorial() {
 			// チュートリアルのテキスト大きさ画像に合わせて再設定
 			tutorialTextSize_ = {832.0f, 96.0f};
 			tutorialGagePosition_.y = 600.0f;
+
+			// オーブ色変更可能に
+			player_->SetRootCanChangeOrbColor(false);
+			// オーブ変換可能に
+			player_->SetRootCanChangeOrb(true);
 
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
@@ -1282,6 +1348,19 @@ void TutorialManager::ChangeOrbTutorial() {
 		player_->AddOrbs(PlayerBullet::Fire);
 		player_->AddOrbs(PlayerBullet::Ice);
 		player_->AddOrbs(PlayerBullet::Fire);
+
+		// 移動可能に
+		player_->SetRootCanMove(true);
+		// 通常射撃可能に
+		player_->SetRootCanShot(true);
+		// 特殊射撃可能に
+		player_->SetRootCanSpecialShot(true);
+		// オーブ選択可能に
+		player_->SetRootCanSelectOrb(true);
+		// オーブ色変更可能に
+		player_->SetRootCanChangeOrbColor(true);
+		// オーブ変換可能に
+		player_->SetRootCanChangeOrb(true);
 
 		// 敵を全て削除
 		enemyManager_->Delete();

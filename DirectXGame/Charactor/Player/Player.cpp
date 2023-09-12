@@ -21,24 +21,14 @@ void Player::Initialize(
 	// 効果音受け取り
 	audioHandles_ = audioHandles;
 
-	// 入力情報取得
+	// 入力取得
 	input_ = Input::GetInstance();
+	// ゲームパッドの状態取得
+	input_->GetJoystickState(0, joyState);
+	preJoyState = joyState;
 
 	// 初期座標を設定
 	worldTransform_.translation_ = {0.0f, 100.0f, 0.0f};
-
-	// Aボタントリガー判定リセット
-	pressAButton_ = false;
-	// Bボタントリガー判定リセット
-	pressBButton_ = false;
-	// Xボタントリガー判定リセット
-	pressXButton_ = false;
-	// Yボタントリガー判定リセット
-	pressYButton_ = false;
-	// 右トリガーのトリガー判定
-	pressRTrigger_ = false;
-	// 左トリガーのトリガー判定
-	pressLTrigger_ = false;
 
 	// トリガーデッドゾーン設定
 	triggerDeadZone_R_ = 25; // 右
@@ -220,6 +210,15 @@ void Player::Initialize(
 	// 行動可能に
 	canAction_ = true;
 
+	// 根本トリガーの初期化
+	rootCanMove_ = true; // 移動
+	rootCanShot_ = true; // 通常射撃
+	rootCanSpecialShot_ = true; // 特殊射撃
+	rootCanSelectOrb_ = true;
+	rootCanChangeOrbColor_ = true;
+	rootCanChangeOrb_ = true; // オーブ変換
+
+
 	// 移動速度初期化
 	moveSpeed_ = 3.0f;
 	// 最大落下速度設定
@@ -261,16 +260,6 @@ void Player::Initialize(
 	fireCoolTime_ = 0;
 	// 発射レート設定
 	kMaxFireCoolTime_ = 15;
-	// 最大弾数設定
-	kMaxMagazine_ = 15;
-	// 弾数リセット
-	magazine_ = kMaxMagazine_;
-	// リロード中ではない
-	isReloading_ = false;
-	// リロード時間設定
-	kMaxReloadTime_ = 60;
-	// リロード時間リセット
-	reloadTime_ = kMaxReloadTime_;
 
 	// オーブ所持数最大値設定
 	kMaxHavingOrbs_ = 3;
@@ -383,8 +372,6 @@ void Player::Initialize(
 	    groupName, "DistanceToReticleObject",
 	    kDistanceToReticleObject_); // カメラから照準オブジェクトの距離
 	globalVariables->AddItem(groupName, "BulletSpeed", bulletSpeed_);      // 弾速
-	globalVariables->AddItem(groupName, "MaxMagazineSize", kMaxMagazine_); // 最大弾数設定
-	globalVariables->AddItem(groupName, "MaxReloadTime", kMaxReloadTime_); // リロードにかかる時間
 	globalVariables->AddItem(
 	    groupName, "SpriteHavingOrbsStartPos",
 	    spriteHavingOrbsStartPos_); // 所持オーブ描画UIの開始座標
@@ -413,6 +400,10 @@ void Player::Initialize(
 
 void Player::Update() {
 
+	// ゲームパッドの状態取得
+	preJoyState = joyState;
+	input_->GetJoystickState(0, joyState);
+
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		if (bullet->GetIsDead()) {
@@ -434,14 +425,20 @@ void Player::Update() {
 
 	// 行動可能なら
 	if (canAction_) {
-		// 移動処理
-		Move();
-		// ジャンプ処理
-		Jump();
-		// 射撃
-		Shot();
-		// リロード
-		Reload();
+		// 根本敵に移動できるなら
+		if (rootCanMove_) {
+			// 移動処理
+			Move();
+			// ジャンプ処理
+			Jump();
+		}
+
+		// 根本的に通常射撃できるなら
+		if (rootCanShot_) {
+			// 射撃
+			Shot();
+		}
+
 		// 特殊射撃
 		SpecialShot();
 	}
@@ -476,63 +473,6 @@ void Player::Update() {
 
 	// 氷の上かをfalseに
 	onTheIce = false;
-
-	// ボタンのトリガー判定をとる
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
-		// Aボタンが押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A))
-			pressAButton_ = false;
-		else
-			pressAButton_ = true;
-		// Bボタンが押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B))
-			pressBButton_ = false;
-		else
-			pressBButton_ = true;
-		// Xボタンが押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X))
-			pressXButton_ = false;
-		else
-			pressXButton_ = true;
-		// Yボタンが押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
-			pressYButton_ = false;
-		else
-			pressYButton_ = true;
-		// 右トリガーが押されていなければ
-		if (!(joyState.Gamepad.bRightTrigger > triggerDeadZone_R_))
-			pressRTrigger_ = false;
-		else
-			pressRTrigger_ = true;
-		// 左トリガーが押されていなければ
-		if (!(joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_))
-			pressLTrigger_ = false;
-		else
-			pressLTrigger_ = true;
-
-		// 十字キー上が押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP))
-			pressDpadUp_ = false;
-		else
-			pressDpadUp_ = true;
-		// 十字キー下が押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN))
-			pressDpadDown_ = false;
-		else
-			pressDpadDown_ = true;
-		// 十字キー左が押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT))
-			pressDpadLeft_ = false;
-		else
-			pressDpadLeft_ = true;
-		// 十字キー右が押されていなければ
-		if (!(joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT))
-			pressDpadRight_ = false;
-		else
-			pressDpadRight_ = true;
-	}
 
 	#ifdef _DEBUG
 
@@ -604,15 +544,20 @@ void Player::SpriteDraw() {
 	spriteReticle_->Draw();
 
 	// 十字ボタンUI描画
-	spriteDpad_->Draw();
-	spriteDpadUP_->Draw();         // 十字上ボタンUI描画
-	spriteDpadLeft_->Draw();       // 十字左ボタンUI描画
-	spriteDpadRight_->Draw();      // 十字右ボタンUI描画
-	spriteChangeOrbText2_->Draw(); // オーブ変換テキスト2
+	if (rootCanSpecialShot_ || rootCanChangeOrb_ || rootCanSelectOrb_ || rootCanChangeOrbColor_) {
+		spriteDpad_->Draw();
+		spriteDpadUP_->Draw();         // 十字上ボタンUI描画
+		spriteDpadLeft_->Draw();       // 十字左ボタンUI描画
+		spriteDpadRight_->Draw();      // 十字右ボタンUI描画
+		spriteChangeOrbText2_->Draw(); // オーブ変換テキスト2
+		                               // オーブ変換テキストUIの描画
+		spriteChangeOrbText_->Draw();
 
-	// 変換に必要な敵数
-	spriteNeedChangeOrbEnemyCountText_->Draw();
-	spriteNeedChangeOrbEnemyCount_->Draw();
+		// 変換に必要な敵数
+		spriteNeedChangeOrbEnemyCountText_->Draw();
+		spriteNeedChangeOrbEnemyCount_->Draw();
+
+	}
 
 	// 通常射撃描画
 	spriteRightTrigger_->Draw();
@@ -628,9 +573,6 @@ void Player::SpriteDraw() {
 	for (int i = 0; i < hp_; i++) {
 		spriteHeart_[i]->Draw();
 	}
-
-	// オーブ変換テキストUIの描画
-	spriteChangeOrbText_->Draw();
 
 	// 所持オーブが1個以上でもあったら
 	if ((int)havingOrbs_.size() > 1) {
@@ -707,16 +649,6 @@ void Player::Setup() {
 	fireCoolTime_ = 0;
 	// 発射レート設定
 	kMaxFireCoolTime_ = 15;
-	// 最大弾数設定
-	kMaxMagazine_ = 15;
-	// 弾数リセット
-	magazine_ = kMaxMagazine_;
-	// リロード中ではない
-	isReloading_ = false;
-	// リロード時間設定
-	kMaxReloadTime_ = 60;
-	// リロード時間リセット
-	reloadTime_ = kMaxReloadTime_;
 
 	// オーブ所持数最大値設定
 	kMaxHavingOrbs_ = 3;
@@ -1011,65 +943,60 @@ void Player::OnCollisionEnemy() {
 }
 
 void Player::Move() {
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
-		// スティックの入力に応じて移動
-		Vector3 move = {
-		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
-		    (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+	// スティックの入力に応じて移動
+	Vector3 move = {
+	    (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
+	    (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
 
-		// 移動量を正規化、スピードを加算
-		move = MyMath::Normalize(move) * moveSpeed_;
+	// 移動量を正規化、スピードを加算
+	move = MyMath::Normalize(move) * moveSpeed_;
 
-		// カメラの角度から回転行列を生成
-		Matrix4x4 rotateMat = MyMath::MakeRotateYMatrix(viewProjection_->rotation_.y);
-		// 移動ベクトルをカメラの角度に応じて回転させる
-		move = MyMath::Transform(move, rotateMat);
+	// カメラの角度から回転行列を生成
+	Matrix4x4 rotateMat = MyMath::MakeRotateYMatrix(viewProjection_->rotation_.y);
+	// 移動ベクトルをカメラの角度に応じて回転させる
+	move = MyMath::Transform(move, rotateMat);
 
-		//氷の跳ね返り
-		velocity_ = move + accelerationIce_;
-		if (accelerationIce_.x != 0.0f) {
-			Vector3 preAccel = accelerationIce_;
-			accelerationIce_ = accelerationIce_ + accelerationIceDown_;
-			if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
-			    accelerationIce_.z * preAccel.z < 0.0f) {
-				accelerationIce_.x = 0.0f;
-				accelerationIce_.y = 0.0f;
-				accelerationIce_.z = 0.0f;
-			}
+	// 氷の跳ね返り
+	velocity_ = move + accelerationIce_;
+	if (accelerationIce_.x != 0.0f) {
+		Vector3 preAccel = accelerationIce_;
+		accelerationIce_ = accelerationIce_ + accelerationIceDown_;
+		if (accelerationIce_.x * preAccel.x < 0.0f || accelerationIce_.y * preAccel.y < 0.0f ||
+		    accelerationIce_.z * preAccel.z < 0.0f) {
+			accelerationIce_.x = 0.0f;
+			accelerationIce_.y = 0.0f;
+			accelerationIce_.z = 0.0f;
 		}
+	}
 
-		// 移動している状態かつ地面に接地している時
-		if ((move.x > 0 || move.x < 0 || move.z > 0 || move.z < 0) &&
-		    worldTransform_.translation_.y == height_) {
-			if (playFootStepSELate_ < 0) {
-				if (!playFootStep2_) {
-					audio_->PlayWave(audioHandles_[Audio::FootStep1]);
-					playFootStep2_ = true;
-					// 足音再生間隔をリセット
-					playFootStepSELate_ = kPlayFootStepSELate_;
-				} else {
-					audio_->PlayWave(audioHandles_[Audio::FootStep2]);
-					playFootStep2_ = false;
-					// 足音再生間隔をリセット
-					playFootStepSELate_ = kPlayFootStepSELate_;
-				}
+	// 移動している状態かつ地面に接地している時
+	if ((move.x > 0 || move.x < 0 || move.z > 0 || move.z < 0) &&
+	    worldTransform_.translation_.y == height_) {
+		if (playFootStepSELate_ < 0) {
+			if (!playFootStep2_) {
+				audio_->PlayWave(audioHandles_[Audio::FootStep1]);
+				playFootStep2_ = true;
+				// 足音再生間隔をリセット
+				playFootStepSELate_ = kPlayFootStepSELate_;
 			} else {
-				// 再生間隔デクリメント
-				playFootStepSELate_--;
+				audio_->PlayWave(audioHandles_[Audio::FootStep2]);
+				playFootStep2_ = false;
+				// 足音再生間隔をリセット
+				playFootStepSELate_ = kPlayFootStepSELate_;
 			}
 		} else {
-			// 足音再生間隔をリセット
-			playFootStepSELate_ = kPlayFootStepSELate_;
+			// 再生間隔デクリメント
+			playFootStepSELate_--;
 		}
-
-		// 移動
-		worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
-		// プレイヤーの向きを移動方向に合わせる
-		worldTransform_.rotation_ = viewProjection_->rotation_;
-
+	} else {
+		// 足音再生間隔をリセット
+		playFootStepSELate_ = kPlayFootStepSELate_;
 	}
+
+	// 移動
+	worldTransform_.translation_ = worldTransform_.translation_ + velocity_;
+	// プレイヤーの向きを移動方向に合わせる
+	worldTransform_.rotation_ = viewProjection_->rotation_;
 
 	// 接地していないなら
 	if (!isGround_) {
@@ -1120,20 +1047,17 @@ void Player::Move() {
 void Player::Jump() { 
 	// ジャンプ可能なら
 	if (canJump_) {
-		// ゲームパッドの状態取得
-		XINPUT_STATE joyState;
-		if (input_->GetJoystickState(0, joyState)) {
-			// Aボタンが押されたら
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A && !pressAButton_) {
-				// ジャンプ音を鳴らす
-				audio_->PlayWave(audioHandles_[Audio::Jump]);
-				// ジャンプさせる
-				jumpSpeed_ = kMaxJumpHeight_;
-				// ジャンプ不可に
-				canJump_ = false;
-				// 接地していない状態に
-				isGround_ = false;
-			}
+		// Aボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+			// ジャンプ音を鳴らす
+			audio_->PlayWave(audioHandles_[Audio::Jump]);
+			// ジャンプさせる
+			jumpSpeed_ = kMaxJumpHeight_;
+			// ジャンプ不可に
+			canJump_ = false;
+			// 接地していない状態に
+			isGround_ = false;
 		}
 	} else {
 		// 接地しているなら
@@ -1191,54 +1115,46 @@ void Player::Shot() {
 	// 3Dレティクルの座標を設定
 	worldTransform3DReticle_.translation_ = mouseDirection + posNear;
 
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
-		// Rトリガーが押されたら
-		if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
-			// 射撃可能、リロード中ではなく、弾数が1発以上なら
-			if (fireCoolTime_ <= 0 && !isReloading_ && magazine_ > 0) {
-				// 弾の生成
-				PlayerBullet* newBullet = new PlayerBullet();
+	// Rトリガーが押されたら
+	if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+		// 射撃可能
+		if (fireCoolTime_ <= 0) {
+			// 弾の生成
+			PlayerBullet* newBullet = new PlayerBullet();
 
-				// 射撃ベクトル計算用
-				Vector3 shotVelocity;
+			// 射撃ベクトル計算用
+			Vector3 shotVelocity;
 
-				// 移動ベクトルを初期化する
-				shotVelocity = {0.0f, 0.0f, 0.0f};
+			// 移動ベクトルを初期化する
+			shotVelocity = {0.0f, 0.0f, 0.0f};
 
-				// レティクルのワールド座標を求める
-				Vector3 ReticleWorldPos;
-				ReticleWorldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
-				ReticleWorldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
-				ReticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
+			// レティクルのワールド座標を求める
+			Vector3 ReticleWorldPos;
+			ReticleWorldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+			ReticleWorldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+			ReticleWorldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
 
-				// 射撃座標調整
-				Vector3 shotPos = worldTransform_.translation_;
-				shotPos = shotPos + shotPosOffset_;
-				shotVelocity = ReticleWorldPos - shotPos;
-				shotVelocity = MyMath::Normalize(shotVelocity) * bulletSpeed_;
+			// 射撃座標調整
+			Vector3 shotPos = worldTransform_.translation_;
+			shotPos = shotPos + shotPosOffset_;
+			shotVelocity = ReticleWorldPos - shotPos;
+			shotVelocity = MyMath::Normalize(shotVelocity) * bulletSpeed_;
 
-				// 生成した弾を初期化
-				newBullet->Initialize(
-				    modelBullet_,  // 3Dモデル
-				    shotPos,                    // 初期位置
-					viewProjection_->rotation_, // 初期角度
-				    shotVelocity); // 弾速
+			// 生成した弾を初期化
+			newBullet->Initialize(
+			    modelBullet_,               // 3Dモデル
+			    shotPos,                    // 初期位置
+			    viewProjection_->rotation_, // 初期角度
+			    shotVelocity);              // 弾速
 
-				// 生成した弾をリストに入れる
-				bullets_.push_back(newBullet);
+			// 生成した弾をリストに入れる
+			bullets_.push_back(newBullet);
 
-				// 弾数デクリメント
-				//magazine_--;
+			// 射撃クールタイムリセット
+			fireCoolTime_ = kMaxFireCoolTime_;
 
-				// 射撃クールタイムリセット
-				fireCoolTime_ = kMaxFireCoolTime_;
-
-				// 射撃音を鳴らす
-				audio_->PlayWave(audioHandles_[Audio::Shot]);
-
-			}
+			// 射撃音を鳴らす
+			audio_->PlayWave(audioHandles_[Audio::Shot]);
 		}
 	}
 
@@ -1250,43 +1166,6 @@ void Player::Shot() {
 		fireCoolTime_ = 0;
 	}
 
-}
-
-void Player::Reload() {
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
-		// xボタンが押されたらリロード待機状態に
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
-			// リロード中ではなく、弾数が減っているなら
-			if (!isReloading_ && magazine_ < kMaxMagazine_) {
-				// リロード中状態に
-				isReloading_ = true;
-			}
-		}
-	}
-
-	// マガジンが空なら
-	if (magazine_ == 0) {
-		// 強制的にリロード
-		isReloading_ = true;
-	}
-
-	// リロード中かつ射撃可能状態なら
-	if (isReloading_ && fireCoolTime_ <= 0) {
-		if (reloadTime_ >= 0) {
-			// リロードカウントデクリメント
-			reloadTime_--;
-		} else {
-			// 弾数リセット
-			magazine_ = kMaxMagazine_;
-			// リロード時間リセット
-			reloadTime_ = kMaxReloadTime_;
-			// リロード中ではない
-			isReloading_ = false;
-		}
-	}
-		
 }
 
 void Player::SpecialShot() {
@@ -1323,17 +1202,17 @@ void Player::SpecialShot() {
 		specialShotStrength_ = 1;
 	}
 
-	// オーブを所持していない場合、特殊射撃は行えない
-	if (specialShotBulletPlans_ == PlayerBullet::None)
-		canSpecialShot_ = false;
-	else
-		canSpecialShot_ = true;
+	// 特殊射撃できるなら
+	if (rootCanSpecialShot_) {
+		// オーブを所持していない場合、特殊射撃は行えない
+		if (specialShotBulletPlans_ == PlayerBullet::None)
+			canSpecialShot_ = false;
+		else
+			canSpecialShot_ = true;
 
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
 		// 左トリガーが押されたら特殊射撃
-		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ && !pressLTrigger_) {
+		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ &&
+		    !(preJoyState.Gamepad.bLeftTrigger > triggerDeadZone_L_)) {
 			if (canSpecialShot_) {
 				// 弾の生成
 				PlayerBullet* newBullet = new PlayerBullet();
@@ -1357,34 +1236,34 @@ void Player::SpecialShot() {
 				shotVelocity = MyMath::Normalize(shotVelocity) * 7.5f;
 				// 壁用テクスチャ
 				std::vector<uint32_t> wallTextureHandles = {
-				    textureHandles_[TextureManager::IceWall], // 氷壁テクスチャ
+				    textureHandles_[TextureManager::IceWall],        // 氷壁テクスチャ
 				    textureHandles_[TextureManager::IceWallDamage1], // 氷壁ダメージ1段階目
 				    textureHandles_[TextureManager::IceWallDamage2], // 氷壁ダメージ2段階目
-				    
+
 				};
 
 				// 効果音達
 				std::vector<uint32_t> playerBulletAudioHandles = {
-				    audioHandles_[Audio::FireBulletLanding], // 炎弾効果音
-				    audioHandles_[Audio::DeployIceWall],     // 氷弾展開音
-				    audioHandles_[Audio::DamageIceWall],     // 氷弾ダメージ音
-				    audioHandles_[Audio::DestroyIceWall],    // 氷弾破壊音
+				    audioHandles_[Audio::FireBulletLanding],      // 炎弾効果音
+				    audioHandles_[Audio::DeployIceWall],          // 氷弾展開音
+				    audioHandles_[Audio::DamageIceWall],          // 氷弾ダメージ音
+				    audioHandles_[Audio::DestroyIceWall],         // 氷弾破壊音
 				    audioHandles_[Audio::DeployStartThunderArea], // 雷エリア展開開始音
-				    audioHandles_[Audio::DeployThunderArea], // 雷エリア展開音
+				    audioHandles_[Audio::DeployThunderArea],      // 雷エリア展開音
 				    audioHandles_[Audio::DeployEndThunderArea],   // 雷エリア展開終了音
 				};
 
 				// 生成した弾を初期化
 				newBullet->Initialize(
 				    modelBullet_,               // 3Dモデル
-				    wallTextureHandles,			// 壁用テクスチャリスト
+				    wallTextureHandles,         // 壁用テクスチャリスト
 				    playerBulletAudioHandles,   // 弾の効果音リスト
 				    shotPos,                    // 初期位置
 				    viewProjection_->rotation_, // 初期角度
 				    shotVelocity,               // 弾速
-					specialShotBulletPlans_,	// 行う特殊射撃
-					specialShotStrength_		// 特殊攻撃の強さ
-					);             
+				    specialShotBulletPlans_,    // 行う特殊射撃
+				    specialShotStrength_        // 特殊攻撃の強さ
+				);
 
 				// 生成した弾をリストに入れる
 				bullets_.push_back(newBullet);
@@ -1397,12 +1276,15 @@ void Player::SpecialShot() {
 
 				// 特殊射撃音を鳴らす
 				audio_->PlayWave(audioHandles_[Audio::SpecialShot]);
-
 			}
 		}
+	}
 
+	// オーブ色選択可能なら
+	if (rootCanChangeOrbColor_) {
 		// 変換するオーブの種類を選択
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && !pressDpadUp_) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)) {
 			if (selectedChangeType_ < PlayerBullet::Thunder) {
 				// 変換タイプを次のに設定
 				selectedChangeType_++;
@@ -1430,13 +1312,18 @@ void Player::SpecialShot() {
 				break;
 			}
 		}
+	}
 
+	// オーブ選択可能なら
+	if (rootCanSelectOrb_) {
+		// 所持オーブは１個未満の場合
 		if (havingOrbCount <= 1) {
 			selectedChangeOrb_ = 0;
 		}
 
 		// 十字右
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && !pressDpadRight_) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)) {
 			if (havingOrbCount >= 2) {
 				// オーブ選択音を鳴らす
 				audio_->PlayWave(audioHandles_[Audio::ChoiceOrb]);
@@ -1450,7 +1337,8 @@ void Player::SpecialShot() {
 			}
 		}
 		// 十字左
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && !pressDpadLeft_) {
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)) {
 			if (havingOrbCount >= 2) {
 				// オーブ選択音を鳴らす
 				audio_->PlayWave(audioHandles_[Audio::ChoiceOrb]);
@@ -1465,11 +1353,15 @@ void Player::SpecialShot() {
 				selectedChangeOrb_--;
 			}
 		}
+	}
 
+	// オーブ変換可能なら
+	if (rootCanChangeOrb_) {
 		// オーブの数が1以上なら
 		if (havingOrbCount > 0 && needChangeOrbEnemyCount_ <= 0) {
 			// 選択したオーブを別のオーブに変換する
-			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X && !pressXButton_) {
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X &&
+			    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
 				if (havingOrbs_[selectedChangeOrb_] != selectedChangeType_) {
 					// オーブ変換成功を鳴らす
 					audio_->PlayWave(audioHandles_[Audio::ChangeOrbSuccess]);
@@ -1715,36 +1607,30 @@ void Player::UIUpdate() {
 		break;
 	}
 
-	// ゲームパッドの状態取得
-	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
+	// Rトリガーが押されたら
+	if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+		spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_P]);
+	} else {
+		spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
+	}
 
-		// Rトリガーが押されたら
-		if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
-			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_P]);
-		} else {
-			spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
-		}
+	// 左トリガー
+	if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_) {
+		// ボタンを押すとテクスチャを変更
+		spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_P]);
+	} else {
+		// ボタンを押すとテクスチャを変更
+		spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_N]);
+	}
 
-		// 左トリガー
-		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_) {
-			// ボタンを押すとテクスチャを変更
-			spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_P]);
-		} else {
-			// ボタンを押すとテクスチャを変更
-			spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_N]);
-		}
-
-		if (!canSpecialShot_) {
-			spriteLeftTrigger_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
-			specialShotText_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
-			spriteSpecialShotMagnification_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
-		} else {
-			spriteLeftTrigger_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-			specialShotText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-			spriteSpecialShotMagnification_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-		}
-
+	if (!canSpecialShot_) {
+		spriteLeftTrigger_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
+		specialShotText_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
+		spriteSpecialShotMagnification_->SetColor({0.35f, 0.35f, 0.35f, 1.0f});
+	} else {
+		spriteLeftTrigger_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		specialShotText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+		spriteSpecialShotMagnification_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	}
 
 }
@@ -1767,8 +1653,6 @@ void Player::ApplyGlobalVariables() {
 	kDistanceToReticleObject_ = globalVariables->GetFloatValue(groupName, "DistanceToReticleObject"); // カメラから照準オブジェクトの距離
 	bulletSpeed_ = globalVariables->GetFloatValue(groupName, "BulletSpeed"); // 弾速
 	kMaxFireCoolTime_ = globalVariables->GetFloatValue(groupName, "MaxFireCoolTime"); // 発射レート
-	kMaxMagazine_ = globalVariables->GetIntValue(groupName, "MaxMagazineSize"); // 最大弾数設定
-	kMaxReloadTime_ = globalVariables->GetIntValue(groupName, "MaxReloadTime"); // リロードにかかる時間
 	spriteHavingOrbsStartPos_ =
 	    globalVariables->GetVector2Value(groupName, "SpriteHavingOrbsStartPos"); // 所持オーブ描画UIの開始座標
 	spriteHavingOrbsSize_ = 
