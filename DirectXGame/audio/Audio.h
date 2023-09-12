@@ -57,6 +57,14 @@ public: // サブクラス
 		endTutorial,
 	};
 
+	// オプション効果音リスト
+	enum OptionAudios {
+		MoveItem, // 項目選択音
+		Open,
+		ChangeValue,
+		close,
+	};
+
 public:
 	// サウンドデータの最大数
 	static const int kMaxSoundData = 256;

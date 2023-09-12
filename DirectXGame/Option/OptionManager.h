@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Model.h"
 #include "Sprite.h"
+#include "audio/Audio.h"
 
 // カメラの前方宣言
 class Camera;
@@ -71,6 +72,9 @@ private: // シングルトンパターン
 	OptionManager& operator=(const OptionManager&) = delete;
 
 private: // メンバ変数
+
+	// 音
+	Audio* audio_ = nullptr;
 
 	// テクスチャリスト
 	std::vector<uint32_t> textureHandles_;

@@ -314,6 +314,10 @@ private: // メンバ変数
 	uint32_t soundHandleTutorialClear_; // チュートリアルをクリアした時の音
 	uint32_t soundHandleTutorialEnd_; // チュートリアルを終了した時の音
 
+	// オプション関連
+	uint32_t soundHandleOptionOpen_; // オプションを開く音
+	uint32_t soundHandleOptionChangeValue_; // オプションを開く音
+	
 	//スプライト
 	// ボスHP
 	std::unique_ptr<Sprite> bossHpSprite_;

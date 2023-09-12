@@ -270,8 +270,17 @@ void GameScene::Initialize() {
 	    soundHandleTutorialEnd_,  // チュートリアルを終了した時の音
 	};
 
+	// オプション関連
+	soundHandleOptionOpen_ =
+	    audio_->LoadWave("/Audio/SE/OptionMenuOpen.wav"); // オプションを開く音
+	soundHandleOptionChangeValue_ =
+	    audio_->LoadWave("/Audio/SE/OptionMenuChangeValue.wav"); // オプションの値を変更する音
+
 	std::vector<uint32_t> optionAudioHandles = {
-	    
+		soundHandleTutorialNext_, // カーソル移動音として代用
+	    soundHandleOptionOpen_, // オプションを開く
+	    soundHandleOptionChangeValue_, // オプション内の値を変更する
+	    soundHandleTutorialEnd_, // 閉じる時の音として代用
 	};
 
 	// エフェクトマネージャーの取得

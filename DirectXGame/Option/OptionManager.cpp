@@ -11,6 +11,9 @@ void OptionManager::Initialize(
     Camera* camera, const std::vector<uint32_t>& textureHandles,
     const std::vector<uint32_t>& audioHandles) {
 
+	// 音をうけとろう
+	audio_ = Audio::GetInstance();
+
 	// テクスチャ受け取り
 	textureHandles_ = textureHandles;
 	// 効果音受け取り
@@ -120,6 +123,9 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	if (gamePad.wButtons & XINPUT_GAMEPAD_DPAD_UP &&
 	    !(preGamePad.wButtons & XINPUT_GAMEPAD_DPAD_UP)) {
 
+		// 次へ音再生
+		audio_->PlayWave(audioHandles_[Audio::MoveItem]);
+
 		// 項目変更
 		switch (itemNow) {
 		case OptionManager::Fov:
@@ -140,6 +146,9 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	else if (gamePad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN &&
 	    !(preGamePad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)) {
 	
+		// 次へ音再生
+		audio_->PlayWave(audioHandles_[Audio::MoveItem]);
+
 		// 項目変更
 		switch (itemNow) {
 		case OptionManager::Fov:
@@ -160,6 +169,9 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	else if (
 	    gamePad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT &&
 		besideButtonCooltimer_ == 0) {
+
+		// 値変更音再生
+		audio_->PlayWave(audioHandles_[Audio::ChangeValue]);
 
 		besideButtonCooltimer_ = kBesideButtonCooltime_;
 
@@ -186,6 +198,9 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	else if (
 	    gamePad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT &&
 		besideButtonCooltimer_ == 0) {
+
+		// 値変更音再生
+		audio_->PlayWave(audioHandles_[Audio::ChangeValue]);
 
 		besideButtonCooltimer_ = kBesideButtonCooltime_;
 
@@ -322,11 +337,16 @@ void OptionManager::OpenClose(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePa
 	//スタートボタンがおされたら切り替える
 	if (gamePad.wButtons & XINPUT_GAMEPAD_START && 
 			!(preGamePad.wButtons & XINPUT_GAMEPAD_START)) {
-			
+
 		//開くまたは閉じる
 		if (isOpen_) {
 			isOpen_ = false;
+			// 閉じる音再生
+			audio_->PlayWave(audioHandles_[Audio::close]);
+
 		} else {
+			// 開く
+			audio_->PlayWave(audioHandles_[Audio::Open]);
 			isOpen_ = true;
 		}
 
