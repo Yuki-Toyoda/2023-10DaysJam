@@ -95,6 +95,16 @@ void OptionManager::Initialize(
 	    textureHandles_[TextureManager::SelectItem], spriteSelectItemPosition_,
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 
+	// 番号開始座標
+	spriteNumberStartPos_ = {spriteFOVPosition_.x + 800.0f, spriteFOVPosition_.y};
+	// 数値テクスチャリセット
+	for (int i = 0; i < 3; i++) {
+		spriteNumbers_[i].reset(Sprite::Create(textureHandles_[0], 
+			{spriteNumberStartPos_.x + (32.0f * i), spriteNumberStartPos_.y}, 
+			{1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
+		spriteNumbers_[i]->SetSize({64.0f, 64.0f});
+	}
+
 }
 
 void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) {
@@ -211,19 +221,60 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	    camera_->GetCameraSensitivity().y - 0.001f, 10.0f, GageLength.x, 0.1f - 0.001f);
 	spriteCameraSensitivityYGage_->SetSize({GageLengthX, GageLength.y});
 
+	float FOV = camera_->GetFov();
+	int finalFOV = (int)(FOV * 100.0f);
+
+	Vector2 cameraSensitivity = camera_->GetCameraSensitivity();
+	int finalCameraSesitivityX = (int)(cameraSensitivity.x * 1000.0f);
+	int finalCameraSesitivityY = (int)(cameraSensitivity.y * 1000.0f);
+
 	// 選択されている項目によってスプライトを移動
 	switch (itemNow) {
 	case OptionManager::Fov:
 		// 選択スプライトを選択項目に合わせる
 		spriteSelectItemPosition_ = spriteFOVPosition_;
+		for (int i = 0; i < 3; i++) {
+			spriteNumbers_[i]->SetPosition(
+			    {spriteNumberStartPos_.x + (32.0f * i), spriteFOVPosition_.y});
+			/* n桁目以下の桁を取得 */
+			int result = finalFOV % (int)pow(10, 3 - i);
+
+			/* m桁目以上の桁を取得 */
+			result = result / (int)pow(10, 3 - i - 1);
+
+			spriteNumbers_[i]->SetTextureHandle(textureHandles_[result]);
+		}
+
 		break;
 	case OptionManager::CameraSensitivityX:
 		// 選択スプライトを選択項目に合わせる
 		spriteSelectItemPosition_ = spriteCameraSensitivityXPosition_;
+		for (int i = 0; i < 3; i++) {
+			spriteNumbers_[i]->SetPosition(
+			    {spriteNumberStartPos_.x + (32.0f * i), spriteCameraSensitivityXPosition_.y});
+			/* n桁目以下の桁を取得 */
+			int result = finalCameraSesitivityX % (int)pow(10, 3 - i);
+
+			/* m桁目以上の桁を取得 */
+			result = result / (int)pow(10, 3 - i - 1);
+
+			spriteNumbers_[i]->SetTextureHandle(textureHandles_[result]);
+		}
 		break;
 	case OptionManager::CameraSensitivityY:
 		// 選択スプライトを選択項目に合わせる
 		spriteSelectItemPosition_ = spriteCameraSensitivityYPosition_;	
+		for (int i = 0; i < 3; i++) {
+			spriteNumbers_[i]->SetPosition(
+			    {spriteNumberStartPos_.x + (32.0f * i), spriteCameraSensitivityYPosition_.y});
+			/* n桁目以下の桁を取得 */
+			int result = finalCameraSesitivityY % (int)pow(10, 3 - i);
+
+			/* m桁目以上の桁を取得 */
+			result = result / (int)pow(10, 3 - i - 1);
+
+			spriteNumbers_[i]->SetTextureHandle(textureHandles_[result]);
+		}
 		break;
 	default:
 		break;
@@ -258,6 +309,11 @@ void OptionManager::Draw() {
 		spriteCameraSensitivityYGageBackGround_->Draw(); // 垂直カメラゲージ背景
 		spriteCameraSensitivityYGage_->Draw();           // 垂直カメラゲージ
 		spriteSelectItem_->Draw();         // 選択項目描画
+
+		for (int i = 0; i < 3; i++) {
+			spriteNumbers_[i]->Draw();
+		}
+
 	}
 }
 

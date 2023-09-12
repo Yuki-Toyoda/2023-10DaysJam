@@ -11,7 +11,7 @@ void Camera::Intialize() {
 	input_ = Input::GetInstance();
 
 	// カメラFOV
-	fov_ = 0.45f;
+	fov_ = 0.6f;
 	// カメラ感度
 	cameraSensitivity_ = {0.025f, 0.025f};
 

@@ -133,6 +133,7 @@ private: // メンバ変数
 	// 選択項目スプライト
 	std::unique_ptr<Sprite> spriteSelectItem_;
 
+	Vector2 spriteNumberStartPos_;
 	// 数値スプライト
 	std::unique_ptr<Sprite> spriteNumbers_[3];
 
