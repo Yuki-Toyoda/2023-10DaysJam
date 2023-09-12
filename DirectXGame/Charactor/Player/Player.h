@@ -93,6 +93,18 @@ public: // アクセッサ等
 	}
 
 	/// <summary>
+	/// 接地状態ゲッター
+	/// </summary>
+	/// <returns>接地状態</returns>
+	bool GetIsGround() { return isGround_; }
+
+	/// <summary>
+	/// ジャンプ可能状態のゲッター
+	/// </summary>
+	/// <returns>ジャンプ可能状態</returns>
+	bool GetCanJump() { return canJump_; }
+
+	/// <summary>
 	/// 衝突時呼び出し関数
 	/// </summary>
 	void OnCollision(Collider* collision) override;
@@ -245,8 +257,6 @@ private: // メンバ関数
 	// 十字ボタンUI
 	UI spriteDpadUI_;
 	std::unique_ptr<Sprite> spriteDpad_;
-	// 十字ボタン矢印UI
-	std::unique_ptr<Sprite> spriteDpadArrow_;
 	// 十字ボタンUI
 	std::unique_ptr<Sprite> spriteDpadUP_; // 上
 	std::unique_ptr<Sprite> spriteDpadLeft_; // 左

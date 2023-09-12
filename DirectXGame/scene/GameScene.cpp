@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include "Effect/EffectManager.h"
+#include "Tutorial/TutorialManager.h"
 #include <cassert>
 #include <PrimitiveDrawer.h>
 
@@ -44,6 +45,16 @@ void GameScene::Initialize() {
 	    modelSpark_.get() // 火花エフェクト用
 	}; // プレイヤー弾用モデルリストの生成
 
+	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));              // エネミー
+	modelBossEnemy_.reset(Model::CreateFromOBJ("BossFish", true));      // ボスエネミー
+	modelEnemyBullet_.reset(Model::CreateFromOBJ("EnemyBullet", true)); // エネミーバレット
+	modelEnemyDeathEffect_.reset(
+	    Model::CreateFromOBJ("EnemyDeathEffect", true)); // エネミーの死亡エフェクト
+	modelEnemyMark_.reset(Model::CreateFromOBJ("EnemyMark", true)); // 敵のマーカー
+
+	std::vector<Model*> tutorialModels = {
+	};                             // チュートリアル用モデルリストの生成
+
 	/// テクスチャ読み込み
 
 	// サンプルテクスチャ
@@ -63,14 +74,8 @@ void GameScene::Initialize() {
 
 	// ボタン用テクスチャ達
 	texturehandleDpad_ = TextureManager::Load("/Image/Button/Dpad.png"); // 十字ボタン
-	texturehandleDpadArrow_N_ = TextureManager::Load("/Image/Button/DpadArrow_P.png"); // 十字ボタン矢印
-	texturehandleDpadArrow_P_ = TextureManager::Load("/Image/Button/DpadArrow_N.png"); // 十字ボタン矢印押下時
-	texturehandleButton_X_N_ = TextureManager::Load("/Image/Button/button_x_N.png"); // Xボタン
-	texturehandleButton_X_P_ = TextureManager::Load("/Image/Button/button_x_P.png"); // Xボタン押下時
 	texturehandleButton_RT_N_ = TextureManager::Load("/Image/Button/rt_N.png"); // RTトリガー
 	texturehandleButton_RT_P_ = TextureManager::Load("/Image/Button/rt_P.png"); // RTトリガー押下時
-	texturehandleButton_RB_N_ = TextureManager::Load("/Image/Button/rb_N.png"); // RBトリガー
-	texturehandleButton_RB_P_ = TextureManager::Load("/Image/Button/rb_P.png"); // RBトリガー押下時
 	texturehandleButton_LT_N_ = TextureManager::Load("/Image/Button/lt_N.png"); // LTトリガー
 	texturehandleButton_LT_P_ = TextureManager::Load("/Image/Button/lt_P.png"); // LTトリガー押下時
 
@@ -87,8 +92,6 @@ void GameScene::Initialize() {
 	    TextureManager::Load("/Image/Player/selectArrowUI_L.png"); // オーブ選択左矢印
 	textureHandleSelectArrow_R_ =
 	    TextureManager::Load("/Image/Player/selectArrowUI_R.png"); // オーブ選択右矢印
-	textureHandleRBHoldText_ =
-	    TextureManager::Load("/Image/Player/RBHoldUI.png"); // RBホールドテキスト
 	textureHandleChangeOrbText_ = TextureManager::Load("/Image/Player/changeOrbTextUI.png"); // 選択オーブテキスト
 	textureHandleChangeOrbText2_ =
 	    TextureManager::Load("/Image/Player/changeOrbTextUI2.png"); // 選択オーブテキスト
@@ -101,6 +104,15 @@ void GameScene::Initialize() {
 	textureHandleMagnification[0] = TextureManager::Load("/Image/Player/x1.png"); // 倍率テクスチャx1
 	textureHandleMagnification[1] = TextureManager::Load("/Image/Player/x2.png"); // 倍率テクスチャx2
 	textureHandleMagnification[2] = TextureManager::Load("/Image/Player/x3.png"); // 倍率テクスチャx3
+
+	// コントローラー非接続テクスチャ
+	textureHandleDisconectController_ =
+	    TextureManager::Load("/Image/NeedControllerUI.png");
+	disconectControllerUI_.reset(Sprite::Create(
+	    textureHandleDisconectController_,
+	    {(float)WinApp::GetInstance()->kWindowWidth / 2,
+	     (float)WinApp::GetInstance()->kWindowHeight / 2 - 200},
+	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 
 	// エフェクトテクスチャ群
 	textureHandleIceWallTex[0] = TextureManager::Load("/Wall/WallTex.png");
@@ -125,14 +137,8 @@ void GameScene::Initialize() {
 
 		// ボタン用テクスチャ
 		texturehandleDpad_, // 十字ボタン
-		texturehandleDpadArrow_N_, // 十字ボタン矢印
-		texturehandleDpadArrow_P_, // 十字ボタン矢印押下時
-		texturehandleButton_X_N_, // Xボタン
-		texturehandleButton_X_P_, // Xボタン押下時
 		texturehandleButton_RT_N_, // RTトリガー
 		texturehandleButton_RT_P_, // RTトリガー押下時
-		texturehandleButton_RB_N_, // RBトリガー
-		texturehandleButton_RB_P_, // RBトリガー押下時
 		texturehandleButton_LT_N_, // LTトリガー
 		texturehandleButton_LT_P_, // LTトリガー押下時
 
@@ -147,7 +153,6 @@ void GameScene::Initialize() {
 	    textureHandleSelectedOrb_, // オーブ選択
 		textureHandleSelectArrow_L_, // オーブ選択左矢印
 		textureHandleSelectArrow_R_, // オーブ選択右矢印
-	    textureHandleRBHoldText_, // RBホールドテキスト
 	    textureHandleChangeOrbText_, // 選択オーブテキスト
 	    textureHandleChangeOrbText2_, // 選択オーブテキスト2
 	    textureHandleNeedEnemyCountText_, // 変換に必要な敵数テキスト
@@ -161,7 +166,11 @@ void GameScene::Initialize() {
 		textureHandleIceWallTex[0], // 氷壁1段階目
 	    textureHandleIceWallTex[1], // 氷壁2段階目
 	    textureHandleIceWallTex[2], // 氷壁3段階目
-	};
+	}; // プレイヤーテクスチャ群
+
+	std::vector<uint32_t> tutorialTextureHandles{
+		textureHandle1x1_, // 1ｘ1テクスチャ
+	}; // チュートリアルテクスチャ群
 
 	// 効果音
 	soundHandleFootStep_[0] = audio_->LoadWave("/Audio/SE/FootStep1.wav"); // 歩行音1
@@ -215,15 +224,19 @@ void GameScene::Initialize() {
 	    soundHandleDeployChoiceIceBullet_, // 氷弾選択音
 	};
 
+	std::vector<uint32_t> tutorialAudioHandles = {
+	    
+	};
+
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();
 	// 取得したエフェクトマネージャーの初期化
 	effectManager_->Initialize();
 
-	modelEnemy_.reset(Model::CreateFromOBJ("Fish", true));//エネミー
-	modelBossEnemy_.reset(Model::CreateFromOBJ("BossFish", true)); // ボスエネミー
-	modelEnemyBullet_.reset(Model::CreateFromOBJ("EnemyBullet", true)); // エネミーバレット
-	modelEnemyDeathEffect_.reset(Model::CreateFromOBJ("EnemyDeathEffect", true)); // エネミーの死亡エフェクト
+	// チュートリアルマネージャーを取得
+	tutorialManager_ = TutorialManager::GetInstance();
+	// 取得したチュートリアルマネージャーを初期化
+	tutorialManager_->Initialize(tutorialModels, tutorialTextureHandles, tutorialAudioHandles);
 
 	// デバックカメラ無効
 	enableDebugCamera_ = false;
@@ -254,6 +267,8 @@ void GameScene::Initialize() {
 	effectManager_->SetViewProjection(camera_->GetViewProjection());
 	// カメラにカメラシェイク強さの変数ポインタを渡す
 	camera_->SetShakeStrength(player_->GetShakeStrength());
+	// チュートリアルマネージャーにプレイヤーをセット
+	tutorialManager_->SetPlayer(player_.get());
 
 	//テクスチャハンドル
 	std::vector<uint32_t> enemyTextureHandles = {
@@ -277,17 +292,18 @@ void GameScene::Initialize() {
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(
-	    std::vector<Model*>{modelEnemy_.get()}, enemyTextureHandles,
+	    std::vector<Model*>{modelEnemy_.get(), modelEnemyMark_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
 	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(), bossHpFrameSprite_.get());
+	enemyManager_->SetViewProjection(camera_->GetViewProjection());
 
 	// 衝突マネージャー
 	collisionManager.reset(new CollisionManager);
 
 	// 現在のシーン
-	currentScene_ = Main;
+	currentScene_ = Title;
 	// 次のシーン
-	nextScene_ = Main;
+	nextScene_ = Title;
 
 	// フェードインしているか
 	isFadeIn_ = false;
@@ -317,31 +333,33 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-
 	// ゲームパッドの状態取得
 	preJoyState = joyState;
 	input_->GetJoystickState(0, joyState);
 
-	switch (currentScene_) {
-	case GameScene::Title:
-		TitleUpdate();
-		break;
-	case GameScene::Tutorial:
-		TutorialUpdate();
-		break;
-	case GameScene::Main:
-		if (!theGameIsOver) {
-			MainUpdate();
+	// ゲームパッドの状態取得
+	if (input_->GetJoystickState(0, joyState)) {
+		switch (currentScene_) {
+		case GameScene::Title:
+			TitleUpdate();
+			break;
+		case GameScene::Tutorial:
+			TutorialUpdate();
+			break;
+		case GameScene::Main:
+			if (!theGameIsOver) {
+				MainUpdate();
+			}
+			break;
+		case GameScene::GameClear:
+			GameClearUpdate();
+			break;
+		case GameScene::GameOver:
+			GameOverUpdate();
+			break;
+		default:
+			break;
 		}
-		break;
-	case GameScene::GameClear:
-		GameClearUpdate();
-		break;
-	case GameScene::GameOver:
-		GameOverUpdate();
-		break;
-	default:
-		break;
 	}
 
 	//フェードインアウト
@@ -406,7 +424,78 @@ void GameScene::TitleUpdate() {
 
 }
 
-void GameScene::TutorialUpdate() {}
+void GameScene::TutorialUpdate() {
+	// リスト削除
+	enemyManager_->DeleteEnemy();
+	enemyManager_->DeleteEnemyBullet();
+
+	// 更新処理全般
+	tutorialManager_->Update(); // チュートリアル
+	camera_->Update();          // カメラ
+	skyDome_->Update();         // 天球
+	ground_->Update();          // 地面
+	player_->Update();          // プレイヤー
+	effectManager_->Update();   // エフェクトマネージャー
+	enemyManager_->Update();    // エネミーマネージャー
+
+	// デバックカメラ有効時
+	if (enableDebugCamera_) {
+		debugCamera_->Update(); // デバックカメラ
+
+		// ビュープロジェクションをデバックカメラのものに設定する
+		viewProjection_->matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_->matProjection = debugCamera_->GetViewProjection().matProjection;
+
+	} else {
+		// ビュープロジェクションを追従カメラのものに設定する
+		viewProjection_ = camera_->GetViewProjection();
+	}
+
+	// 行列を定数バッファに転送
+	viewProjection_->TransferMatrix();
+
+	// リストをクリア
+	collisionManager->ListClear();
+	// コライダーをリストに登録
+	// 自機について
+	collisionManager->ListRegister(player_.get());
+	// 敵全てについて
+	for (Enemy* enemy : enemyManager_->GetEnemies()) {
+		collisionManager->ListRegister(enemy);
+	}
+	// 敵弾全てについて
+	for (EnemyBullet* enemybullet : enemyManager_->GetEnemyBullets()) {
+		collisionManager->ListRegister(enemybullet);
+	}
+	// ボス敵全てについて
+	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+		collisionManager->ListRegister(bossEnemy);
+	}
+	// 自弾全てについて
+	for (PlayerBullet* playerBullet : player_->GetBullets()) {
+		collisionManager->ListRegister(playerBullet);
+	}
+	// 当たり判定
+	collisionManager->CheakAllCollision();
+
+	// チュートリアルが終了したら次のシーンへ
+	if (tutorialManager_->GetTutorialEnd()) {
+		FadeInOutSetUp(Main);
+	}
+
+	#ifdef _DEBUG
+
+	// フィールドの更新
+	field_->Update();
+
+	ImGui::Begin("Debug");
+	ImGui::Checkbox("activeDebugCamera", &enableDebugCamera_);
+
+	ImGui::End();
+
+#endif // _DEBUG
+
+}
 
 void GameScene::MainUpdate() {
 
@@ -580,6 +669,13 @@ void GameScene::TutorialSetup() {
 	enemyManager_->Delete();
 	enemyManager_->SetEnemyCount(0);
 
+	// カメラ 
+	camera_->SetUp();
+	// プレイヤー
+	player_->Setup();
+	// エフェクトマネージャー
+	effectManager_->Initialize();
+
 }
 
 void GameScene::MainSetup() {
@@ -636,6 +732,13 @@ void GameScene::Draw() {
 		break;
 	default:
 		break;
+	}
+
+	// ゲームパッドの状態取得
+	if (!input_->GetJoystickState(0, joyState)) {
+		Sprite::PreDraw(commandList);
+			disconectControllerUI_->Draw();
+		Sprite::PostDraw();
 	}
 
 }
@@ -710,6 +813,12 @@ void GameScene::TutorialDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	skyDome_->Draw(*viewProjection_);       // 天球
+	ground_->Draw(*viewProjection_);        // 地面
+	player_->Draw(*viewProjection_);        // プレイヤー
+	effectManager_->Draw(*viewProjection_); // エフェクトマネージャー
+	enemyManager_->Draw(*viewProjection_);  // エネミー
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -721,14 +830,20 @@ void GameScene::TutorialDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-	
+	player_->SpriteDraw();       // プレイヤー
+	tutorialManager_->SpriteDraw(); // チュートリアルマネージャー
+
 	// フェードインアウト
 	FadeInOutDraw();
+
+#ifdef _DEBUG
+	player_->ColliderDraw(enableDebugCamera_);
+	enemyManager_->ColliderDraw();
+#endif // _DEBUG
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
-#pragma endregion
 
 }
 
