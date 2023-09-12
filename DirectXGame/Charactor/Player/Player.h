@@ -121,6 +121,38 @@ public: // アクセッサ等
 	int GetHavingOrbCount() { return (int)havingOrbs_.size(); }
 
 	/// <summary>
+	/// オーブのリセット
+	/// </summary>
+	void ResetOrbs() {havingOrbs_.erase(havingOrbs_.begin(), havingOrbs_.end());}
+
+	/// <summary>
+	/// 特殊射撃強さゲッター
+	/// </summary>
+	/// <returns>特殊射撃強さ</returns>
+	int32_t GetSpecialShotStrength() { return specialShotStrength_; }
+
+	/// <summary>
+	/// 選択されている変換タイプゲッター
+	/// </summary>
+	/// <returns>選択されている変換タイプ</returns>
+	int GetSelectedType() { return selectedChangeType_; }
+	/// <summary>
+	/// 変換タイプセッター
+	/// </summary>
+	/// <param name="type">変換タイプ</param>
+	void SetSelectedType(PlayerBullet::BulletType type) { selectedChangeType_ = (int)type; }
+
+	/// <summary>
+	/// 選択されているオーブのゲッター
+	/// </summary>
+	int32_t GetSelectedChangeOrb() { return selectedChangeOrb_; }
+	/// <summary>
+	/// 選択されているオーブセッター
+	/// </summary>
+	/// <param name="index">番号</param>
+	void SetSelectedChangeOrb(int32_t index) { selectedChangeOrb_ = index; }
+
+	/// <summary>
 	/// カメラシェイク強さのゲッター
 	/// </summary>
 	/// <returns>カメラシェイク強さ変数のポインタ</returns>

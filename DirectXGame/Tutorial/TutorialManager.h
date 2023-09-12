@@ -69,6 +69,11 @@ public: // メンバ関数
 	    const std::vector<uint32_t>& textureHandles, const std::vector<uint32_t>& audioHandles);;
 
 	/// <summary>
+	/// セットアップ関数
+	/// </summary>
+	void SetUp();
+
+	/// <summary>
 	/// 更新関数
 	/// </summary>
 	void Update();
@@ -111,6 +116,31 @@ private: // その他関数
 	/// </summary>
 	void OrbTutorial();
 
+	/// <summary>
+	/// 炎弾チュートリアル
+	/// </summary>
+	void FireBulletTutorial();
+
+	/// <summary>
+	/// 氷弾チュートリアル
+	/// </summary>
+	void IceBulletTutorial();
+
+	/// <summary>
+	/// 雷弾チュートリアル
+	/// </summary>
+	void ThunderBulletTutorial();
+
+	/// <summary>
+	/// オーブ強化チュートリアル
+	/// </summary>
+	void OrbReinforcementTutorial();
+
+	/// <summary>
+	/// オーブ変換チュートリアル
+	/// </summary>
+	void ChangeOrbTutorial();
+
 private: // メンバ変数
 
 	// 入力検知用
@@ -150,6 +180,13 @@ private: // メンバ変数
 	const float kMaxTutorialGage_ = 100.0f;
 	// 次のチュートリアルへ
 	bool isNextTutorial_;
+
+	// チュートリアル画像の表示切り替えのトリガー
+	bool tutorialImageChangeTrigger_;
+	int tutorialImagewayPoint_;
+
+	// 敵のスポーン間隔
+	float enemySpawnInterval_;
 
 	// チュートリアル画像テクスチャ
 	uint32_t textureHandleTutorialImage_;

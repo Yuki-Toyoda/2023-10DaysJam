@@ -50,6 +50,12 @@ void TutorialManager::Initialize(
 	// 次のチュートリアルトリガーリセット
 	isNextTutorial_ = false;
 
+	// チュートリアル画像の表示切り替えのトリガー
+	tutorialImageChangeTrigger_ = false;
+	tutorialImagewayPoint_ = 0;
+
+	enemySpawnInterval_ = 0.0f;
+
 	// 最初の画像を読み込み
 	textureHandleTutorialImage_ =
 		TextureManager::Load("/Image/Tutorial/Image_1_OrbTutorialImageUI.png"); // オーブ
@@ -105,7 +111,60 @@ void TutorialManager::Initialize(
 
 }
 
+void TutorialManager::SetUp() {
+
+	// 進捗リセット
+	tutorialSteps_ = Move;
+	// 個々のチュートリアル演出中間地点リセット
+	tutorialStagingWayPoint_ = WayPoint1;
+	// チュートリアル演出用t
+	tutorialT_ = 0.0f;
+
+	// チュートリアル終了トリガーリセット
+	isEndTutorial = false;
+
+	// チュートリアル画像表示トリガーリセット
+	displayTutorialImage_ = false;
+
+	// チュートリアル進捗ゲージリセット
+	tutorialGageProgress_ = 0;
+	// 次のチュートリアルトリガーリセット
+	isNextTutorial_ = false;
+
+	// チュートリアル画像の表示切り替えのトリガー
+	tutorialImageChangeTrigger_ = false;
+	tutorialImagewayPoint_ = 0;
+
+	// スポーン間隔リセット
+	enemySpawnInterval_ = 0.0f;
+
+	// チュートリアルゲージの大きさ
+	tutorialGageSize_ = {500.0f, 16.0f};
+	// チュートリアルゲージの座標
+	tutorialGagePosition_ = {
+	    (float)(WinApp::GetInstance()->kWindowWidth / 2) - tutorialGageSize_.x / 2.0f, 500.0f};
+
+	// チュートリアルテキストの大きさ
+	tutorialTextSize_ = {832.0f, 96.0f};
+	// チュートリアルテキスト座標
+	tutorialTextPosition_ = {(float)WinApp::GetInstance()->kWindowWidth / 2, 600.0f};
+
+	// 最初の画像を読み込み
+	TextureManager::Unload(textureHandleTutorialImage_); // 一応アンロード
+	textureHandleTutorialImage_ =
+	    TextureManager::Load("/Image/Tutorial/Image_1_OrbTutorialImageUI.png"); // オーブ
+
+	// 最初のテキストを読み込み
+	TextureManager::Unload(textureHandleTutorialText_); // 一応アンロード
+	textureHandleTutorialText_ =
+	    TextureManager::Load("/Image/Tutorial/1_MoveTutorialTextUI.png"); // 移動テキスト
+
+}
+
 void TutorialManager::Update() {
+
+	spriteNextTutorial_->SetPosition(
+	    {tutorialTextPosition_.x + 450.0f, tutorialTextPosition_.y - 175.0f});
 
 	// ゲームパッドの状態取得
 	preJoyState = joyState;
@@ -126,21 +185,41 @@ void TutorialManager::Update() {
 		OrbTutorial();
 		break;
 	case TutorialManager::FireBullet:
-
+		// 炎弾チュートリアル
+		FireBulletTutorial();
 		break;
 	case TutorialManager::IceBullet:
-
+		// 氷弾チュートリアル
+		IceBulletTutorial();
 		break;
 	case TutorialManager::ThunderBullet:
-
+		// 雷弾チュートリアル
+		ThunderBulletTutorial();
 		break;
 	case TutorialManager::OrbReinforcement:
-
+		// オーブ強化チュートリアル
+		OrbReinforcementTutorial();
 		break;
 	case TutorialManager::ChangeOrb:
-
+		// オーブ変換チュートリアル
+		ChangeOrbTutorial();
 		break;
 	case TutorialManager::TutorialEnd:
+
+		// 敵がわいていないならランダムに沸かせる
+		if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
+			int enemyType = MyMath::Random(Enemy::Fire, Enemy::Thunder);
+			// チュートリアル用敵の出現
+			enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, (Enemy::EnemyType)enemyType, true);
+			// 敵スポーン間隔リセット
+			enemySpawnInterval_ = 1.0f;
+		}
+
+		// 敵スポーン間隔が0以下になる前に
+		if (enemySpawnInterval_ > 0 && (int)enemyManager_->GetEnemyCount() <= 0) {
+			// 敵スポーン間隔をデクリメント
+			enemySpawnInterval_ -= 1.0f / 60.0f;
+		}
 
 		break;
 	}
@@ -164,7 +243,7 @@ void TutorialManager::Update() {
 	if (tutorialSteps_ == TutorialEnd) {
 		// Bボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
-		    preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 			// チュートリアル終了
 			isEndTutorial = true;
 		}
@@ -183,8 +262,6 @@ void TutorialManager::Update() {
 	// チュートリアルテキスト
 	spriteTutorialText_->SetSize(tutorialTextSize_);         // 大きさ
 	spriteTutorialText_->SetPosition(tutorialTextPosition_); // 座標
-	spriteNextTutorial_->SetPosition(
-	    {tutorialTextPosition_.x + 450.0f, tutorialTextPosition_.y - 175.0f});
 
 	// チュートリアル中はHHPが位置を下回らないように
 	if (player_->GetHp() <= 0) {
@@ -313,7 +390,7 @@ void TutorialManager::OrbTutorial() {
 	case TutorialManager::WayPoint2:
 		// Bボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
-		    preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 			// テクスチャを一度アンロード
 			TextureManager::Unload(textureHandleTutorialText_);
 			// テクスチャ再度読み込み
@@ -377,6 +454,838 @@ void TutorialManager::OrbTutorial() {
 		    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
 		// チュートリアル用画像表示
 		displayTutorialImage_ = true;
+
+		// チュートリアル個々進捗リセット
+		tutorialStagingWayPoint_ = WayPoint1;
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
+}
+
+void TutorialManager::FireBulletTutorial() {
+	switch (tutorialStagingWayPoint_) {
+	case TutorialManager::WayPoint1:
+		// チュートリアルの画像切り替え
+		switch (tutorialImagewayPoint_) {
+		case 0:
+			if (tutorialT_ < 0.5f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_3_SpecialShotTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_++;
+			}
+			break;
+			case 1:
+			if (tutorialT_ < 0.5f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_4_FireBulletTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_++;
+			}
+			break;
+			case 2:
+			if (tutorialT_ < 1.0f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_ = 0;
+			}
+			break;
+
+		}
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/GetOrbTutorialText.png");
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialImage_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialImage_ =
+			    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+
+			// チュートリアル用画像非表示
+			displayTutorialImage_ = false;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint2:
+		// プレイヤーのオーブ所持数が0を超えたら
+		if (player_->GetHavingOrbCount() > 0) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/5_OrbTutorialTextUI.png");
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint3:
+		// Lトリガーが押されたら
+		if (joyState.Gamepad.bLeftTrigger > 25) {
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/NextTutorialUIText.png");
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 96.0f};
+			tutorialGagePosition_.y = 600.0f;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint4:
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// 次のチュートリアルへ
+			isNextTutorial_ = true;
+		}
+
+		break;
+	}
+
+	// 敵がわいていないなら沸かせる
+	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
+		// チュートリアル用敵の出現
+		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+		// 敵スポーン間隔リセット
+		enemySpawnInterval_ = 1.0f;
+	}
+
+	// 敵スポーン間隔が0以下になる前に
+	if (enemySpawnInterval_ > 0 && (int)enemyManager_->GetEnemyCount() <= 0) {
+		// 敵スポーン間隔をデクリメント
+		enemySpawnInterval_ -= 1.0f / 60.0f;
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/7_IceBulletTutorialTextUI.png");
+		// チュートリアルのテキスト大きさ画像に合わせて再設定
+		tutorialTextSize_ = {832.0f, 192.0f};
+		tutorialGagePosition_.y = 475.0f;
+
+		// 画像中間地点リセット
+		tutorialImagewayPoint_ = 0;
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialImage_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialImage_ =
+		    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+		// チュートリアル用画像表示
+		displayTutorialImage_ = true;
+
+		// チュートリアル個々進捗リセット
+		tutorialStagingWayPoint_ = WayPoint1;
+
+		// プレイヤーの所持オーブリセット
+		player_->ResetOrbs();
+
+		// 敵を全て削除
+		enemyManager_->Delete();
+		enemyManager_->SetEnemyCount(0);
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
+}
+
+void TutorialManager::IceBulletTutorial() {
+	switch (tutorialStagingWayPoint_) {
+	case TutorialManager::WayPoint1:
+		// チュートリアルの画像切り替え
+		switch (tutorialImagewayPoint_) {
+		case 0:
+			if (tutorialT_ < 0.5f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_3_SpecialShotTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_++;
+			}
+			break;
+		case 1:
+			if (tutorialT_ < 0.5f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_5_IceBulletTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_++;
+			}
+			break;
+		case 2:
+			if (tutorialT_ < 1.0f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_ = 0;
+			}
+			break;
+		}
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/GetOrbTutorialText.png");
+
+			// 画像中間地点リセット
+			tutorialImagewayPoint_ = 0;
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialImage_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialImage_ =
+			    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+
+			// チュートリアル用画像非表示
+			displayTutorialImage_ = false;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint2:
+		// プレイヤーのオーブ所持数が0を超えたら
+		if (player_->GetHavingOrbCount() > 0) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/5_OrbTutorialTextUI.png");
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint3:
+		// Lトリガーが押されたら
+		if (joyState.Gamepad.bLeftTrigger > 25) {
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/NextTutorialUIText.png");
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 96.0f};
+			tutorialGagePosition_.y = 600.0f;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint4:
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// 次のチュートリアルへ
+			isNextTutorial_ = true;
+		}
+
+		break;
+	}
+
+	// 敵がわいていないなら沸かせる
+	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
+		// チュートリアル用敵の出現
+		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Ice, true);
+		// 敵スポーン間隔リセット
+		enemySpawnInterval_ = 1.0f;
+	}
+
+	// 敵スポーン間隔が0以下になる前に
+	if (enemySpawnInterval_ > 0 && (int)enemyManager_->GetEnemyCount() <= 0) {
+		// 敵スポーン間隔をデクリメント
+		enemySpawnInterval_ -= 1.0f / 60.0f;
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/8_ThunderBulletTutorialTextUI.png");
+		// チュートリアルのテキスト大きさ画像に合わせて再設定
+		tutorialTextSize_ = {832.0f, 192.0f};
+		tutorialGagePosition_.y = 475.0f;
+
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialImage_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialImage_ =
+		    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+		// チュートリアル用画像表示
+		displayTutorialImage_ = true;
+
+		// チュートリアル個々進捗リセット
+		tutorialStagingWayPoint_ = WayPoint1;
+
+		// プレイヤーの所持オーブリセット
+		player_->ResetOrbs();
+
+		// 敵を全て削除
+		enemyManager_->Delete();
+		enemyManager_->SetEnemyCount(0);
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
+}
+
+void TutorialManager::ThunderBulletTutorial() {
+	switch (tutorialStagingWayPoint_) {
+	case TutorialManager::WayPoint1:
+		// チュートリアルの画像切り替え
+		switch (tutorialImagewayPoint_) {
+		case 0:
+			if (tutorialT_ < 0.5f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_3_SpecialShotTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_++;
+			}
+			break;
+		case 1:
+			if (tutorialT_ < 0.5f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_6_ThunderBulletTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_++;
+			}
+			break;
+		case 2:
+			if (tutorialT_ < 1.0f) {
+				// 演出用t加算
+				tutorialT_ += 1.0f / 60.0f;
+			} else {
+				// テクスチャを一度アンロード
+				TextureManager::Unload(textureHandleTutorialImage_);
+				// テクスチャ再度読み込み
+				textureHandleTutorialImage_ =
+				    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+
+				// チュートリアル演出tリセット
+				tutorialT_ = 0.0f;
+				// チュートリアル画像を切り替え
+				tutorialImagewayPoint_ = 0;
+			}
+			break;
+		}
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/GetOrbTutorialText.png");
+
+			// 画像中間地点リセット
+			tutorialImagewayPoint_ = 0;
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialImage_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialImage_ =
+			    TextureManager::Load("/Image/Tutorial/Image_2_SpecialShotTutorialImageUI.png");
+
+			// チュートリアル用画像非表示
+			displayTutorialImage_ = false;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint2:
+		// プレイヤーのオーブ所持数が0を超えたら
+		if (player_->GetHavingOrbCount() > 0) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/5_OrbTutorialTextUI.png");
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint3:
+		// Lトリガーが押されたら
+		if (joyState.Gamepad.bLeftTrigger > 25) {
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/NextTutorialUIText.png");
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 96.0f};
+			tutorialGagePosition_.y = 600.0f;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint4:
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// 次のチュートリアルへ
+			isNextTutorial_ = true;
+		}
+
+		break;
+	}
+
+	// 敵がわいていないなら沸かせる
+	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
+		// チュートリアル用敵の出現
+		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Thunder, true);
+		// 敵スポーン間隔リセット
+		enemySpawnInterval_ = 1.0f;
+	}
+
+	// 敵スポーン間隔が0以下になる前に
+	if (enemySpawnInterval_ > 0 && (int)enemyManager_->GetEnemyCount() <= 0) {
+		// 敵スポーン間隔をデクリメント
+		enemySpawnInterval_ -= 1.0f / 60.0f;
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/9_OrbReinforcementTutorialTextUI.png");
+		// チュートリアルのテキスト大きさ画像に合わせて再設定
+		tutorialTextSize_ = {832.0f, 192.0f};
+		tutorialGagePosition_.y = 475.0f;
+
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialImage_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialImage_ =
+		    TextureManager::Load("/Image/Tutorial/Image_1_OrbTutorialImageUI.png");
+		// チュートリアル用画像表示
+		displayTutorialImage_ = true;
+
+		// チュートリアル個々進捗リセット
+		tutorialStagingWayPoint_ = WayPoint1;
+
+		// プレイヤーの所持オーブリセット
+		player_->ResetOrbs();
+
+		// 敵を全て削除
+		enemyManager_->Delete();
+		enemyManager_->SetEnemyCount(0);
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
+}
+
+void TutorialManager::OrbReinforcementTutorial() {
+	switch (tutorialStagingWayPoint_) {
+	case TutorialManager::WayPoint1:
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/10_OrbReinforcementTutorialTextUI.png");
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialImage_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialImage_ =
+			    TextureManager::Load("/Image/Tutorial/Image_7_OrbReinforcementTutorialImageUI.png");
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint2:
+
+		spriteNextTutorial_->SetPosition(
+		    {tutorialTextPosition_.x + 450.0f, tutorialTextPosition_.y - 525.0f});
+
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/OrbReinforcementTutorialTextUI.png");
+
+			// チュートリアル画像を非表示
+			displayTutorialImage_ = false;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint3:
+		// 特殊射撃強さが2以上なら
+		if (player_->GetSpecialShotStrength() >= 2) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/5_OrbTutorialTextUI.png");
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 192.0f};
+			tutorialGagePosition_.y = 475.0f;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint4:
+		// Lトリガーが押されたら
+		if (joyState.Gamepad.bLeftTrigger > 25) {
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/NextTutorialUIText.png");
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 96.0f};
+			tutorialGagePosition_.y = 600.0f;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint5:
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// 次のチュートリアルへ
+			isNextTutorial_ = true;
+		}
+		break;
+	}
+
+	// 敵がわいていないなら沸かせる
+	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
+		// チュートリアル用敵の出現
+		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+		// 敵スポーン間隔リセット
+		enemySpawnInterval_ = 1.0f;
+	}
+
+	// 敵スポーン間隔が0以下になる前に
+	if (enemySpawnInterval_ > 0 && (int)enemyManager_->GetEnemyCount() <= 0) {
+		// 敵スポーン間隔をデクリメント
+		enemySpawnInterval_ -= 1.0f / 60.0f;
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/11_ChangeOrbTutorialTextUI.png");
+		// チュートリアルのテキスト大きさ画像に合わせて再設定
+		tutorialTextSize_ = {832.0f, 192.0f};
+		tutorialGagePosition_.y = 475.0f;
+
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialImage_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialImage_ =
+		    TextureManager::Load("/Image/Tutorial/ChangeOrbImage1.png");
+		// チュートリアル用画像表示
+		displayTutorialImage_ = true;
+
+		// チュートリアル個々進捗リセット
+		tutorialStagingWayPoint_ = WayPoint1;
+
+		// プレイヤーの所持オーブリセット
+		player_->ResetOrbs();
+		// プレイヤーにオーブを渡す
+		player_->AddOrbs(PlayerBullet::Fire);
+		player_->AddOrbs(PlayerBullet::Ice);
+		player_->AddOrbs(PlayerBullet::Fire);
+		// オーブ選択状態を氷に
+		player_->SetSelectedType(PlayerBullet::Ice);
+		// 選択オーブ番号を0に
+		player_->SetSelectedChangeOrb(0);
+
+		// 敵を全て削除
+		enemyManager_->Delete();
+		enemyManager_->SetEnemyCount(0);
+
+		// ゲージ進捗リセット
+		tutorialGageProgress_ = 0.0f;
+		// 次のチュートリアルへ
+		tutorialSteps_++;
+
+		// トリガーリセット
+		isNextTutorial_ = false;
+	}
+}
+
+void TutorialManager::ChangeOrbTutorial() {
+	switch (tutorialStagingWayPoint_) {
+	case TutorialManager::WayPoint1:
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/ChangeOrbText.png");
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialImage_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialImage_ =
+			    TextureManager::Load("/Image/Tutorial/Image_1_OrbTutorialImageUI.png");
+
+			// チュートリアル画像を非表示
+			displayTutorialImage_ = true;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		break;
+	case TutorialManager::WayPoint2:
+		// Bボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/ChangeOrbTutorialText.png");
+
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 96.0f};
+			tutorialGagePosition_.y = 600.0f;
+			// チュートリアルテキストの座標を設定
+			tutorialTextPosition_ = {
+			    (float)WinApp::GetInstance()->kWindowWidth / 2 + 150.0f, 600.0f};
+
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialImage_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialImage_ =
+			    TextureManager::Load("/Image/Tutorial/ChangeOrbImage2.png");
+
+			// チュートリアル画像を非表示
+			displayTutorialImage_ = true;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		
+		break;
+	case TutorialManager::WayPoint3:
+
+		// 次のチュートリアルへ誘導するスプライトの位置を変える
+		spriteNextTutorial_->SetPosition(
+		    {tutorialTextPosition_.x + 900.0f, tutorialTextPosition_.y - 175.0f});
+
+		// ２個目のオーブが選択されたら
+		if (player_->GetSelectedChangeOrb() == 1) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/ChangeOrbColorTutorialText.png");
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+
+		break;
+	case TutorialManager::WayPoint4:
+		// 次のチュートリアルへ誘導するスプライトの位置を変える
+		spriteNextTutorial_->SetPosition(
+		    {tutorialTextPosition_.x + 900.0f, tutorialTextPosition_.y - 175.0f});
+		// 変換タイプが炎の時
+		if (player_->GetSelectedType() == (int)PlayerBullet::Fire) {
+			// テクスチャを一度アンロード
+			TextureManager::Unload(textureHandleTutorialText_);
+			// テクスチャ再度読み込み
+			textureHandleTutorialText_ =
+			    TextureManager::Load("/Image/Tutorial/13_ChangeOrbTutorialTextUI.png");
+			// チュートリアルテキスト座標
+			tutorialTextPosition_ = {(float)WinApp::GetInstance()->kWindowWidth / 2, 600.0f};
+			// チュートリアルのテキスト大きさ画像に合わせて再設定
+			tutorialTextSize_ = {832.0f, 96.0f};
+			tutorialGagePosition_.y = 600.0f;
+
+			// 次のチュートリアル段階へ
+			tutorialStagingWayPoint_++;
+		}
+		
+		break;
+	case TutorialManager::WayPoint5:
+		// 次のチュートリアルへ誘導するスプライトの位置を変える
+		spriteNextTutorial_->SetPosition(
+		    {tutorialTextPosition_.x + 900.0f, tutorialTextPosition_.y - 175.0f});
+
+		// Xボタンが押されたら
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+			// 次のチュートリアルへ
+			isNextTutorial_ = true;
+		}
+		break;
+	}
+
+	// 次のチュートリアルへ進む場合
+	if (isNextTutorial_) {
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialText_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialText_ =
+		    TextureManager::Load("/Image/Tutorial/EndTutorialText.png");
+
+		// テクスチャを一度アンロード
+		TextureManager::Unload(textureHandleTutorialImage_);
+		// テクスチャ再度読み込み
+		textureHandleTutorialImage_ = TextureManager::Load("/Image/Tutorial/1_MoveTutorialTextUI.png");
+		// チュートリアル用画像表示
+		displayTutorialImage_ = false;
+
+		// チュートリアル個々進捗リセット
+		tutorialStagingWayPoint_ = WayPoint1;
+
+		// プレイヤーの所持オーブリセット
+		player_->ResetOrbs();
+		// プレイヤーにオーブを渡す
+		player_->AddOrbs(PlayerBullet::Fire);
+		player_->AddOrbs(PlayerBullet::Ice);
+		player_->AddOrbs(PlayerBullet::Fire);
+
+		// 敵を全て削除
+		enemyManager_->Delete();
+		enemyManager_->SetEnemyCount(0);
 
 		// ゲージ進捗リセット
 		tutorialGageProgress_ = 0.0f;

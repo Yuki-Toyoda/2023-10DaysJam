@@ -675,6 +675,8 @@ void GameScene::TutorialSetup() {
 	player_->Setup();
 	// エフェクトマネージャー
 	effectManager_->Initialize();
+	// チュートリアルマネージャー
+	tutorialManager_->SetUp();
 
 }
 
