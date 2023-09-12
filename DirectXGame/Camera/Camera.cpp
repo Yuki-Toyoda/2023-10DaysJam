@@ -80,7 +80,12 @@ void Camera::Update() {
 	}
 
 	// 調整項目の適用
-	ApplyGlobalVariables();
+	//ApplyGlobalVariables();
+	fov_ = std::clamp(fov_, fovMin_, fovMax_);
+	cameraSensitivity_.x =
+	    std::clamp(cameraSensitivity_.x, cameraSensitivityMin_, cameraSensitivityMax_);
+	cameraSensitivity_.y =
+	    std::clamp(cameraSensitivity_.x, cameraSensitivityMin_, cameraSensitivityMax_);
 
 	// ビュープロジェクション行列の更新
 	viewProjection_.UpdateMatrix();

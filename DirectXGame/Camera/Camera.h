@@ -44,6 +44,30 @@ public: // アクセッサ等
 	/// <param name="shakeStrength">シェイク強さの変数ポインタ</param>
 	void SetShakeStrength(const Vector2* shakeStrength) { shakeStrength_ = shakeStrength; }
 
+	/// <summary>
+	/// fovセッター
+	/// </summary>
+	/// <param name="fov"></param>
+	void SetFov(float fov) { fov_ = fov; }
+
+	/// <summary>
+	/// fovゲッター
+	/// </summary>
+	/// <returns></returns>
+	float GetFov() { return fov_; }
+
+	/// <summary>
+	/// カメラ感度セッター
+	/// </summary>
+	/// <param name="cameraSensitivity"></param>
+	void SetCameraSensitivity(Vector2 cameraSensitivity) { cameraSensitivity_ = cameraSensitivity; }
+	
+	/// <summary>
+	/// カメラ感度ゲッター
+	/// </summary>
+	/// <param name="cameraSensitivity"></param>
+	Vector2 GetCameraSensitivity() { return cameraSensitivity_; }
+
 private: // メンバ関数
 
 	/// <summary>
@@ -66,6 +90,17 @@ private: // メンバ変数
 	float fov_;
 	// カメラ感度
 	Vector2 cameraSensitivity_;
+
+	//Fov最大値
+	const float fovMin_ = 0.45f;
+	//Fov最小値
+	const float fovMax_ = 1.2f;
+
+	// cameraSensitivity最大値
+	const float cameraSensitivityMax_ = 0.1f;
+	// cameraSensitivity最小値
+	const float cameraSensitivityMin_ = 0.001f;
+
 
 	// カメラシェイク強さ
 	const Vector2* shakeStrength_ = nullptr;

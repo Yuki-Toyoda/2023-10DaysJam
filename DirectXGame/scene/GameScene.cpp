@@ -330,6 +330,10 @@ void GameScene::Initialize() {
 	input_->GetJoystickState(0, joyState);
 	preJoyState = joyState;
 
+	// オプション初期化
+	optionManager_ = OptionManager::GetInstance();
+	optionManager_->Initialize(camera_.get());
+
 	// タイトルテクスチャハンドル
 	titleNameTextureHandle_ = TextureManager::Load("./Resources/Title/title.png");
 	// タイトルスプライト
@@ -360,7 +364,13 @@ void GameScene::Update() {
 			break;
 		case GameScene::Main:
 			if (!theGameIsOver) {
-				MainUpdate();
+				// オプション開くか
+				optionManager_->OpenClose(joyState.Gamepad, preJoyState.Gamepad);
+				if (!optionManager_->GetIsOpen()) {
+					MainUpdate();
+				} else {
+					OptionUpdate();
+				}
 			}
 			break;
 		case GameScene::GameClear:
@@ -1041,3 +1051,16 @@ void GameScene::FadeInOutDraw() {
 	}
 
 }
+
+void GameScene::OptionUpdate() {
+
+	optionManager_->Update(joyState.Gamepad, preJoyState.Gamepad);
+	camera_->Update(); // カメラ
+	// ビュープロジェクションを追従カメラのものに設定する
+	viewProjection_ = camera_->GetViewProjection();
+	// 行列を定数バッファに転送
+	viewProjection_->TransferMatrix();
+
+}
+
+void GameScene::OptionDraw() {}

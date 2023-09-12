@@ -15,6 +15,7 @@
 #include "Charactor/CharactorList.h"
 #include "Collision/CollisionManager.h"
 #include "Ambient/Field.h"
+#include "Option/OptionManager.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -173,6 +174,15 @@ private: //描画
 	/// </summary>
 	void FadeInOutDraw();
 
+private: // その他
+
+	/// <summary>
+	/// オプションアップデート
+	/// </summary>
+	void OptionUpdate();
+
+	void OptionDraw();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -184,6 +194,9 @@ private: // メンバ変数
 
 	//フィールド
 	Field* field_ = nullptr;
+
+	//オプション
+	OptionManager* optionManager_ = nullptr;
 
 	// ビュープロジェクション
 	ViewProjection* viewProjection_;
