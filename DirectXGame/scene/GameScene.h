@@ -360,4 +360,12 @@ private: // メンバ変数
 	XINPUT_STATE joyState;
 	XINPUT_STATE preJoyState;
 
+	// タイトル
+	// タイトルスプライト
+	std::unique_ptr<Sprite> titleNameSpraite_;
+	// タイトルテクスチャハンドル
+	uint32_t titleNameTextureHandle_ = 0u;
+	// タイトルサイズ
+	Vector2 titleSize_;
+
 };

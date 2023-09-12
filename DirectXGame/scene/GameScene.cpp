@@ -330,6 +330,18 @@ void GameScene::Initialize() {
 	input_->GetJoystickState(0, joyState);
 	preJoyState = joyState;
 
+	// タイトルテクスチャハンドル
+	titleNameTextureHandle_ = TextureManager::Load("./Resources/Title/title.png");
+	// タイトルスプライト
+	titleNameSpraite_.reset(Sprite::Create(titleNameTextureHandle_,
+		Vector2( float(WinApp::kWindowWidth / 2.0f), float(WinApp::kWindowHeight / 2.0f)),
+		Vector4(1.0f,1.0f,1.0f,1.0f), Vector2(0.5f,0.5f)));
+	// タイトルサイズ
+	titleSize_ = titleNameSpraite_->GetSize();
+
+	//タイトルセットアップ
+	TitleSetup();
+
 }
 
 void GameScene::Update() {
@@ -421,6 +433,14 @@ void GameScene::TitleUpdate() {
 	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 		FadeInOutSetUp(Tutorial);
 	}
+	skyDome_->Update(); // 天球
+	ground_->Update();  // 地面
+	camera_->Update();  // カメラ
+	enemyManager_->Update(); // エネミーマネージャー
+	 // ビュープロジェクションを追従カメラのものに設定する
+	viewProjection_ = camera_->GetViewProjection();
+	// 行列を定数バッファに転送
+	viewProjection_->TransferMatrix();
 
 }
 
@@ -662,7 +682,16 @@ void GameScene::FadeInOutUpdate() {
 
 }
 
-void GameScene::TitleSetup() {}
+void GameScene::TitleSetup() {
+
+	enemyManager_->Delete();
+	enemyManager_->SetEnemyCount(0);
+	// カメラ
+	camera_->SetUp();
+	// エネミーマネージャー
+	enemyManager_->AddBossEnemy();
+
+}
 
 void GameScene::TutorialSetup() {
 
@@ -766,6 +795,10 @@ void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	skyDome_->Draw(*viewProjection_); // 天球
+	ground_->Draw(*viewProjection_);  // 地面
+	enemyManager_->Draw(*viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -778,6 +811,9 @@ void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	//タイトル
+	titleNameSpraite_->Draw();
 
 	//フェードインアウト
 	FadeInOutDraw();
