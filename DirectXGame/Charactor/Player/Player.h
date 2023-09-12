@@ -411,6 +411,9 @@ private: // メンバ関数
 	// 衝突無敵タイマー
 	uint32_t collisionInvincibilityTime_;
 
+	// 氷の上か
+	bool onTheIce;
+
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG
 

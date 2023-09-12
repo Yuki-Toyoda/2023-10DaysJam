@@ -336,6 +336,9 @@ void Player::Initialize(
 	// 衝突無敵タイマー
 	collisionInvincibilityTime_ = 20;
 
+	// 氷の上か
+	onTheIce = false;
+
 #pragma region ImGuiテスト用変数
 #ifdef _DEBUG
 
@@ -461,7 +464,9 @@ void Player::Update() {
 	BaseCharacter::Update();
 
 	// コライダー更新
-	colliderShape_->Update(GetWorldPosition(), worldTransform_.rotation_,colliderShape_->GetSize());
+	Vector3 colliderPos = GetWorldPosition();
+	colliderPos.y -= height_ / 2.0f;
+	colliderShape_->Update(colliderPos, worldTransform_.rotation_, colliderShape_->GetSize());
 
 	// 3Dレティクルのワールド座標更新
 	worldTransform3DReticle_.UpdateMatrix();
@@ -470,6 +475,9 @@ void Player::Update() {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
 	}
+
+	// 氷の上かをfalseに
+	onTheIce = false;
 
 	// ボタンのトリガー判定をとる
 	// ゲームパッドの状態取得
@@ -745,6 +753,9 @@ void Player::Setup() {
 	// 無敵タイマー
 	invincibilityTimer_ = 0;
 
+	// 氷の上か
+	onTheIce = false;
+
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		delete bullet;
@@ -804,21 +815,6 @@ void Player::SubtractNeedChangeOrbEnemyCount_() {
 }
 
 void Player::OnCollisionIce(Collider* collision) {
-
-	/*
-	if (accelerationIce_.x == 0.0f) {
-	    float reflection = -10.0f;
-	    float accelerationDown = 1.0f / 2.0f;
-
-	    worldTransform_.translation_ = preTranslation_;
-	    if (!isGround_) {
-	        worldTransform_.translation_.y = height_;
-	    }
-	    accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
-	    accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
-	    worldTransform_.UpdateMatrix();
-	}
-	*/
 
 	Vector3* iceOtientatuons = collision->GetColliderShape()->GetOtientatuons();
 
@@ -932,7 +928,7 @@ void Player::OnCollisionIce(Collider* collision) {
 			// tを求める
 			float t = (iceDistance[i] - MyMath::Dot(origin, icePlaneNormal[i])) / dot;
 
-			if (t >= 0 && t <= 1.0f) {
+			if (t >= 0) {
 
 				//平面の中か
 				Vector3 v01 = useVertex[i][1] - useVertex[i][0];
@@ -990,6 +986,13 @@ void Player::OnCollisionIce(Collider* collision) {
 	}
 
 	worldTransform_.translation_ = worldTransform_.translation_ + (icePlaneNormal[num] * distance);
+
+	// 氷の上か
+	if (num == 2) {
+		isGround_ = true;
+		onTheIce = true;
+		worldTransform_.translation_.y = worldTransform_.translation_.y + 4.0f;
+	}
 
 }
 
@@ -1109,6 +1112,11 @@ void Player::Move() {
 	} else {
 		// 落下スピード加算
 		worldTransform_.translation_.y += fallSpeed_;
+	}
+
+	// 一時座標がプレイヤー身長より上になったら
+	if (tempTranslateY > height_ && !onTheIce) {
+		isGround_ = false;
 	}
 }
 
