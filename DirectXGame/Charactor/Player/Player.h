@@ -346,6 +346,17 @@ private: // メンバ関数
 	// 行動できるか
 	bool canAction_;
 
+	// 根本的に移動できるのか
+	bool rootCanMove_;
+	// 根本的に通常射撃ができるか
+	bool rootCanShot_;
+	// 根本的に特殊射撃ができるか
+	bool rootCanSpecialShot_;
+	// 根本的にオーブ選択ができるか
+	bool rootCanSelectOrb_;
+	// 根本的にオーブ色変換ができるか
+	bool rootCanChangeOrbColor_;
+
 	// 移動速度
 	float moveSpeed_;
 	// 最大落下ベクトル
