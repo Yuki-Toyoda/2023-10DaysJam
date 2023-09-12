@@ -179,6 +179,8 @@
     <ClCompile Include="Effect\EnemyDeathEffect.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="Tutorial\TutorialManager.cpp" />
+    <ClCompile Include="Option\OptionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect\ExplosiveEffect.h">
@@ -358,6 +360,8 @@
     <ClInclude Include="Effect\EnemyDeathEffect.h">
       <Filter>Effect</Filter>
     </ClInclude>
+    <ClInclude Include="Tutorial\TutorialManager.h" />
+    <ClInclude Include="Option\OptionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">

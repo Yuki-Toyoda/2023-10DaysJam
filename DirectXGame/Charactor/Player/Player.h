@@ -178,7 +178,7 @@ private: //衝突処理
 	/// <summary>
 	/// 氷との衝突処理
 	/// </summary>
-	void OnCollisionIce();
+	void OnCollisionIce(Collider* collision);
 
 	/// <summary>
 	/// エネミーとの衝突処理
@@ -473,6 +473,9 @@ private: // メンバ関数
 	uint32_t invincibilityTimer_;
 	// 衝突無敵タイマー
 	uint32_t collisionInvincibilityTime_;
+
+	// 氷の上か
+	bool onTheIce;
 
 	#pragma region ImGuiテスト用変数
 	#ifdef _DEBUG

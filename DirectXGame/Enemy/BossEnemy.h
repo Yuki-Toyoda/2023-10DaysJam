@@ -124,7 +124,7 @@ public: // 衝突処理
 	/// <summary>
 	/// 氷弾
 	/// </summary>
-	void CollisionBulletIce(bool ishit);
+	void CollisionBulletIce(Collider* collision);
 
 	/// <summary>
 	/// 雷弾

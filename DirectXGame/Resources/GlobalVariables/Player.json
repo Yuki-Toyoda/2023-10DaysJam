@@ -18,7 +18,7 @@
         "MoveSpeed": 3.0,
         "OBBSize": [
             3.0,
-            3.0,
+            10.0,
             3.0
         ],
         "ShotPosOffset": [

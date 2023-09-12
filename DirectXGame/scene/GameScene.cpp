@@ -139,7 +139,7 @@ void GameScene::Initialize() {
 		texturehandleDpad_, // 十字ボタン
 		texturehandleButton_RT_N_, // RTトリガー
 		texturehandleButton_RT_P_, // RTトリガー押下時
-		texturehandleButton_LT_N_, // LTトリガー
+	    texturehandleButton_LT_N_, // LTトリガー
 		texturehandleButton_LT_P_, // LTトリガー押下時
 
 		// UIテクスチャ
@@ -330,6 +330,13 @@ void GameScene::Initialize() {
 	input_->GetJoystickState(0, joyState);
 	preJoyState = joyState;
 
+	// オプション初期化
+	optionManager_ = OptionManager::GetInstance();
+	optionManager_->Initialize(camera_.get());
+
+	//タイトルセットアップ
+	TitleSetup();
+
 }
 
 void GameScene::Update() {
@@ -348,7 +355,13 @@ void GameScene::Update() {
 			break;
 		case GameScene::Main:
 			if (!theGameIsOver) {
-				MainUpdate();
+				// オプション開くか
+				optionManager_->OpenClose(joyState.Gamepad, preJoyState.Gamepad);
+				if (!optionManager_->GetIsOpen()) {
+					MainUpdate();
+				} else {
+					OptionUpdate();
+				}
 			}
 			break;
 		case GameScene::GameClear:
@@ -421,6 +434,13 @@ void GameScene::TitleUpdate() {
 	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 		FadeInOutSetUp(Tutorial);
 	}
+	skyDome_->Update(); // 天球
+	ground_->Update();  // 地面
+	enemyManager_->Update(); // エネミーマネージャー
+	 // ビュープロジェクションを追従カメラのものに設定する
+	viewProjection_->rotation_ = viewProjection_->rotation_ + Vector3(0.0f, 0.0005f, 0.0f);
+	// 行列を定数バッファに転送
+	viewProjection_->UpdateMatrix();
 
 }
 
@@ -431,7 +451,7 @@ void GameScene::TutorialUpdate() {
 
 	// 更新処理全般
 	tutorialManager_->Update(); // チュートリアル
-	camera_->Update();          // カメラ
+	camera_->Update(false);          // カメラ
 	skyDome_->Update();         // 天球
 	ground_->Update();          // 地面
 	player_->Update();          // プレイヤー
@@ -504,7 +524,7 @@ void GameScene::MainUpdate() {
 	enemyManager_->DeleteEnemyBullet();
 
 	// 更新処理全般
-	camera_->Update();        // カメラ
+	camera_->Update(false);        // カメラ
 	skyDome_->Update();       // 天球
 	ground_->Update();        // 地面
 	player_->Update();        // プレイヤー
@@ -662,7 +682,35 @@ void GameScene::FadeInOutUpdate() {
 
 }
 
-void GameScene::TitleSetup() {}
+void GameScene::TitleSetup() {
+
+	enemyManager_->Delete();
+	enemyManager_->SetEnemyCount(0);
+
+	// エネミーマネージャー
+	enemyManager_->AddBossEnemy();
+
+	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->UpdateMatrix();
+
+	//アンロード
+	if (gameclearTextureHandle_ != 0u) {
+		TextureManager::Unload(gameclearTextureHandle_);
+		gameclearTextureHandle_ = 0u;
+	}
+	//テクスチャ読み込み
+
+	// タイトルテクスチャハンドル
+	titleNameTextureHandle_ = TextureManager::Load("./Resources/Scene/title.png");
+	// タイトルスプライト
+	titleNameSpraite_.reset(Sprite::Create(
+	    titleNameTextureHandle_,
+	    Vector2(0.0f, 0.0f)));
+	// タイトルサイズ
+	titleNameSize_ = titleNameSpraite_->GetSize();
+
+}
 
 void GameScene::TutorialSetup() {
 
@@ -677,6 +725,11 @@ void GameScene::TutorialSetup() {
 	effectManager_->Initialize();
 	// チュートリアルマネージャー
 	tutorialManager_->SetUp();
+
+	if (titleNameTextureHandle_ != 0u) {
+		TextureManager::Unload(titleNameTextureHandle_);
+		titleNameTextureHandle_ = 0u;
+	}
 
 }
 
@@ -693,11 +746,45 @@ void GameScene::MainSetup() {
 	// エネミーマネージャー
 	enemyManager_->Reset();
 
+	if (titleNameTextureHandle_ != 0u) {
+		TextureManager::Unload(titleNameTextureHandle_);
+		titleNameTextureHandle_ = 0u;
+	}
+	// アンロード
+	if (gameclearTextureHandle_ != 0u) {
+		TextureManager::Unload(gameclearTextureHandle_);
+		gameclearTextureHandle_ = 0u;
+	}
+
 }
 
-void GameScene::GameClearSetup() {}
+void GameScene::GameClearSetup() {
 
-void GameScene::GameOverSetup() {}
+	// クリアテクスチャハンドル
+	gameclearTextureHandle_ = TextureManager::Load("./Resources/Scene/gameclear.png");
+	// クリアスプライト
+	gameclearSpraite_.reset(Sprite::Create(
+	    gameclearTextureHandle_,
+	    Vector2(float(WinApp::kWindowWidth / 2.0f), float(WinApp::kWindowHeight / 2.0f)),
+	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
+	// クリアサイズ
+	gameclearSize_ = gameclearSpraite_->GetSize();
+
+}
+
+void GameScene::GameOverSetup() {
+
+	// オーバーテクスチャハンドル
+	gameoverTextureHandle_ = TextureManager::Load("./Resources/Scene/gameclear.png");
+	// オーバースプライト
+	gameoverSpraite_.reset(Sprite::Create(
+	    gameoverTextureHandle_,
+	    Vector2(float(WinApp::kWindowWidth / 2.0f), float(WinApp::kWindowHeight / 2.0f)),
+	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
+	// オーバーサイズ
+	gameoverSize_ = titleNameSpraite_->GetSize();
+
+}
 
 void GameScene::FadeInOutSetUp(SceneName nextScene) {
 	
@@ -768,6 +855,10 @@ void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	skyDome_->Draw(*viewProjection_); // 天球
+	ground_->Draw(*viewProjection_);  // 地面
+	enemyManager_->Draw(*viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -780,6 +871,9 @@ void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	//タイトル
+	titleNameSpraite_->Draw();
 
 	//フェードインアウト
 	FadeInOutDraw();
@@ -944,6 +1038,8 @@ void GameScene::GameClearDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
+	gameclearSpraite_->Draw();
+
 	// フェードインアウト
 	FadeInOutDraw();
 
@@ -990,6 +1086,8 @@ void GameScene::GameOverDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
+	gameoverSpraite_->Draw();
+
 	// フェードインアウト
 	FadeInOutDraw();
 
@@ -1007,3 +1105,16 @@ void GameScene::FadeInOutDraw() {
 	}
 
 }
+
+void GameScene::OptionUpdate() {
+
+	optionManager_->Update(joyState.Gamepad, preJoyState.Gamepad);
+	camera_->Update(true); // カメラ
+	// ビュープロジェクションを追従カメラのものに設定する
+	viewProjection_ = camera_->GetViewProjection();
+	// 行列を定数バッファに転送
+	viewProjection_->TransferMatrix();
+
+}
+
+void GameScene::OptionDraw() {}

@@ -139,6 +139,7 @@
     <ClCompile Include="Effect\SparkEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\MyMath.cpp" />
+    <ClCompile Include="Option\OptionManager.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Tutorial\TutorialManager.cpp" />
   </ItemGroup>
@@ -201,6 +202,7 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="Option\OptionManager.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Tutorial\TutorialManager.h" />
   </ItemGroup>

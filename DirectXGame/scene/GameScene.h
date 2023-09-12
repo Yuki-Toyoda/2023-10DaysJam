@@ -15,6 +15,7 @@
 #include "Charactor/CharactorList.h"
 #include "Collision/CollisionManager.h"
 #include "Ambient/Field.h"
+#include "Option/OptionManager.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -173,6 +174,15 @@ private: //描画
 	/// </summary>
 	void FadeInOutDraw();
 
+private: // その他
+
+	/// <summary>
+	/// オプションアップデート
+	/// </summary>
+	void OptionUpdate();
+
+	void OptionDraw();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -184,6 +194,9 @@ private: // メンバ変数
 
 	//フィールド
 	Field* field_ = nullptr;
+
+	//オプション
+	OptionManager* optionManager_ = nullptr;
 
 	// ビュープロジェクション
 	ViewProjection* viewProjection_;
@@ -359,5 +372,27 @@ private: // メンバ変数
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
 	XINPUT_STATE preJoyState;
+
+	// シーン
+	// タイトルスプライト
+	std::unique_ptr<Sprite> titleNameSpraite_;
+	// タイトルテクスチャハンドル
+	uint32_t titleNameTextureHandle_ = 0u;
+	// タイトルサイズ
+	Vector2 titleNameSize_;
+
+	// クリアスプライト
+	std::unique_ptr<Sprite> gameclearSpraite_;
+	// クリアテクスチャハンドル
+	uint32_t gameclearTextureHandle_ = 0u;
+	// クリアサイズ
+	Vector2 gameclearSize_;
+
+	// オーバースプライト
+	std::unique_ptr<Sprite> gameoverSpraite_;
+	// オーバーテクスチャハンドル
+	uint32_t gameoverTextureHandle_ = 0u;
+	// オーバーサイズ
+	Vector2 gameoverSize_;
 
 };
