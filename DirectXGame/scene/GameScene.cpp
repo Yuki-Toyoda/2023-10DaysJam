@@ -224,8 +224,19 @@ void GameScene::Initialize() {
 	    soundHandleDeployChoiceIceBullet_, // 氷弾選択音
 	};
 
+	// チュートリアル関連
+	soundHandleTutorialNext_ =
+	    audio_->LoadWave("/Audio/SE/TutorialNextSound.wav"); // チュートリアルで次に進む時の音
+	soundHandleTutorialClear_ =
+	    audio_->LoadWave("/Audio/SE/TutorialClearSound.wav"); // チュートリアルをクリアした時の音
+	soundHandleTutorialEnd_ =
+	    audio_->LoadWave("/Audio/SE/TutorialEnd.wav"); // チュートリアルを終了した時の音
+
+
 	std::vector<uint32_t> tutorialAudioHandles = {
-	    
+		soundHandleTutorialNext_,  // チュートリアルで次に進む時の音
+	    soundHandleTutorialClear_, // チュートリアルをクリアした時の音
+	    soundHandleTutorialEnd_,  // チュートリアルを終了した時の音
 	};
 
 	// エフェクトマネージャーの取得

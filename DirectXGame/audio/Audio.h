@@ -50,6 +50,13 @@ public: // サブクラス
 		ThunderBulletDeployEnd, // 雷エリア展開終了音
 	};
 
+	// チュートリアル効果音リスト
+	enum TutorialAudios {
+		NextTutorial,
+		clearTutorial,
+		endTutorial,
+	};
+
 public:
 	// サウンドデータの最大数
 	static const int kMaxSoundData = 256;

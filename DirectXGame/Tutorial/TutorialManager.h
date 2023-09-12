@@ -4,6 +4,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "Charactor/Player/Player.h"
+#include "audio/Audio.h"
 
 // クラスの前方宣言
 class EnemyManager;
@@ -149,6 +150,9 @@ private: // メンバ変数
 	XINPUT_STATE joyState;
 	XINPUT_STATE preJoyState;
 
+	// 音
+	Audio* audio_ = nullptr;
+
 	// プレイヤー
 	Player* player_;
 	// 敵マネージャー
@@ -167,6 +171,11 @@ private: // メンバ変数
 	int tutorialStagingWayPoint_;
 	// チュートリアル演出用t
 	float tutorialT_;
+
+	// チュートリアルスキップ演出用t
+	float tutorialSkipT_;
+	// チュートリアルスキップにかかる秒数
+	float tutorialSkipTime_;
 
 	// チュートリアル終了トリガー
 	bool isEndTutorial;
@@ -194,6 +203,8 @@ private: // メンバ変数
 	uint32_t textureHandleTutorialText_;
 	// 次のチュートリアルへ促すテクスチャ
 	uint32_t textureHandleNextTutorial_;
+	// チュートリアルスキップテクスチャ
+	uint32_t textureHandleSkipTutorial_;
 
 	// チュートリアルゲージの座標
 	Vector2 tutorialGagePosition_;
@@ -217,5 +228,14 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> spriteTutorialTextBackGround_;
 	// チュートリアルテキスト用スプライト
 	std::unique_ptr<Sprite> spriteTutorialText_;
+
+	// チュートリアルスキップテキストの座標
+	Vector2 tutorialSkipTextPosition_;
+	// チュートリアルスキップテキストの大きさ
+	Vector2 tutorialSkipTextSize_;
+	// チュートリアルスキップテキスト用スプライト
+	std::unique_ptr<Sprite> spriteTutorialSkipText_;
+	// チュートリアルスキップテキスト用進捗ゲージスプライト
+	std::unique_ptr<Sprite> spriteTutorialGageSkipText_;
 
 };

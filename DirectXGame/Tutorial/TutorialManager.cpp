@@ -29,6 +29,9 @@ void TutorialManager::Initialize(
 	input_->GetJoystickState(0, joyState);
 	preJoyState = joyState;
 
+	// 音検知
+	audio_ = Audio::GetInstance();
+
 	// 敵マネージャーのインスタンス取得
 	enemyManager_ = EnemyManager::GetInstance();
 
@@ -38,6 +41,9 @@ void TutorialManager::Initialize(
 	tutorialStagingWayPoint_ = WayPoint1;
 	// チュートリアル演出用t
 	tutorialT_ = 0.0f;
+
+	// チュートリアルスキップ演出用t
+	tutorialSkipT_ = 0.0f;
 
 	// チュートリアル終了トリガーリセット
 	isEndTutorial = false;
@@ -66,7 +72,9 @@ void TutorialManager::Initialize(
 	// 次のチュートリアルへ促すテクスチャ
 	textureHandleNextTutorial_ =
 	    TextureManager::Load("/Image/Tutorial/NextTutorialText.png");
-	
+	// チュートリアルスキップテクスチャ
+	textureHandleSkipTutorial_ = TextureManager::Load("/Image/Tutorial/tutorialSkipUI.png");
+
 	// チュートリアルゲージの大きさ
 	tutorialGageSize_ = {500.0f, 16.0f};
 	// チュートリアルゲージの座標
@@ -109,6 +117,21 @@ void TutorialManager::Initialize(
 	    {tutorialTextPosition_.x + 300.0f, tutorialTextPosition_.y - 250.0f},
 	    {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 
+	// チュートリアルスキップテキストの座標
+	tutorialSkipTextPosition_ = {300.0f, 50.0f};
+	// チュートリアルスキップテキストの大きさ
+	tutorialSkipTextSize_ = {363.0f, 64.0f};
+	// チュートリアルスキップテキスト
+	spriteTutorialSkipText_.reset(Sprite::Create(
+	    textureHandleSkipTutorial_, tutorialSkipTextPosition_, {1.0f, 1.0f, 1.0f, 1.0f},
+	    {0.5f, 0.5f}));
+	// チュートリアルスキップテキスト用進捗ゲージスプライト
+	spriteTutorialGageSkipText_.reset(Sprite::Create(
+	    textureHandles_[0],
+	    {tutorialSkipTextPosition_.x + tutorialSkipTextSize_.x / 2.25f, tutorialSkipTextPosition_.y}, 
+		{1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.5f}));
+	spriteTutorialGageSkipText_->SetSize({0.0f, tutorialSkipTextSize_.y});
+
 }
 
 void TutorialManager::SetUp() {
@@ -119,6 +142,11 @@ void TutorialManager::SetUp() {
 	tutorialStagingWayPoint_ = WayPoint1;
 	// チュートリアル演出用t
 	tutorialT_ = 0.0f;
+
+	// チュートリアルスキップ演出用t
+	tutorialSkipT_ = 0.0f;
+	// チュートリアルスキップにかかる秒数
+	tutorialSkipTime_ = 1.25f;
 
 	// チュートリアル終了トリガーリセット
 	isEndTutorial = false;
@@ -149,6 +177,14 @@ void TutorialManager::SetUp() {
 	// チュートリアルテキスト座標
 	tutorialTextPosition_ = {(float)WinApp::GetInstance()->kWindowWidth / 2, 600.0f};
 
+	// チュートリアルスキップテキストの座標
+	tutorialSkipTextPosition_ = {(float)WinApp::GetInstance()->kWindowWidth / 2, 50.0f};
+	// チュートリアルスキップテキストの大きさ
+	tutorialSkipTextSize_ = {363.0f, 64.0f};
+
+	// チュートリアルスキップテキスト用進捗ゲージスプライト
+	spriteTutorialGageSkipText_->SetSize({0.0f, tutorialSkipTextSize_.y});
+
 	// 最初の画像を読み込み
 	TextureManager::Unload(textureHandleTutorialImage_); // 一応アンロード
 	textureHandleTutorialImage_ =
@@ -178,6 +214,25 @@ void TutorialManager::Update() {
 	// ゲームパッドの状態取得
 	preJoyState = joyState;
 	input_->GetJoystickState(0, joyState);
+
+	// Yボタンが押されると
+	if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && !isEndTutorial) {
+		if (tutorialSkipT_ >= tutorialSkipTime_) {
+			// チュートリアルを終了させる
+			tutorialSteps_ = TutorialEnd;
+		} else {
+			// 押している間加算
+			tutorialSkipT_ += 1.0f / 60.0f;
+		}
+	} else {
+		if (tutorialSkipT_ > 0) {
+			// 押していない間は減算する
+			tutorialSkipT_ -= 1.0f / 60.0f;
+		} else {
+			// 0いかにならないよう固定
+			tutorialSkipT_ = 0.0f;
+		}
+	}
 
 	// チュートリアル段階によって切り替え
 	switch (tutorialSteps_) {
@@ -250,9 +305,15 @@ void TutorialManager::Update() {
 
 	// チュートリアル終了が終了段階なら
 	if (tutorialSteps_ == TutorialEnd) {
-		// Bボタンが押されたら
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
-		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+		// Bボタンが押されたらまたはチュートリアルスキップを行うなら
+		if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) || 
+			tutorialSkipT_ >= tutorialSkipTime_) {
+			// チュートリアルスキップ用tを初期化
+			tutorialSkipT_ = 0.0f;
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::endTutorial]);
+
 			// チュートリアル終了
 			isEndTutorial = true;
 		}
@@ -271,6 +332,12 @@ void TutorialManager::Update() {
 	// チュートリアルテキスト
 	spriteTutorialText_->SetSize(tutorialTextSize_);         // 大きさ
 	spriteTutorialText_->SetPosition(tutorialTextPosition_); // 座標
+	// チュートリアルスキップテキスト
+	spriteTutorialSkipText_->SetSize(tutorialSkipTextSize_); // 大きさ
+	spriteTutorialSkipText_->SetPosition(tutorialSkipTextPosition_); // 位置
+	float skipGageLength =
+	    MyMath::Linear(tutorialSkipT_, 0.0f, tutorialSkipTextSize_.x, tutorialSkipTime_);
+	spriteTutorialGageSkipText_->SetSize({skipGageLength, tutorialSkipTextSize_.y});
 
 	// チュートリアル中はHHPが位置を下回らないように
 	if (player_->GetHp() <= 0) {
@@ -296,6 +363,10 @@ void TutorialManager::SpriteDraw() {
 	spriteTutorialTextBackGround_->Draw();
 	// チュートリアルテキスト
 	spriteTutorialText_->Draw();
+
+	// チュートリアルスキップテキスト
+	spriteTutorialSkipText_->Draw();
+	spriteTutorialGageSkipText_->Draw();
 }
 
 void TutorialManager::MoveTutorial() {
@@ -338,13 +409,16 @@ void TutorialManager::MoveTutorial() {
 		// プレイヤーの通常射撃を可能に
 		player_->SetRootCanShot(true);
 
+		// トリガーリセット
+		isNextTutorial_ = false;
+
+		// クリア音再生
+		audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 		// ゲージ進捗リセット
 		tutorialGageProgress_ = 0.0f;
 		// 次のチュートリアルへ
 		tutorialSteps_++;
-
-		// トリガーリセット
-		isNextTutorial_ = false;
 	}
 }
 
@@ -365,6 +439,9 @@ void TutorialManager::NormalShotTutorial() {
 
 		// チュートリアル用敵の出現
 		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+
+		// クリア音再生
+		audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
 
 		// ゲージ進捗リセット
 		tutorialGageProgress_ = 0.0f;
@@ -393,6 +470,9 @@ void TutorialManager::OrbTutorial() {
 			// プレイヤーを動けない状態に
 			player_->SetCanAction(false);
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// チュートリアル用画像表示
 			displayTutorialImage_ = true;
 			// 次のチュートリアル段階へ
@@ -417,6 +497,9 @@ void TutorialManager::OrbTutorial() {
 			// チュートリアル用画像非表示
 			displayTutorialImage_ = false;
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -426,6 +509,10 @@ void TutorialManager::OrbTutorial() {
 		if (joyState.Gamepad.bLeftTrigger > 25) {
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
+
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 		}
 		break;
 	case TutorialManager::WayPoint4:
@@ -568,6 +655,9 @@ void TutorialManager::FireBulletTutorial() {
 			// プレイヤーを動ける状態に
 			player_->SetCanAction(true);
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -598,6 +688,9 @@ void TutorialManager::FireBulletTutorial() {
 			tutorialTextSize_ = {832.0f, 96.0f};
 			tutorialGagePosition_.y = 600.0f;
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -607,6 +700,10 @@ void TutorialManager::FireBulletTutorial() {
 		// Bボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
 		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアルへ
 			isNextTutorial_ = true;
 		}
@@ -753,6 +850,9 @@ void TutorialManager::IceBulletTutorial() {
 			// プレイヤーを動ける状態に
 			player_->SetCanAction(true);
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -783,6 +883,9 @@ void TutorialManager::IceBulletTutorial() {
 			tutorialTextSize_ = {832.0f, 96.0f};
 			tutorialGagePosition_.y = 600.0f;
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -792,6 +895,10 @@ void TutorialManager::IceBulletTutorial() {
 		// Bボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
 		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアルへ
 			isNextTutorial_ = true;
 		}
@@ -936,6 +1043,9 @@ void TutorialManager::ThunderBulletTutorial() {
 			// プレイヤーを動ける状態に
 			player_->SetCanAction(true);
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -966,6 +1076,9 @@ void TutorialManager::ThunderBulletTutorial() {
 			tutorialTextSize_ = {832.0f, 96.0f};
 			tutorialGagePosition_.y = 600.0f;
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -975,6 +1088,10 @@ void TutorialManager::ThunderBulletTutorial() {
 		// Bボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
 		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアルへ
 			isNextTutorial_ = true;
 		}
@@ -1056,6 +1173,9 @@ void TutorialManager::OrbReinforcementTutorial() {
 			textureHandleTutorialImage_ =
 			    TextureManager::Load("/Image/Tutorial/Image_7_OrbReinforcementTutorialImageUI.png");
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -1080,6 +1200,8 @@ void TutorialManager::OrbReinforcementTutorial() {
 			// プレイヤーを動ける状態に
 			player_->SetCanAction(true);
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
 
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
@@ -1096,6 +1218,9 @@ void TutorialManager::OrbReinforcementTutorial() {
 			// チュートリアルのテキスト大きさ画像に合わせて再設定
 			tutorialTextSize_ = {832.0f, 192.0f};
 			tutorialGagePosition_.y = 475.0f;
+
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
 
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
@@ -1114,6 +1239,9 @@ void TutorialManager::OrbReinforcementTutorial() {
 			tutorialTextSize_ = {832.0f, 96.0f};
 			tutorialGagePosition_.y = 600.0f;
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -1122,6 +1250,10 @@ void TutorialManager::OrbReinforcementTutorial() {
 		// Bボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
 		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアルへ
 			isNextTutorial_ = true;
 		}
@@ -1213,6 +1345,9 @@ void TutorialManager::ChangeOrbTutorial() {
 			// チュートリアル画像を非表示
 			displayTutorialImage_ = true;
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -1254,6 +1389,9 @@ void TutorialManager::ChangeOrbTutorial() {
 			// オーブ選択可能に
 			player_->SetRootCanSelectOrb(true);
 
+			// 次へ音再生
+			audio_->PlayWave(audioHandles_[Audio::NextTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -1278,6 +1416,9 @@ void TutorialManager::ChangeOrbTutorial() {
 			// オーブ色変更可能に
 			player_->SetRootCanChangeOrbColor(true);
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// 次のチュートリアル段階へ
 			tutorialStagingWayPoint_++;
 		}
@@ -1300,6 +1441,9 @@ void TutorialManager::ChangeOrbTutorial() {
 			tutorialTextSize_ = {832.0f, 96.0f};
 			tutorialGagePosition_.y = 600.0f;
 
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// オーブ色変更可能に
 			player_->SetRootCanChangeOrbColor(false);
 			// オーブ変換可能に
@@ -1318,6 +1462,10 @@ void TutorialManager::ChangeOrbTutorial() {
 		// Xボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X &&
 		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+
+			// クリア音再生
+			audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
+
 			// 次のチュートリアルへ
 			isNextTutorial_ = true;
 		}

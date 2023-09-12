@@ -685,6 +685,14 @@ void Player::Setup() {
 	// 氷の上か
 	onTheIce = false;
 
+	// 根本トリガーの初期化
+	rootCanMove_ = true;        // 移動
+	rootCanShot_ = true;        // 通常射撃
+	rootCanSpecialShot_ = true; // 特殊射撃
+	rootCanSelectOrb_ = true;
+	rootCanChangeOrbColor_ = true;
+	rootCanChangeOrb_ = true; // オーブ変換
+
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		delete bullet;

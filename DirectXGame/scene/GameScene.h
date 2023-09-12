@@ -302,6 +302,11 @@ private: // メンバ変数
 	uint32_t soundHandleDeployChoiceFireBullet_; // 炎弾選択音
 	uint32_t soundHandleDeployChoiceIceBullet_; // 氷弾選択音
 
+	// チュートリアル関連
+	uint32_t soundHandleTutorialNext_; // チュートリアルで次に進む時の音
+	uint32_t soundHandleTutorialClear_; // チュートリアルをクリアした時の音
+	uint32_t soundHandleTutorialEnd_; // チュートリアルを終了した時の音
+
 	//スプライト
 	// ボスHP
 	std::unique_ptr<Sprite> bossHpSprite_;

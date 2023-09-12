@@ -24,7 +24,7 @@ public: // メンバ関数
 private: // メンバ変数
 
 	// 粒子の数
-	const static int kMaxParticleCount_ = 32;
+	const static int kMaxParticleCount_ = 12;
 	
 	// 粒子ごとのワールド座標
 	WorldTransform worldTransformParticle_[kMaxParticleCount_];
