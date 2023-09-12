@@ -379,6 +379,35 @@ private: // メンバ変数
 	// タイトルテクスチャハンドル
 	uint32_t titleNameTextureHandle_ = 0u;
 	// タイトルサイズ
-	Vector2 titleSize_;
+	Vector2 titleNameSize_;
+
+	// テキスト
+	// ゲームスプライト
+	std::unique_ptr<Sprite> gameTextSpraite_;
+	// ゲームテクスチャハンドル
+	uint32_t gameTextTextureHandle_ = 0u;
+	// ゲームサイズ
+	Vector2 gameTextSize_;
+
+	// リトライスプライト
+	std::unique_ptr<Sprite> retryTextSpraite_;
+	// リトライテクスチャハンドル
+	uint32_t retryTextTextureHandle_ = 0u;
+	// リトライサイズ
+	Vector2 retryTextSize_;
+
+	// タイトルスプライト
+	std::unique_ptr<Sprite> titleTextSpraite_;
+	// タイトルテクスチャハンドル
+	uint32_t titleTextTextureHandle_ = 0u;
+	// タイトルサイズ
+	Vector2 titleTextSize_;
+
+	// チュートリアルスプライト
+	std::unique_ptr<Sprite> tutorialTextSpraite_;
+	// チュートリアルテクスチャハンドル
+	uint32_t tutorialTextTextureHandle_ = 0u;
+	// チュートリアルサイズ
+	Vector2 tutorialTextSize_;
 
 };
