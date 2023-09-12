@@ -436,12 +436,11 @@ void GameScene::TitleUpdate() {
 	}
 	skyDome_->Update(); // 天球
 	ground_->Update();  // 地面
-	camera_->Update(false);  // カメラ
 	enemyManager_->Update(); // エネミーマネージャー
 	 // ビュープロジェクションを追従カメラのものに設定する
-	viewProjection_ = camera_->GetViewProjection();
+	viewProjection_->rotation_ = viewProjection_->rotation_ + Vector3(0.0f, 0.0005f, 0.0f);
 	// 行列を定数バッファに転送
-	viewProjection_->TransferMatrix();
+	viewProjection_->UpdateMatrix();
 
 }
 
@@ -687,59 +686,29 @@ void GameScene::TitleSetup() {
 
 	enemyManager_->Delete();
 	enemyManager_->SetEnemyCount(0);
-	// カメラ
-	camera_->SetUp();
+
 	// エネミーマネージャー
 	enemyManager_->AddBossEnemy();
 
+	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->UpdateMatrix();
+
+	//アンロード
+	if (gameclearTextureHandle_ != 0u) {
+		TextureManager::Unload(gameclearTextureHandle_);
+		gameclearTextureHandle_ = 0u;
+	}
 	//テクスチャ読み込み
-	if (titleTextTextureHandle_ != 0u) {
-		TextureManager::Unload(titleTextTextureHandle_);
-		titleTextTextureHandle_ = 0u;
-	}
-	if (retryTextTextureHandle_ != 0u) {
-		TextureManager::Unload(retryTextTextureHandle_);
-		retryTextTextureHandle_ = 0u;
-	}
 
 	// タイトルテクスチャハンドル
-	titleNameTextureHandle_ = TextureManager::Load("./Resources/Title/title.png");
+	titleNameTextureHandle_ = TextureManager::Load("./Resources/Scene/title.png");
 	// タイトルスプライト
 	titleNameSpraite_.reset(Sprite::Create(
 	    titleNameTextureHandle_,
-	    Vector2(float(WinApp::kWindowWidth / 2.0f), float(WinApp::kWindowHeight / 2.0f)),
-	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
+	    Vector2(0.0f, 0.0f)));
 	// タイトルサイズ
 	titleNameSize_ = titleNameSpraite_->GetSize();
-
-	// テキスト
-	// ゲームテクスチャハンドル
-	gameTextTextureHandle_ = TextureManager::Load("./Resources/Image/text/game.png");
-	// ゲームスプライト
-	gameTextSpraite_.reset(Sprite::Create(
-	    gameTextTextureHandle_,
-	    Vector2(float(WinApp::kWindowWidth / 4.0f), float(WinApp::kWindowHeight * 3.0f / 4.0f)),
-	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
-	// ゲームサイズ
-	gameTextSize_ = gameTextSpraite_->GetSize();
-	gameTextSize_.x /= 2.0f;
-	gameTextSize_.y /= 2.0f;
-	gameTextSpraite_->SetSize(gameTextSize_);
-
-
-	// チュートリアルテクスチャハンドル
-	tutorialTextTextureHandle_ = TextureManager::Load("./Resources/Image/text/tutorial.png");
-	// チュートリアルスプライト
-	tutorialTextSpraite_.reset(Sprite::Create(
-	    tutorialTextTextureHandle_,
-	    Vector2(
-	        float(WinApp::kWindowWidth * 3.0f / 4.0f), float(WinApp::kWindowHeight * 3.0f / 4.0f)),
-	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
-	// チュートリアルサイズ
-	tutorialTextSize_ = tutorialTextSpraite_->GetSize();
-	tutorialTextSize_.x /= 2.0f;
-	tutorialTextSize_.y /= 2.0f;
-	tutorialTextSpraite_->SetSize(tutorialTextSize_);
 
 }
 
@@ -758,14 +727,6 @@ void GameScene::TutorialSetup() {
 	if (titleNameTextureHandle_ != 0u) {
 		TextureManager::Unload(titleNameTextureHandle_);
 		titleNameTextureHandle_ = 0u;
-	}
-	if (gameTextTextureHandle_ != 0u) {
-		TextureManager::Unload(gameTextTextureHandle_);
-		gameTextTextureHandle_ = 0u;
-	}
-	if (tutorialTextTextureHandle_ != 0u) {
-		TextureManager::Unload(tutorialTextTextureHandle_);
-		tutorialTextTextureHandle_ = 0u;
 	}
 
 }
@@ -787,84 +748,40 @@ void GameScene::MainSetup() {
 		TextureManager::Unload(titleNameTextureHandle_);
 		titleNameTextureHandle_ = 0u;
 	}
-	if (gameTextTextureHandle_ != 0u) {
-		TextureManager::Unload(gameTextTextureHandle_);
-		gameTextTextureHandle_ = 0u;
-	}
-	if (tutorialTextTextureHandle_ != 0u) {
-		TextureManager::Unload(tutorialTextTextureHandle_);
-		tutorialTextTextureHandle_ = 0u;
-	}
-	if (titleTextTextureHandle_ != 0u) {
-		TextureManager::Unload(titleTextTextureHandle_);
-		titleTextTextureHandle_ = 0u;
-	}
-	if (retryTextTextureHandle_ != 0u) {
-		TextureManager::Unload(retryTextTextureHandle_);
-		retryTextTextureHandle_ = 0u;
+	// アンロード
+	if (gameclearTextureHandle_ != 0u) {
+		TextureManager::Unload(gameclearTextureHandle_);
+		gameclearTextureHandle_ = 0u;
 	}
 
 }
 
 void GameScene::GameClearSetup() {
 
-	// タイトルテクスチャハンドル
-	titleTextTextureHandle_ = TextureManager::Load("./Resources/Image/text/title.png");
-	// タイトルスプライト
-	titleTextSpraite_.reset(Sprite::Create(
-	    titleTextTextureHandle_,
-	    Vector2(
-	        float(WinApp::kWindowWidth * 3.0f / 4.0f), float(WinApp::kWindowHeight * 3.0f / 4.0f)),
+	// クリアテクスチャハンドル
+	gameclearTextureHandle_ = TextureManager::Load("./Resources/Scene/gameclear.png");
+	// クリアスプライト
+	gameclearSpraite_.reset(Sprite::Create(
+	    gameclearTextureHandle_,
+	    Vector2(float(WinApp::kWindowWidth / 2.0f), float(WinApp::kWindowHeight / 2.0f)),
 	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
-	// タイトルサイズ
-	titleTextSize_ = titleTextSpraite_->GetSize();
-	titleTextSize_.x /= 2.0f;
-	titleTextSize_.y /= 2.0f;
-	titleTextSpraite_->SetSize(titleTextSize_);
-
-	// リトライテクスチャハンドル
-	retryTextTextureHandle_ = TextureManager::Load("./Resources/Image/text/retry.png");
-	// リトライスプライト
-	retryTextSpraite_.reset(Sprite::Create(
-	    retryTextTextureHandle_,
-	    Vector2(float(WinApp::kWindowWidth / 4.0f), float(WinApp::kWindowHeight * 3.0f / 4.0f)),
-	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
-	// リトライサイズ
-	retryTextSize_ = retryTextSpraite_->GetSize();
-	retryTextSize_.x /= 2.0f;
-	retryTextSize_.y /= 2.0f;
-	retryTextSpraite_->SetSize(retryTextSize_);
+	// クリアサイズ
+	gameclearSize_ = gameclearSpraite_->GetSize();
 
 }
 
 void GameScene::GameOverSetup() {
 
-		// タイトルテクスチャハンドル
-	titleTextTextureHandle_ = TextureManager::Load("./Resources/Image/text/title.png");
-	// タイトルスプライト
-	titleTextSpraite_.reset(Sprite::Create(
-	    titleTextTextureHandle_,
-	    Vector2(
-	        float(WinApp::kWindowWidth * 3.0f / 4.0f), float(WinApp::kWindowHeight * 3.0f / 4.0f)),
+	// オーバーテクスチャハンドル
+	gameoverTextureHandle_ = TextureManager::Load("./Resources/Scene/gameclear.png");
+	// オーバースプライト
+	gameoverSpraite_.reset(Sprite::Create(
+	    gameoverTextureHandle_,
+	    Vector2(float(WinApp::kWindowWidth / 2.0f), float(WinApp::kWindowHeight / 2.0f)),
 	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
-	// タイトルサイズ
-	titleTextSize_ = titleTextSpraite_->GetSize();
-	titleTextSize_.x /= 2.0f;
-	titleTextSize_.y /= 2.0f;
-	titleTextSpraite_->SetSize(titleTextSize_);
+	// オーバーサイズ
+	gameoverSize_ = titleNameSpraite_->GetSize();
 
-	// リトライテクスチャハンドル
-	retryTextTextureHandle_ = TextureManager::Load("./Resources/Image/text/retry.png");
-	// リトライスプライト
-	retryTextSpraite_.reset(Sprite::Create(
-	    retryTextTextureHandle_,
-	    Vector2(float(WinApp::kWindowWidth / 4.0f), float(WinApp::kWindowHeight * 3.0f / 4.0f)),
-	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
-	// リトライサイズ
-	retryTextSize_ = retryTextSpraite_->GetSize();
-	retryTextSize_.x /= 2.0f;
-	retryTextSize_.y /= 2.0f;
-	retryTextSpraite_->SetSize(retryTextSize_);
 }
 
 void GameScene::FadeInOutSetUp(SceneName nextScene) {
@@ -955,8 +872,6 @@ void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) {
 
 	//タイトル
 	titleNameSpraite_->Draw();
-	gameTextSpraite_->Draw();
-	tutorialTextSpraite_->Draw();
 
 	//フェードインアウト
 	FadeInOutDraw();
@@ -1121,8 +1036,7 @@ void GameScene::GameClearDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	retryTextSpraite_->Draw();
-	titleTextSpraite_->Draw();
+	gameclearSpraite_->Draw();
 
 	// フェードインアウト
 	FadeInOutDraw();
@@ -1170,8 +1084,7 @@ void GameScene::GameOverDraw(ID3D12GraphicsCommandList* commandList) {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	retryTextSpraite_->Draw();
-	titleTextSpraite_->Draw();
+	gameoverSpraite_->Draw();
 
 	// フェードインアウト
 	FadeInOutDraw();

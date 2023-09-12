@@ -373,7 +373,7 @@ private: // メンバ変数
 	XINPUT_STATE joyState;
 	XINPUT_STATE preJoyState;
 
-	// タイトル
+	// シーン
 	// タイトルスプライト
 	std::unique_ptr<Sprite> titleNameSpraite_;
 	// タイトルテクスチャハンドル
@@ -381,33 +381,18 @@ private: // メンバ変数
 	// タイトルサイズ
 	Vector2 titleNameSize_;
 
-	// テキスト
-	// ゲームスプライト
-	std::unique_ptr<Sprite> gameTextSpraite_;
-	// ゲームテクスチャハンドル
-	uint32_t gameTextTextureHandle_ = 0u;
-	// ゲームサイズ
-	Vector2 gameTextSize_;
+	// クリアスプライト
+	std::unique_ptr<Sprite> gameclearSpraite_;
+	// クリアテクスチャハンドル
+	uint32_t gameclearTextureHandle_ = 0u;
+	// クリアサイズ
+	Vector2 gameclearSize_;
 
-	// リトライスプライト
-	std::unique_ptr<Sprite> retryTextSpraite_;
-	// リトライテクスチャハンドル
-	uint32_t retryTextTextureHandle_ = 0u;
-	// リトライサイズ
-	Vector2 retryTextSize_;
-
-	// タイトルスプライト
-	std::unique_ptr<Sprite> titleTextSpraite_;
-	// タイトルテクスチャハンドル
-	uint32_t titleTextTextureHandle_ = 0u;
-	// タイトルサイズ
-	Vector2 titleTextSize_;
-
-	// チュートリアルスプライト
-	std::unique_ptr<Sprite> tutorialTextSpraite_;
-	// チュートリアルテクスチャハンドル
-	uint32_t tutorialTextTextureHandle_ = 0u;
-	// チュートリアルサイズ
-	Vector2 tutorialTextSize_;
+	// オーバースプライト
+	std::unique_ptr<Sprite> gameoverSpraite_;
+	// オーバーテクスチャハンドル
+	uint32_t gameoverTextureHandle_ = 0u;
+	// オーバーサイズ
+	Vector2 gameoverSize_;
 
 };
