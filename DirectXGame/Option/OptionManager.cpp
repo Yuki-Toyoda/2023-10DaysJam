@@ -131,8 +131,8 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 
 	ImGui::Begin("Option");
 	ImGui::Text("Fov%f", camera_->GetFov());
-	ImGui::Text("CameraSensitivity%f", camera_->GetCameraSensitivity().x);
-	ImGui::Text("CameraSensitivity%f", camera_->GetCameraSensitivity().y);
+	ImGui::Text("CameraSensitivityX%f", camera_->GetCameraSensitivity().x);
+	ImGui::Text("CameraSensitivityY%f", camera_->GetCameraSensitivity().y);
 	ImGui::End();
 
 #endif // DEBUG

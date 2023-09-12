@@ -28,14 +28,14 @@ void Camera::Intialize() {
 
 }
 
-void Camera::Update() {
+void Camera::Update(bool isOption) {
 
 	// 視野角の設定
 	viewProjection_.fovAngleY = fov_;
 
 	// ゲームパッドの状態取得
 	XINPUT_STATE joyState;
-	if (input_->GetJoystickState(0, joyState)) {
+	if (input_->GetJoystickState(0, joyState) && !isOption) {
 		// スティックの横移動に対してカメラを旋回
 		viewProjection_.rotation_.x -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * cameraSensitivity_.x;
 		viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * cameraSensitivity_.y;
@@ -85,7 +85,7 @@ void Camera::Update() {
 	cameraSensitivity_.x =
 	    std::clamp(cameraSensitivity_.x, cameraSensitivityMin_, cameraSensitivityMax_);
 	cameraSensitivity_.y =
-	    std::clamp(cameraSensitivity_.x, cameraSensitivityMin_, cameraSensitivityMax_);
+	    std::clamp(cameraSensitivity_.y, cameraSensitivityMin_, cameraSensitivityMax_);
 
 	// ビュープロジェクション行列の更新
 	viewProjection_.UpdateMatrix();

@@ -445,7 +445,7 @@ void GameScene::TitleUpdate() {
 	}
 	skyDome_->Update(); // 天球
 	ground_->Update();  // 地面
-	camera_->Update();  // カメラ
+	camera_->Update(false);  // カメラ
 	enemyManager_->Update(); // エネミーマネージャー
 	 // ビュープロジェクションを追従カメラのものに設定する
 	viewProjection_ = camera_->GetViewProjection();
@@ -461,7 +461,7 @@ void GameScene::TutorialUpdate() {
 
 	// 更新処理全般
 	tutorialManager_->Update(); // チュートリアル
-	camera_->Update();          // カメラ
+	camera_->Update(false);          // カメラ
 	skyDome_->Update();         // 天球
 	ground_->Update();          // 地面
 	player_->Update();          // プレイヤー
@@ -534,7 +534,7 @@ void GameScene::MainUpdate() {
 	enemyManager_->DeleteEnemyBullet();
 
 	// 更新処理全般
-	camera_->Update();        // カメラ
+	camera_->Update(false);        // カメラ
 	skyDome_->Update();       // 天球
 	ground_->Update();        // 地面
 	player_->Update();        // プレイヤー
@@ -1055,7 +1055,7 @@ void GameScene::FadeInOutDraw() {
 void GameScene::OptionUpdate() {
 
 	optionManager_->Update(joyState.Gamepad, preJoyState.Gamepad);
-	camera_->Update(); // カメラ
+	camera_->Update(true); // カメラ
 	// ビュープロジェクションを追従カメラのものに設定する
 	viewProjection_ = camera_->GetViewProjection();
 	// 行列を定数バッファに転送

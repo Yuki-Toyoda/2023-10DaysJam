@@ -17,7 +17,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 更新関数
 	/// </summary>
-	void Update();
+	void Update(bool isOption);
 
 	/// <summary>
 	/// セットアップ
