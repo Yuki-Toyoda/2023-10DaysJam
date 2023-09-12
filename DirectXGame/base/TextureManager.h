@@ -63,6 +63,28 @@ public: // サブクラス
 
 	};
 
+	enum OptionTextures {
+		tex_0,
+		tex_1,
+		tex_2,
+		tex_3,
+		tex_4,
+		tex_5,
+		tex_6,
+		tex_7,
+		tex_8,
+		tex_9,
+
+		texture1x1,
+
+		BackGruond,
+		FOV,
+		CameraSensitivityX,
+		CameraSensitivityY,
+		SelectItem,
+
+	};
+
 public:
 	// デスクリプターの数
 	static const size_t kNumDescriptors = 256;

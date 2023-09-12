@@ -67,7 +67,7 @@ public: // メンバ関数
 	/// <param name="audioHandles">効果音達</param>
 	void Initialize(
 	    const std::vector<Model*>& tutorialModels,
-	    const std::vector<uint32_t>& textureHandles, const std::vector<uint32_t>& audioHandles);;
+	    const std::vector<uint32_t>& textureHandles, const std::vector<uint32_t>& audioHandles);
 
 	/// <summary>
 	/// セットアップ関数

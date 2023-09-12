@@ -281,6 +281,13 @@ private: // メンバ変数
 	// コントローラー非接続スプライト
 	std::unique_ptr<Sprite> disconectControllerUI_;
 
+	// オプションテクスチャ
+	uint32_t textureHandleOptionBackGround_; // オプション背景
+	uint32_t textureHandleOptionFOV_; // 視野角
+	uint32_t textureHandleOptionCameraSensitivityX_; // 水平感度
+	uint32_t textureHandleOptionCameraSensitivityY_; // 垂直感度
+	uint32_t textureHandleOptionSelectItem_; // 選択アイテム
+
 	// 効果音
 	uint32_t soundHandleFootStep_[2];            // 歩行音
 	uint32_t soundHandleJump_;                   // ジャンプ音

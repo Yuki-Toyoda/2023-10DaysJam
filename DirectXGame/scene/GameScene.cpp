@@ -172,6 +172,37 @@ void GameScene::Initialize() {
 		textureHandle1x1_, // 1ｘ1テクスチャ
 	}; // チュートリアルテクスチャ群
 
+	// オプションテクスチャ
+	textureHandleOptionBackGround_ = TextureManager::Load("/Image/Option/OptionBackGround.png"); // オプション背景
+	textureHandleOptionFOV_ = TextureManager::Load("/Image/Option/FOV.png"); // 視野角
+	textureHandleOptionCameraSensitivityX_ =
+	    TextureManager::Load("/Image/Option/CameraSensitivityX.png"); // 水平感度
+	textureHandleOptionCameraSensitivityY_ =
+	    TextureManager::Load("/Image/Option/CameraSensitivityY.png"); // 垂直感度
+	textureHandleOptionSelectItem_ =
+	    TextureManager::Load("/Image/Option/SelectItem.png"); // 選択アイテム
+	std::vector<uint32_t> optionTextureHandles{
+	    // 番号テクスチャ
+	    textureHandleNumbers_[0], // 0
+	    textureHandleNumbers_[1], // 1
+	    textureHandleNumbers_[2], // 2
+	    textureHandleNumbers_[3], // 3
+	    textureHandleNumbers_[4], // 4
+	    textureHandleNumbers_[5], // 5
+	    textureHandleNumbers_[6], // 6
+	    textureHandleNumbers_[7], // 7
+	    textureHandleNumbers_[8], // 8
+	    textureHandleNumbers_[9], // 9
+
+	    textureHandle1x1_, // 1ｘ1テクスチャ
+
+		textureHandleOptionBackGround_, // オプション背景
+	    textureHandleOptionFOV_,        // 視野角
+	    textureHandleOptionCameraSensitivityX_, // 水平感度
+	    textureHandleOptionCameraSensitivityY_,   // 垂直感度
+	    textureHandleOptionSelectItem_, // 選択アイテム
+	};                     // オプションテクスチャ群
+
 	// 効果音
 	soundHandleFootStep_[0] = audio_->LoadWave("/Audio/SE/FootStep1.wav"); // 歩行音1
 	soundHandleFootStep_[1] = audio_->LoadWave("/Audio/SE/FootStep2.wav"); // 歩行音2
@@ -239,6 +270,10 @@ void GameScene::Initialize() {
 	    soundHandleTutorialEnd_,  // チュートリアルを終了した時の音
 	};
 
+	std::vector<uint32_t> optionAudioHandles = {
+	    
+	};
+
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();
 	// 取得したエフェクトマネージャーの初期化
@@ -283,7 +318,7 @@ void GameScene::Initialize() {
 
 	//テクスチャハンドル
 	std::vector<uint32_t> enemyTextureHandles = {
-		TextureManager::Load("./Resources/white1x1.png"),
+	    textureHandle1x1_,
 		TextureManager::Load("./Resources/Enemy/EnemyFire.png"),
 		TextureManager::Load("./Resources/Enemy/EnemyIce.png"),
 		TextureManager::Load("./Resources/Enemy/EnemyThunder.png"),
@@ -293,11 +328,11 @@ void GameScene::Initialize() {
 	// ボスHP
 	Vector2 spritePos =
 	    Vector2(float(WinApp::kWindowWidth) / 4.0f + 100.0f, float(WinApp::kWindowHeight) / 8.0f);
-	bossHpTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
+	bossHpTextureHandle_ = textureHandle1x1_;
 	bossHpSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
 
 	// ボスHPフレーム
-	bossHpFrameTextureHandle_ = TextureManager::Load("./Resources/white1x1.png");
+	bossHpFrameTextureHandle_ = textureHandle1x1_;
 	bossHpFrameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
 
 
@@ -324,7 +359,7 @@ void GameScene::Initialize() {
 	fadeTimer_ = 0;
 
 	// フェードテクスチャ
-	fadeTextureHandle_ = TextureManager::Load("white1x1.png");
+	fadeTextureHandle_ = textureHandle1x1_;
 	// フェードポジション
 	fadePosition_ = {float(WinApp::kWindowWidth) / 2.0f, float(WinApp::kWindowHeight) / 2.0f};
 	// フェード色
@@ -343,7 +378,7 @@ void GameScene::Initialize() {
 
 	// オプション初期化
 	optionManager_ = OptionManager::GetInstance();
-	optionManager_->Initialize(camera_.get());
+	optionManager_->Initialize(camera_.get(), optionTextureHandles, optionAudioHandles);
 
 	//タイトルセットアップ
 	TitleSetup();
@@ -835,13 +870,15 @@ void GameScene::Draw() {
 		break;
 	}
 
+	Sprite::PreDraw(commandList);
 	// ゲームパッドの状態取得
 	if (!input_->GetJoystickState(0, joyState)) {
-		Sprite::PreDraw(commandList);
-			disconectControllerUI_->Draw();
-		Sprite::PostDraw();
+		disconectControllerUI_->Draw();
+		
 	}
-
+	// オプション描画
+	optionManager_->Draw();
+	Sprite::PostDraw();
 }
 
 void GameScene::TitleDraw(ID3D12GraphicsCommandList* commandList) { 

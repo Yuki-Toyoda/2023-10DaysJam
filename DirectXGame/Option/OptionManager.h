@@ -1,5 +1,7 @@
 #pragma once
 #include "Input.h"
+#include "Model.h"
+#include "Sprite.h"
 
 // カメラの前方宣言
 class Camera;
@@ -27,7 +29,11 @@ public: //メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="camera">カメラ</param>
-	void Initialize(Camera* camera);
+	/// <param name="textureHandles">テクスチャリスト</param>
+	/// <param name="audioHandles">効果音リスト</param>
+	void Initialize(
+	    Camera* camera, const std::vector<uint32_t>& textureHandles,
+	    const std::vector<uint32_t>& audioHandles);
 	
 	/// <summary>
 	/// 更新
@@ -66,6 +72,11 @@ private: // シングルトンパターン
 
 private: // メンバ変数
 
+	// テクスチャリスト
+	std::vector<uint32_t> textureHandles_;
+	// 効果音リスト
+	std::vector<uint32_t> audioHandles_;
+
 	// 開かれているか
 	bool isOpen_;
 
@@ -84,5 +95,45 @@ private: // メンバ変数
 
 	const uint32_t kBesideButtonCooltime_ = 5;
 
+	// 背景スプライト
+	std::unique_ptr<Sprite> spriteBackGround_;
+
+	// ゲージ長さ
+	const Vector2 GageLength = {450.0f, 32.0f};
+
+	// FOVスプライト座標
+	Vector2 spriteFOVPosition_;
+	// FOVスプライト
+	std::unique_ptr<Sprite> spriteFOV_;
+	// FOVゲージ背景
+	std::unique_ptr<Sprite> spriteFOVGageBackGround_;
+	// FOVゲージ
+	std::unique_ptr<Sprite> spriteFOVGage_;
+
+	// 水平感度スプライト座標
+	Vector2 spriteCameraSensitivityXPosition_;
+	// 水平感度スプライト
+	std::unique_ptr<Sprite> spriteCameraSensitivityX_;
+	// 水平感度ゲージ背景
+	std::unique_ptr<Sprite> spriteCameraSensitivityXGageBackGround_;
+	// 水平感度ゲージ
+	std::unique_ptr<Sprite> spriteCameraSensitivityXGage_;
+
+	// 垂直感度スプライト座標
+	Vector2 spriteCameraSensitivityYPosition_;
+	// 垂直感度スプライト
+	std::unique_ptr<Sprite> spriteCameraSensitivityY_;
+	// 垂直感度ゲージ背景
+	std::unique_ptr<Sprite> spriteCameraSensitivityYGageBackGround_;
+	// 垂直感度ゲージ
+	std::unique_ptr<Sprite> spriteCameraSensitivityYGage_;
+
+	// 選択項目スプライト座標
+	Vector2 spriteSelectItemPosition_;
+	// 選択項目スプライト
+	std::unique_ptr<Sprite> spriteSelectItem_;
+
+	// 数値スプライト
+	std::unique_ptr<Sprite> spriteNumbers_[3];
 
 };
