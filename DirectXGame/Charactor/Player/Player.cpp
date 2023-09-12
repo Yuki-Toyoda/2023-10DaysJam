@@ -991,7 +991,7 @@ void Player::OnCollisionIce(Collider* collision) {
 	if (num == 2) {
 		isGround_ = true;
 		onTheIce = true;
-		worldTransform_.translation_.y = worldTransform_.translation_.y + 0.0f;
+		worldTransform_.translation_.y = worldTransform_.translation_.y;
 	}
 
 }
