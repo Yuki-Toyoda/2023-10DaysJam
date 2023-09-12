@@ -964,9 +964,9 @@ void Player::OnCollisionIce(Collider* collision) {
 	float r = 0.0f;
 	Vector3* playerOtientatuons = collision->GetColliderShape()->GetOtientatuons();
 	float playersize[3] = {
-	    collision->GetColliderShape()->GetSize().x * 0.6f / 25.0f,
-	    collision->GetColliderShape()->GetSize().y * 0.6f / 10.0f,
-	    collision->GetColliderShape()->GetSize().z * 0.5f,
+	    colliderShape_->GetSize().x,
+	    colliderShape_->GetSize().y,
+	    colliderShape_->GetSize().z,
 	};
 	for (size_t i = 0; i < 3; i++) {
 		r += std::fabsf(MyMath::Dot(playerOtientatuons[i] * playersize[i], icePlaneNormal[num]));
@@ -991,7 +991,7 @@ void Player::OnCollisionIce(Collider* collision) {
 	if (num == 2) {
 		isGround_ = true;
 		onTheIce = true;
-		worldTransform_.translation_.y = worldTransform_.translation_.y + 4.0f;
+		worldTransform_.translation_.y = worldTransform_.translation_.y + 0.0f;
 	}
 
 }
