@@ -274,7 +274,7 @@ void TutorialManager::Update() {
 		if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
 			int enemyType = MyMath::Random(Enemy::Fire, Enemy::Thunder);
 			// チュートリアル用敵の出現
-			enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, (Enemy::EnemyType)enemyType, true);
+			enemyManager_->AddEnemy({0.0f, 25.0f, 50.0f}, (Enemy::EnemyType)enemyType, true);
 			// 敵スポーン間隔リセット
 			enemySpawnInterval_ = 1.0f;
 		}
@@ -438,7 +438,7 @@ void TutorialManager::NormalShotTutorial() {
 		    TextureManager::Load("/Image/Tutorial/3_NormalShotTotorialTextUI.png");
 
 		// チュートリアル用敵の出現
-		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+		enemyManager_->AddEnemy({0.0f, 25.0f, 50.0f}, Enemy::Fire, true);
 
 		// クリア音再生
 		audio_->PlayWave(audioHandles_[Audio::clearTutorial]);
@@ -714,7 +714,7 @@ void TutorialManager::FireBulletTutorial() {
 	// 敵がわいていないなら沸かせる
 	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
 		// チュートリアル用敵の出現
-		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+		enemyManager_->AddEnemy({0.0f, 25.0f, 50.0f}, Enemy::Fire, true);
 		// 敵スポーン間隔リセット
 		enemySpawnInterval_ = 1.0f;
 	}
@@ -909,7 +909,7 @@ void TutorialManager::IceBulletTutorial() {
 	// 敵がわいていないなら沸かせる
 	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
 		// チュートリアル用敵の出現
-		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Ice, true);
+		enemyManager_->AddEnemy({0.0f, 25.0f, 50.0f}, Enemy::Ice, true);
 		// 敵スポーン間隔リセット
 		enemySpawnInterval_ = 1.0f;
 	}
@@ -1102,7 +1102,7 @@ void TutorialManager::ThunderBulletTutorial() {
 	// 敵がわいていないなら沸かせる
 	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
 		// チュートリアル用敵の出現
-		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Thunder, true);
+		enemyManager_->AddEnemy({0.0f, 25.0f, 50.0f}, Enemy::Thunder, true);
 		// 敵スポーン間隔リセット
 		enemySpawnInterval_ = 1.0f;
 	}
@@ -1263,7 +1263,7 @@ void TutorialManager::OrbReinforcementTutorial() {
 	// 敵がわいていないなら沸かせる
 	if ((int)enemyManager_->GetEnemyCount() < 1 && enemySpawnInterval_ <= 0) {
 		// チュートリアル用敵の出現
-		enemyManager_->AddEnemy({0.0f, 25.0f, 0.0f}, Enemy::Fire, true);
+		enemyManager_->AddEnemy({0.0f, 25.0f, 50.0f}, Enemy::Fire, true);
 		// 敵スポーン間隔リセット
 		enemySpawnInterval_ = 1.0f;
 	}
