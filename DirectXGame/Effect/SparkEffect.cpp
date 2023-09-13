@@ -57,7 +57,7 @@ void SparkEffect::Update() {
 					    MyMath::RandomF(-0.25f, 0.25f, 2)};
 					endTransformParticle_[i] = worldTransformParticle_[i].translation_;
 					endTransformParticle_[i] =
-					    endTransformParticle_[i] + (Velocity * MyMath::RandomF(10.0f, 17.0f, 2));
+					    endTransformParticle_[i] + (Velocity * MyMath::RandomF(30.0f, 37.0f, 2));
 					// 最終サイズを設定する
 					endSizeParticle_[i] = {
 						MyMath::Linear(t_, 1.0f, 0.5f, time_),
