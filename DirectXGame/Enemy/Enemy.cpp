@@ -698,18 +698,9 @@ void Enemy::CollisionBulletFire() {
 void Enemy::CollisionBulletIce(Collider* collision) {
 
 	if (collision->GetPlayerBullet()->GetIsHit()) {
-		if (enemyState_ == Wait) {
-			/*
-			float reflection = -10.0f;
-			float accelerationDown = 1.0f / 2.0f;
-
-			worldTransform_.translation_ = preTranslation_;
-			accelerationIce_ = MyMath::Normalize(velocity_) * reflection;
-			accelerationIceDown_ = MyMath::Normalize(velocity_) * accelerationDown;
-			worldTransform_.UpdateMatrix();
-			 */
+		if (enemyState_ == Wait || enemyState_ == Tutorial || enemyState_ == Appear) {
 			
-				Vector3* iceOtientatuons = collision->GetColliderShape()->GetOtientatuons();
+			Vector3* iceOtientatuons = collision->GetColliderShape()->GetOtientatuons();
 
 			Vector3 size_ = collision->GetColliderShape()->GetSize();
 
@@ -880,6 +871,9 @@ void Enemy::CollisionBulletIce(Collider* collision) {
 			worldTransform_.translation_ =
 			    worldTransform_.translation_ + (icePlaneNormal[num] * distance);
 
+			if (worldTransform_.translation_.y <= 0.0f) {
+				worldTransform_.translation_.y = 0.0f;
+			}
 
 		} else {
 			Dead();
