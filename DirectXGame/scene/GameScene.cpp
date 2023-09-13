@@ -467,31 +467,31 @@ void GameScene::Update() {
 	case GameScene::Title:
 		// 再生されていなければ再生する
 		if (!audio_->IsPlaying(voiceHandleTitleScene_) || voiceHandleTitleScene_ == -1) {
-			voiceHandleTitleScene_ = audio_->PlayWave(bgmHandleTitleScene_, false, 0.1f);
+			voiceHandleTitleScene_ = audio_->PlayWave(bgmHandleTitleScene_, false, 0.05f);
 		}
 		break;
 	case GameScene::Tutorial:
 		// 再生されていなければ再生する
 		if (!audio_->IsPlaying(voiceHandleTutorialScene_) || voiceHandleTutorialScene_ == -1) {
-			voiceHandleTutorialScene_ = audio_->PlayWave(bgmHandleTutorialScene_, false, 0.1f);
+			voiceHandleTutorialScene_ = audio_->PlayWave(bgmHandleTutorialScene_, false, 0.05f);
 		}
 		break;
 	case GameScene::Main:
 		// 再生されていなければ再生する
 		if (!audio_->IsPlaying(voiceHandleGameScene_) || voiceHandleGameScene_ == -1) {
-			voiceHandleGameScene_ = audio_->PlayWave(bgmHandleGameScene_, false, 0.1f);
+			voiceHandleGameScene_ = audio_->PlayWave(bgmHandleGameScene_, false, 0.05f);
 		}
 		break;
 	case GameScene::GameClear:
 		// 再生されていなければ再生する
 		if (!audio_->IsPlaying(voiceHandleGameClearScene_) || voiceHandleGameClearScene_ == -1) {
-			voiceHandleGameClearScene_ = audio_->PlayWave(bgmHandleGameClearScene_, false, 0.1f);
+			voiceHandleGameClearScene_ = audio_->PlayWave(bgmHandleGameClearScene_, false, 0.05f);
 		}
 		break;
 	case GameScene::GameOver:
 		// 再生されていなければ再生する
 		if (!audio_->IsPlaying(voiceHandleGameOverScene_) || voiceHandleGameOverScene_ == -1) {
-			voiceHandleGameOverScene_ = audio_->PlayWave(bgmHandleGameOverScene_, false, 0.1f);
+			voiceHandleGameOverScene_ = audio_->PlayWave(bgmHandleGameOverScene_, false, 0.05f);
 		}
 		break;
 	default:
