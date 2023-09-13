@@ -673,6 +673,12 @@ void GameScene::GameClearUpdate() {
 	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 		FadeInOutSetUp(Title);
 	}
+	skyDome_->Update(); // 天球
+	ground_->Update();  // 地面
+    // ビュープロジェクションを追従カメラのものに設定する
+	viewProjection_->rotation_ = viewProjection_->rotation_ + Vector3(0.0f, 0.0005f, 0.0f);
+	// 行列を定数バッファに転送
+	viewProjection_->UpdateMatrix();
 
 }
 
@@ -688,6 +694,12 @@ void GameScene::GameOverUpdate() {
 	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
 		FadeInOutSetUp(Title);
 	}
+	skyDome_->Update(); // 天球
+	ground_->Update();  // 地面
+	 // ビュープロジェクションを追従カメラのものに設定する
+	viewProjection_->rotation_ = viewProjection_->rotation_ + Vector3(0.0f, 0.0005f, 0.0f);
+	// 行列を定数バッファに転送
+	viewProjection_->UpdateMatrix();
 
 }
 
@@ -755,6 +767,10 @@ void GameScene::TitleSetup() {
 		TextureManager::Unload(gameclearTextureHandle_);
 		gameclearTextureHandle_ = 0u;
 	}
+	if (gameoverTextureHandle_ != 0u) {
+		TextureManager::Unload(gameoverTextureHandle_);
+		gameoverTextureHandle_ = 0u;
+	}
 	//テクスチャ読み込み
 
 	// タイトルテクスチャハンドル
@@ -802,14 +818,18 @@ void GameScene::MainSetup() {
 	// エネミーマネージャー
 	enemyManager_->Reset();
 
+	// アンロード
 	if (titleNameTextureHandle_ != 0u) {
 		TextureManager::Unload(titleNameTextureHandle_);
 		titleNameTextureHandle_ = 0u;
 	}
-	// アンロード
 	if (gameclearTextureHandle_ != 0u) {
 		TextureManager::Unload(gameclearTextureHandle_);
 		gameclearTextureHandle_ = 0u;
+	}
+	if (gameoverTextureHandle_ != 0u) {
+		TextureManager::Unload(gameoverTextureHandle_);
+		gameoverTextureHandle_ = 0u;
 	}
 
 }
@@ -826,12 +846,16 @@ void GameScene::GameClearSetup() {
 	// クリアサイズ
 	gameclearSize_ = gameclearSpraite_->GetSize();
 
+	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->UpdateMatrix();
+
 }
 
 void GameScene::GameOverSetup() {
 
 	// オーバーテクスチャハンドル
-	gameoverTextureHandle_ = TextureManager::Load("./Resources/Scene/gameclear.png");
+	gameoverTextureHandle_ = TextureManager::Load("./Resources/Scene/gameover.png");
 	// オーバースプライト
 	gameoverSpraite_.reset(Sprite::Create(
 	    gameoverTextureHandle_,
@@ -839,6 +863,10 @@ void GameScene::GameOverSetup() {
 	    Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.5f, 0.5f)));
 	// オーバーサイズ
 	gameoverSize_ = titleNameSpraite_->GetSize();
+
+	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->UpdateMatrix();
 
 }
 
@@ -1083,6 +1111,8 @@ void GameScene::GameClearDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	skyDome_->Draw(*viewProjection_); // 天球
+	ground_->Draw(*viewProjection_);  // 地面
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -1131,6 +1161,8 @@ void GameScene::GameOverDraw(ID3D12GraphicsCommandList* commandList) {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	skyDome_->Draw(*viewProjection_); // 天球
+	ground_->Draw(*viewProjection_);  // 地面
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
