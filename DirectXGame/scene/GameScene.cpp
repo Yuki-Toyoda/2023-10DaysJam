@@ -494,7 +494,7 @@ void GameScene::TitleUpdate() {
 	skyDome_->Update(); // 天球
 	ground_->Update();  // 地面
 	enemyManager_->Update(); // エネミーマネージャー
-	 // ビュープロジェクションを追従カメラのものに設定する
+	 // ビュープロジェクション設定する
 	viewProjection_->rotation_ = viewProjection_->rotation_ + Vector3(0.0f, 0.0005f, 0.0f);
 	// 行列を定数バッファに転送
 	viewProjection_->UpdateMatrix();
@@ -760,6 +760,7 @@ void GameScene::TitleSetup() {
 
 	viewProjection_->rotation_.x = 0.35f;
 	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->fovAngleY = camera_->GetFov();
 	viewProjection_->UpdateMatrix();
 
 	//アンロード
@@ -848,6 +849,7 @@ void GameScene::GameClearSetup() {
 
 	viewProjection_->rotation_.x = 0.35f;
 	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->fovAngleY = camera_->GetFov();
 	viewProjection_->UpdateMatrix();
 
 }
@@ -866,6 +868,7 @@ void GameScene::GameOverSetup() {
 
 	viewProjection_->rotation_.x = 0.35f;
 	viewProjection_->translation_.y = 100.0f;
+	viewProjection_->fovAngleY = camera_->GetFov();
 	viewProjection_->UpdateMatrix();
 
 }
@@ -1201,9 +1204,14 @@ void GameScene::OptionUpdate() {
 	optionManager_->Update(joyState.Gamepad, preJoyState.Gamepad);
 	camera_->Update(true); // カメラ
 	// ビュープロジェクションを追従カメラのものに設定する
-	viewProjection_ = camera_->GetViewProjection();
+	if (currentScene_ == Title || currentScene_ == GameClear || currentScene_ == GameOver) {
+		viewProjection_->fovAngleY = camera_->GetFov();
+		viewProjection_->translation_.y = 100.0f;
+	} else {
+		viewProjection_ = camera_->GetViewProjection();
+	}
 	// 行列を定数バッファに転送
-	viewProjection_->TransferMatrix();
+	viewProjection_->UpdateMatrix();
 
 }
 
