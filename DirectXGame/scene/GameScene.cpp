@@ -1100,6 +1100,9 @@ void GameScene::TutorialDraw(ID3D12GraphicsCommandList* commandList) {
 	// フェードインアウト
 	FadeInOutDraw();
 
+	// フィールド
+	field_->Draw();
+
 #ifdef _DEBUG
 	player_->ColliderDraw(enableDebugCamera_);
 	enemyManager_->ColliderDraw();
@@ -1157,6 +1160,9 @@ void GameScene::MainDraw(ID3D12GraphicsCommandList* commandList) {
 
 	// フェードインアウト
 	FadeInOutDraw();
+
+	// フィールド
+	field_->Draw();
 
 #ifdef _DEBUG
 	player_->ColliderDraw(enableDebugCamera_);
