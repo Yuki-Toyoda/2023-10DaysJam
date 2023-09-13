@@ -67,7 +67,8 @@ public: // サブクラス
 
 	// エネミー効果音リスト
 	enum EnemyAudios {
-		EnemyDamage
+		EnemyDamage,
+		EnemyDeath
 	};
 
 public:

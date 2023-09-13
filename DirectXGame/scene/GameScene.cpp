@@ -285,7 +285,8 @@ void GameScene::Initialize() {
 
 	//エネミー関連
 	soundHandleEnemyDamage_ = audio_->LoadWave("/Audio/SE/EnemyDamage.wav");
-	std::vector<uint32_t> enemyAudioHandles = {soundHandleEnemyDamage_};
+	soundHandleEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
+	std::vector<uint32_t> enemyAudioHandles = {soundHandleEnemyDamage_, soundHandleEnemyDeath_};
 
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();

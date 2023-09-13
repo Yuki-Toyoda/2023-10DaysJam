@@ -589,6 +589,7 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
 	hp_ -= damage;
 	if (hp_ <= 0) {
+		audio->PlayWave(audioHandles_[Audio::EnemyDeath], false, 0.1f);
 		Dead();
 	} else {
 		//無敵
@@ -882,6 +883,7 @@ void Enemy::CollisionBulletIce(Collider* collision) {
 
 		} else {
 			Dead();
+			audio->PlayWave(audioHandles_[Audio::EnemyDeath], false, 0.1f);
 		}
 	} else {
 		HpFluctuation(
