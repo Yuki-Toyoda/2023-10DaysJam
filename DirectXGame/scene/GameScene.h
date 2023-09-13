@@ -348,6 +348,10 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> bossHpFrameSprite_;
 	uint32_t bossHpFrameTextureHandle_ = 0u;
 
+	// ボスHPネーム
+	//std::unique_ptr<Sprite> bossHpNameSprite_;
+	//uint32_t bossHpNameTextureHandle_ = 0u;
+
 	// エフェクトマネージャー
 	EffectManager* effectManager_ = nullptr;
 	// チュートリアルマネージャー
