@@ -317,6 +317,9 @@ private: // メンバ変数
 	// オプション関連
 	uint32_t soundHandleOptionOpen_; // オプションを開く音
 	uint32_t soundHandleOptionChangeValue_; // オプションを開く音
+
+	// エネミー関連
+	uint32_t soundHandleEnemyDamage_; //ダメージ
 	
 	//スプライト
 	// ボスHP

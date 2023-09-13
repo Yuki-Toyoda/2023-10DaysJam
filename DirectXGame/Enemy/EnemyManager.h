@@ -3,6 +3,7 @@
 #include <Model.h>
 #include <vector>
 #include "Sprite.h"
+#include "../audio/Audio.h"
 
 #include "Enemy.h"
 #include "EnemyBullet.h"
@@ -32,7 +33,7 @@ public: // メンバ変数
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
 	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
 	    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite,
-	    Sprite* bossHpFrameSprite);
+	    Sprite* bossHpFrameSprite, const std::vector<uint32_t>& audioHandles);
 
 	/// <summary>
 	/// 更新
@@ -211,5 +212,8 @@ private: // メンバ変数
 
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
+
+	// 効果音リスト
+	std::vector<uint32_t> audioHandles_;
 
 };

@@ -283,6 +283,10 @@ void GameScene::Initialize() {
 	    soundHandleTutorialEnd_, // 閉じる時の音として代用
 	};
 
+	//エネミー関連
+	soundHandleEnemyDamage_ = audio_->LoadWave("/Audio/SE/EnemyDamage.wav");
+	std::vector<uint32_t> enemyAudioHandles = {soundHandleEnemyDamage_};
+
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();
 	// 取得したエフェクトマネージャーの初期化
@@ -349,7 +353,10 @@ void GameScene::Initialize() {
 	enemyManager_->Initialize(
 	    std::vector<Model*>{modelEnemy_.get(), modelEnemyMark_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
-	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(), bossHpFrameSprite_.get());
+	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(),
+	    bossHpFrameSprite_.get(), enemyAudioHandles);
+	
+	
 	enemyManager_->SetViewProjection(camera_->GetViewProjection());
 
 	// 衝突マネージャー

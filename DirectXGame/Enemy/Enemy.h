@@ -1,5 +1,6 @@
 #pragma once
 #include "../Charactor/BaseCharacter.h"
+#include "../audio/Audio.h"
 
 //エネミーマネージャーの前方宣言
 class EnemyManager;
@@ -42,7 +43,9 @@ public: //メンバ関数
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
 	    Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
-	    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels, bool isTutorial, const ViewProjection* viewProjection);
+	    std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels,
+	    bool isTutorial, const ViewProjection* viewProjection,
+	    const std::vector<uint32_t>& audioHandles);
 
 	/// <summary>
 	/// 更新
@@ -324,5 +327,11 @@ private: //メンバ変数
 
 	// カメラのビュープロジェクション
 	const ViewProjection* viewProjection_ = nullptr;
+	
+	// 効果音リスト
+	std::vector<uint32_t> audioHandles_;
+
+	//オーディオ
+	Audio* audio;
 
 };

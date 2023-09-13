@@ -16,7 +16,8 @@
 void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle, EnemyType enemyType,
     Vector3 posioton, uint32_t hp, EnemyManager* enemyManager, Player* player,
     std::list<BossEnemy*>* bossEnemies, const std::vector<Model*>& deathEffectModels,
-    bool isTutorial, const ViewProjection* viewProjection) {
+    bool isTutorial, const ViewProjection* viewProjection,
+    const std::vector<uint32_t>& audioHandles) {
 	
 	// NULLポインタチェック
 	assert(models.front());
@@ -103,6 +104,11 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	isTutorial_ = isTutorial;
 	// ビュープロジェクションを受け取る
 	viewProjection_ = viewProjection;
+
+	//効果音
+	audioHandles_ = audioHandles;
+	
+	audio = Audio::GetInstance();
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -590,6 +596,8 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 		invincibilityTimer_ = InvincibilityTime;
 		//シェイク
 		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
+		// 音
+		audio->PlayWave(audioHandles_[Audio::EnemyAudios::EnemyDamage]);
 	}
 
 }

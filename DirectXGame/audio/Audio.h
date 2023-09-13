@@ -65,6 +65,11 @@ public: // サブクラス
 		close,
 	};
 
+	// エネミー効果音リスト
+	enum EnemyAudios {
+		EnemyDamage
+	};
+
 public:
 	// サウンドデータの最大数
 	static const int kMaxSoundData = 256;

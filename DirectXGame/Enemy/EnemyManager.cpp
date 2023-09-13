@@ -10,7 +10,8 @@ EnemyManager* EnemyManager::GetInstance() {
 void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
     const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
-    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite, Sprite* bossHpFrameSprite) {
+    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite, Sprite* bossHpFrameSprite,
+    const std::vector<uint32_t>& audioHandles) {
 	
 	//モデル
 	models_ = models;
@@ -52,7 +53,6 @@ void EnemyManager::Initialize(
 
 	// エネミー死亡エフェクトのモデル
 	deathEffectModels_ = deathEffectModels;
-
 	
 	// UIスプライト
 	// ボスHP
@@ -69,6 +69,8 @@ void EnemyManager::Initialize(
 	bossHpFrameSprite_->SetSize(bossHpSpriteSize_);
 	bossHpFrameSprite_->SetColor(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
+	//効果音
+	audioHandles_ = audioHandles;
 
 	// エネミースポナーの追加
 	spawnerNumber_ = 0;
@@ -84,7 +86,7 @@ void EnemyManager::Initialize(
 }
 
 void EnemyManager::Update() {
-	
+
 	//スポナー更新
 	for (EnemySpawner* enemySponer : enemySpawneres_) {
 		enemySponer->Update();
@@ -102,8 +104,8 @@ void EnemyManager::Update() {
 	for (BossEnemy* bossEnemy : bossEnemies_) {
 		bossEnemy->Update(&enemies_);
 
-		// hpゲージ
-		Vector2 bossHpSpriteSize = {
+	// hpゲージ
+	Vector2 bossHpSpriteSize = {
 		    MyMath::Linear(
 		        float(bossEnemy->GetHp()) / float(bossInitialHp_), 0.0f, bossHpSpriteSize_.x),
 		    bossHpSpriteSize_.y};
@@ -165,7 +167,7 @@ void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bo
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
 		    initialHp_[enemyTypeNext], this, player_, &bossEnemies_, deathEffectModels_,
-		    isTutorial, viewProjection_);
+		    isTutorial, viewProjection_,audioHandles_);
 		enemies_.push_back(enemy);
 		enemyCount_++;
 	}
