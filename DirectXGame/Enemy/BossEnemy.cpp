@@ -660,7 +660,7 @@ void BossEnemy::Dead() {
 
 	bossEnemyState_ = Down;
 	
-	audio_->PlayWave(audioHandles_[Audio::BossEnemyDeath]);
+	audio_->PlayWave(audioHandles_[Audio::BossEnemyDeath], false, 0.15f);
 
 }
 
@@ -679,7 +679,7 @@ void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 		// シェイク
 		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
 
-		audio_->PlayWave(audioHandles_[Audio::BossEnemyDamage]);
+		audio_->PlayWave(audioHandles_[Audio::BossEnemyDamage], false, 0.25f);
 	}
 
 }

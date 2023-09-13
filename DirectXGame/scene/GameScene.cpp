@@ -301,7 +301,7 @@ void GameScene::Initialize() {
 	soundHandleEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
 	std::vector<uint32_t> enemyAudioHandles = { soundHandleEnemyDamage_, soundHandleEnemyDeath_ };
 
-	soundHandleBossEnemyDamage_ = audio_->LoadWave("/Audio/SE/EnemyDamage.wav");
+	soundHandleBossEnemyDamage_ = audio_->LoadWave("/Audio/SE/BossEnemyDamage.wav");
 	soundHandleBossEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
 	std::vector<uint32_t> bossEnemyAudioHandles = {
 		soundHandleBossEnemyDamage_, soundHandleBossEnemyDeath_ };
