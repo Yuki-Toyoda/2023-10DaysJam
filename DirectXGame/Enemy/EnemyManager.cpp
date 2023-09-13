@@ -10,7 +10,8 @@ EnemyManager* EnemyManager::GetInstance() {
 void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
     const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
-    const std::vector<Model*>& deathEffectModels, 
+    const std::vector<Model*>& deathEffectModels,
+	const std::vector<Model*>& bossDeathEffectModels, 
 	const std::vector<Sprite*>& bossSprites,
     const std::vector<uint32_t>& enemyAudioHandles,
     const std::vector<uint32_t>& bosEenemyAudioHandles) {
@@ -55,6 +56,9 @@ void EnemyManager::Initialize(
 
 	// エネミー死亡エフェクトのモデル
 	deathEffectModels_ = deathEffectModels;
+
+	// ボスエネミー死亡エフェクトのモデル
+	bossDeathEffectModels_ = bossDeathEffectModels;
 	
 	// UIスプライト
 	// ボスHP
@@ -224,7 +228,9 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, this, player_,bossInitialHp_,bossEnemyAudioHandles_);
+	bossEnemy->Initialize(
+	    bossModels_, bossTextureHandles_, this, player_, bossInitialHp_, bossEnemyAudioHandles_,
+	    bossDeathEffectModels_);
 	bossEnemies_.push_back(bossEnemy);
 
 }

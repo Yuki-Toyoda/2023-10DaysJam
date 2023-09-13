@@ -383,6 +383,7 @@ void GameScene::Initialize() {
 	    std::vector<Model*>{modelEnemy_.get(), modelEnemyMark_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
 	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, 
+		std::vector<Model*>{modelFireBullet_.get()},
 		bossEnemySprites, enemyAudioHandles,
 	    bossEnemyAudioHandles);
 	

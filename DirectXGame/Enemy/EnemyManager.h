@@ -32,7 +32,8 @@ public: // メンバ変数
 	void Initialize(
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
 	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
-	    const std::vector<Model*>& deathEffectModels, 
+	    const std::vector<Model*>& deathEffectModels,
+		const std::vector<Model*>& bossDeathEffectModels, 
 		const std::vector<Sprite*>& bossSprites,
 	    const std::vector<uint32_t>& enemyAudioHandles,
 	    const std::vector<uint32_t>& bosEenemyAudioHandles);
@@ -222,5 +223,7 @@ private: // メンバ変数
 	std::vector<uint32_t> enemyAudioHandles_;
 	std::vector<uint32_t> bossEnemyAudioHandles_;
 
+	// 爆破モデル
+	std::vector<Model*> bossDeathEffectModels_;
 
 };

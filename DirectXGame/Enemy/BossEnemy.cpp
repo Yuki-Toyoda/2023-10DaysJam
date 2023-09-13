@@ -16,7 +16,8 @@
 /// <param name="models">モデルデータ配列</param>
 void BossEnemy::Initialize(
     const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
-    Player* player, uint32_t hp, const std::vector<uint32_t>& audioHandles) {
+    Player* player, uint32_t hp, const std::vector<uint32_t>& audioHandles,
+    const std::vector<Model*>& explosionModels) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -158,9 +159,20 @@ void BossEnemy::Initialize(
 	unitPattern_ = 0;
 	// エネミーの最大数
 	enemiesJoiningNumMax = unitTransformNum_[unitPattern_];
-	for (size_t j = 0; j < kUnitTransformnumMax; j++) {
-		unitTtransform_[j] = unitTtransformData_[unitPattern_][j];
+	for (size_t i = 0; i < kUnitTransformnumMax; i++) {
+		unitTtransform_[i] = unitTtransformData_[unitPattern_][i];
 	}
+
+	//爆破
+	explosionModels_ = explosionModels;
+	for (size_t i = 0; i < 3; i++) {
+		explosionWorldTransform_[i].Initialize();
+		explosionTimerStart[i] = uint32_t(i * 30);
+		explosionTimerend[i] = uint32_t((i * 30) + 30);
+		isExplosion_[i] = false;
+	}
+
+	explosionTimer_ = 0;
 
 }
 
@@ -233,6 +245,13 @@ void BossEnemy::Draw(const ViewProjection& viewProjection) {
 
 	for (Model* model : models_) {
 		model->Draw(modelWorldTransform_, viewProjection);
+	}
+	for (size_t i = 0; i < 3; i++) {
+		if (isExplosion_[i]) {
+			for (Model* model : explosionModels_) {
+				model->Draw(explosionWorldTransform_[i], viewProjection);
+			}
+		}
 	}
 }
 
@@ -662,6 +681,14 @@ void BossEnemy::Dead() {
 	
 	audio_->PlayWave(audioHandles_[Audio::BossEnemyDeath], false, 0.15f);
 
+	for (int i = 0; i < 3; i++) {
+		explosionWorldTransform_[i].translation_ = colliderShape_->GetCenter();
+		explosionWorldTransform_[i].translation_.x = explosionWorldTransform_[i].translation_.x + colliderShape_->GetSize().x * (1 - i);
+		explosionWorldTransform_[i].translation_.y = explosionWorldTransform_[i].translation_.y + colliderShape_->GetSize().y * (1 - i);
+		explosionWorldTransform_[i].translation_.z = explosionWorldTransform_[i].translation_.z + colliderShape_->GetSize().z * (1 - i);
+	}
+	explosionTimer_ = 0; 
+
 }
 
 void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
@@ -747,6 +774,26 @@ void BossEnemy::DownMove() {
 	//落ちきったらクリアへ
 	if (worldTransform_.translation_.y <= -70.0f) {
 		isDead_ = true;
+	}
+
+	//爆破
+	for (size_t i = 0; i < 3; i++) {
+		if (!isExplosion_[i] && explosionTimer_ >= explosionTimerStart[i] &&
+		    explosionTimer_ <= explosionTimerend[i]) {
+			isExplosion_[i] = true;
+		}
+		if (isExplosion_[i] && explosionTimer_ > explosionTimerend[i]) {
+			isExplosion_[i] = false;
+		}
+		if (isExplosion_[i]) {
+			float t = (explosionTimer_ - explosionTimerStart[i]) / 60.0f;
+			float scale = MyMath::Linear(t, 0.0f, 1.0f) * 2.0f;
+			explosionWorldTransform_[i].scale_ = {scale, scale, scale};
+			explosionWorldTransform_[i].UpdateMatrix();
+		}
+	}
+	if (explosionTimer_ <= 90) {
+		explosionTimer_++;
 	}
 
 }

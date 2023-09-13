@@ -22,7 +22,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow(L"魚ーブウォーズ");
+	win->CreateGameWindow(L"2007_魚ーブウォーズ");
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
