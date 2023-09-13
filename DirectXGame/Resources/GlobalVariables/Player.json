@@ -1,9 +1,9 @@
 {
     "Player": {
-        "BulletDamageFire": 3,
+        "BulletDamageFire": 5,
         "BulletDamageIce": 1,
         "BulletDamageNone": 1,
-        "BulletDamageThunder": 1,
+        "BulletDamageThunder": 2,
         "BulletSpeed": 20.0,
         "CollisionInvincibilityTime": 20,
         "DistanceToReticleObject": 150.0,
