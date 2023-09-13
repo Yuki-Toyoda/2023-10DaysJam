@@ -589,7 +589,7 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
 	hp_ -= damage;
 	if (hp_ <= 0) {
-		audio_->PlayWave(audioHandles_[Audio::EnemyDeath]);
+		audio_->PlayWave(audioHandles_[Audio::EnemyDeath], false, 0.5f);
 		Dead();
 	} else {
 		//無敵
@@ -598,7 +598,7 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 		//シェイク
 		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
 		// 音
-		audio_->PlayWave(audioHandles_[Audio::EnemyAudios::EnemyDamage]);
+		audio_->PlayWave(audioHandles_[Audio::EnemyAudios::EnemyDamage], false, 0.5f);
 	}
 
 }
@@ -883,7 +883,7 @@ void Enemy::CollisionBulletIce(Collider* collision) {
 
 		} else {
 			Dead();
-			audio_->PlayWave(audioHandles_[Audio::EnemyDeath]);
+			audio_->PlayWave(audioHandles_[Audio::EnemyDeath], false, 0.5f);
 		}
 	} else {
 		HpFluctuation(

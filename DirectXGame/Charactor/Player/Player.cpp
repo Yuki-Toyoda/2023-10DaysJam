@@ -982,12 +982,12 @@ void Player::Move() {
 	    worldTransform_.translation_.y == height_) {
 		if (playFootStepSELate_ < 0) {
 			if (!playFootStep2_) {
-				audio_->PlayWave(audioHandles_[Audio::FootStep1]);
+				audio_->PlayWave(audioHandles_[Audio::FootStep1], false, 0.5f);
 				playFootStep2_ = true;
 				// 足音再生間隔をリセット
 				playFootStepSELate_ = kPlayFootStepSELate_;
 			} else {
-				audio_->PlayWave(audioHandles_[Audio::FootStep2]);
+				audio_->PlayWave(audioHandles_[Audio::FootStep2], false, 0.5f);
 				playFootStep2_ = false;
 				// 足音再生間隔をリセット
 				playFootStepSELate_ = kPlayFootStepSELate_;
@@ -1025,7 +1025,7 @@ void Player::Move() {
 		// 着地音を一度だけ鳴らす
 		if (!isPlayLandSound_) {
 			// 着地音を鳴らす
-			audio_->PlayWave(audioHandles_[Audio::Land]);
+			audio_->PlayWave(audioHandles_[Audio::Land], false, 0.8f);
 			isPlayLandSound_ = true;
 		}
 
