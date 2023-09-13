@@ -32,8 +32,9 @@ public: // メンバ変数
 	void Initialize(
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
 	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
-	    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite,
-	    Sprite* bossHpFrameSprite, const std::vector<uint32_t>& enemyAudioHandles,
+	    const std::vector<Model*>& deathEffectModels, 
+		const std::vector<Sprite*>& bossSprites,
+	    const std::vector<uint32_t>& enemyAudioHandles,
 	    const std::vector<uint32_t>& bosEenemyAudioHandles);
 
 	/// <summary>
@@ -207,6 +208,9 @@ private: // メンバ変数
 
 	//ボスHPフレーム
 	Sprite* bossHpFrameSprite_;
+
+	//ボスHPネーム
+	Sprite* bossHpNameSprite_;
 
 	//サイズ
 	Vector2 bossHpSpriteSize_;

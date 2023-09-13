@@ -10,7 +10,8 @@ EnemyManager* EnemyManager::GetInstance() {
 void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
     const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
-    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite, Sprite* bossHpFrameSprite,
+    const std::vector<Model*>& deathEffectModels, 
+	const std::vector<Sprite*>& bossSprites,
     const std::vector<uint32_t>& enemyAudioHandles,
     const std::vector<uint32_t>& bosEenemyAudioHandles) {
 	
@@ -57,10 +58,11 @@ void EnemyManager::Initialize(
 	
 	// UIスプライト
 	// ボスHP
-	bossHpSprite_ = bossHpSprite;
+	bossHpSprite_ = bossSprites[0];
 
 	// ボスHPフレーム
-	bossHpFrameSprite_ = bossHpFrameSprite;
+	bossHpFrameSprite_ = bossSprites[1];
+
 	//サイズ
 	bossHpSpriteSize_ = Vector2(float(WinApp::kWindowWidth) / 2.0f - 200.0f, 30.0f);
 	// hpゲージ
@@ -69,6 +71,12 @@ void EnemyManager::Initialize(
 	// ボスHPフレーム
 	bossHpFrameSprite_->SetSize(bossHpSpriteSize_);
 	bossHpFrameSprite_->SetColor(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+	
+	// ボスHPネーム
+	bossHpNameSprite_ = bossSprites[2];
+	bossHpNameSprite_->SetSize(
+	    Vector2(bossHpNameSprite_->GetSize().x / 2.0f, bossHpNameSprite_->GetSize().y / 2.0f));
+	bossHpNameSprite_->SetColor(Vector4(0.8f, 0.2f, 0.2f, 1.0f));
 
 	//効果音
 	enemyAudioHandles_ = enemyAudioHandles;
@@ -158,6 +166,8 @@ void EnemyManager::SpriteDraw() {
 	bossHpFrameSprite_->Draw();
 	//hpゲージ
 	bossHpSprite_->Draw();
+	// ネーム
+	bossHpNameSprite_->Draw();
 
 }
 

@@ -365,18 +365,26 @@ void GameScene::Initialize() {
 
 	// ボスHPフレーム
 	bossHpFrameTextureHandle_ = textureHandle1x1_;
-	bossHpFrameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+	bossHpFrameSprite_.reset(Sprite::Create(bossHpFrameTextureHandle_, spritePos));
 
-	//bossHpNameTextureHandle_ = TextureManager::Load("./Resources/Image/Boss/bossText.png");
-	//bossHpNameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+	//ボスHPネーム
+	spritePos =
+	    Vector2(float(WinApp::kWindowWidth) / 2.0f, float(WinApp::kWindowHeight) / 15.0f);
+	bossHpNameTextureHandle_ = TextureManager::Load("./Resources/Image/Boss/bossText.png");
+	bossHpNameSprite_.reset(Sprite::Create(bossHpNameTextureHandle_, spritePos,
+		Vector4(1.0f,1.0f,1.0f,1.0f), Vector2(0.5f,0.5f)));
 
+	std::vector<Sprite*> bossEnemySprites = {
+	    bossHpSprite_.get(), bossHpFrameSprite_.get(), bossHpNameSprite_.get()
+	};
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(
 	    std::vector<Model*>{modelEnemy_.get(), modelEnemyMark_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
-	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(),
-	    bossHpFrameSprite_.get(), enemyAudioHandles,bossEnemyAudioHandles);
+	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, 
+		bossEnemySprites, enemyAudioHandles,
+	    bossEnemyAudioHandles);
 	
 	
 	enemyManager_->SetViewProjection(camera_->GetViewProjection());
