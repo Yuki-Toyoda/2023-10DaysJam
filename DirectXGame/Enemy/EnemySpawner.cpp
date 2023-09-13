@@ -1,8 +1,9 @@
 #include "EnemySpawner.h"
 #include "EnemyManager.h"
+#include "Charactor/Player/Player.h"
 #include <config/GlobalVariables.h>
 
-void EnemySpawner::Initialize(EnemyManager* enemyManager, uint32_t num) {
+void EnemySpawner::Initialize(EnemyManager* enemyManager, uint32_t num, Player* player) {
 
 	generateCooltime_ = generateCooltimeMax_;
 
@@ -21,6 +22,8 @@ void EnemySpawner::Initialize(EnemyManager* enemyManager, uint32_t num) {
 	enemyTypeNext_ = Enemy::EnemyType::None;
 	
 	specialTypeRatio = 0.1f;
+
+	player_ = player;
 
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -74,6 +77,12 @@ void EnemySpawner::Spawn() {
 	    MyMath::RandomF(position_.y - size_.y, position_.y + size_.y, 2),
 	    MyMath::RandomF(position_.z - size_.z, position_.z + size_.z, 2),
 	};
+
+	Vector3 playerPos = player_->GetWorldPosition();
+	Vector3 toPlayer = playerPos - pos;
+	if (MyMath::Length(toPlayer) <= playerDistance) {
+		pos += toPlayer * -playerDistance;
+	}
 
 	//属性
 	float type = MyMath::RandomF(0.0f, 1.0f, 2);

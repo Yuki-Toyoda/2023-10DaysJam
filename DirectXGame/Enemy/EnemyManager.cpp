@@ -232,7 +232,7 @@ void EnemyManager::AddBossEnemy() {
 void EnemyManager::AddEnemySpawner() {
 
 	EnemySpawner* enemySpawner = new EnemySpawner();
-	enemySpawner->Initialize(this, spawnerNumber_);
+	enemySpawner->Initialize(this, spawnerNumber_,player_);
 	spawnerNumber_++;
 	enemySpawneres_.push_back(enemySpawner);
 

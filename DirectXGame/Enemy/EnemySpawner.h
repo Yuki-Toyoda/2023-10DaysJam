@@ -6,6 +6,9 @@
 // エネミーマネージャー前方宣言
 class EnemyManager;
 
+//プレイヤークラスの前方宣言
+class Player;
+
 class EnemySpawner {
 
 public: //構造体
@@ -20,7 +23,7 @@ public: //メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <param name="enemyManager"></param>
-	void Initialize(EnemyManager* enemyManager, uint32_t num);
+	void Initialize(EnemyManager* enemyManager, uint32_t num, Player* player);
 
 	/// <summary>
 	/// 更新
@@ -79,5 +82,11 @@ private: //メンバ変数
 
 	// 属性割合
 	float specialTypeRatio;
+
+	//player
+	Player* player_;
+	//playerとの最低距離
+	const float playerDistance = 150.0f;
+
 
 };
