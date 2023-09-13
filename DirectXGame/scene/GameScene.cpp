@@ -729,7 +729,6 @@ void GameScene::MainUpdate() {
 			FadeInOutSetUp(GameOver);
 			theGameIsOver = true;
 		}
-
 	}
 
 	#ifdef _DEBUG
