@@ -283,15 +283,28 @@ void GameScene::Initialize() {
 	    soundHandleTutorialEnd_, // 閉じる時の音として代用
 	};
 
+	// BGM関係
+	bgmHandleTitleScene_ = audio_->LoadWave("/Audio/BGM/TitleSceneBGM.wav"); // タイトルシーン
+	bgmHandleTutorialScene_ = audio_->LoadWave("/Audio/BGM/TutorialSceneBGM.wav"); // チュートリアル
+	bgmHandleGameScene_ = audio_->LoadWave("/Audio/BGM/GameSceneBGM.wav");  // ゲーム
+	bgmHandleGameClearScene_ = audio_->LoadWave("/Audio/BGM/GameClearSceneBGM.wav"); // ゲームクリア
+	bgmHandleGameOverScene_ = audio_->LoadWave("/Audio/BGM/GameOverSceneBGM.wav"); // ゲームオーバー
+	// ボイスハンドルもリセット
+	voiceHandleTitleScene_ = -1;     // タイトル
+	voiceHandleTutorialScene_ = -1;  // チュートリアル
+	voiceHandleGameScene_ = -1;      // ゲーム
+	voiceHandleGameClearScene_ = -1; // ゲームクリア
+	voiceHandleGameOverScene_ = -1;  // ゲームクリア
+
 	//エネミー関連
 	soundHandleEnemyDamage_ = audio_->LoadWave("/Audio/SE/EnemyDamage.wav");
 	soundHandleEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
-	std::vector<uint32_t> enemyAudioHandles = {soundHandleEnemyDamage_, soundHandleEnemyDeath_};
+	std::vector<uint32_t> enemyAudioHandles = { soundHandleEnemyDamage_, soundHandleEnemyDeath_ };
 
 	soundHandleBossEnemyDamage_ = audio_->LoadWave("/Audio/SE/EnemyDamage.wav");
 	soundHandleBossEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
 	std::vector<uint32_t> bossEnemyAudioHandles = {
-	    soundHandleBossEnemyDamage_, soundHandleBossEnemyDeath_};
+		soundHandleBossEnemyDamage_, soundHandleBossEnemyDeath_ };
 
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();
@@ -435,6 +448,41 @@ void GameScene::Update() {
 		default:
 			break;
 		}
+	}
+
+	switch (currentScene_) {
+	case GameScene::Title:
+		// 再生されていなければ再生する
+		if (!audio_->IsPlaying(voiceHandleTitleScene_) || voiceHandleTitleScene_ == -1) {
+			voiceHandleTitleScene_ = audio_->PlayWave(bgmHandleTitleScene_);
+		}
+		break;
+	case GameScene::Tutorial:
+		// 再生されていなければ再生する
+		if (!audio_->IsPlaying(voiceHandleTutorialScene_) || voiceHandleTutorialScene_ == -1) {
+			voiceHandleTutorialScene_ = audio_->PlayWave(bgmHandleTutorialScene_);
+		}
+		break;
+	case GameScene::Main:
+		// 再生されていなければ再生する
+		if (!audio_->IsPlaying(voiceHandleGameScene_) || voiceHandleGameScene_ == -1) {
+			voiceHandleGameScene_ = audio_->PlayWave(bgmHandleGameScene_);
+		}
+		break;
+	case GameScene::GameClear:
+		// 再生されていなければ再生する
+		if (!audio_->IsPlaying(voiceHandleGameClearScene_) || voiceHandleGameClearScene_ == -1) {
+			voiceHandleGameClearScene_ = audio_->PlayWave(bgmHandleGameClearScene_);
+		}
+		break;
+	case GameScene::GameOver:
+		// 再生されていなければ再生する
+		if (!audio_->IsPlaying(voiceHandleGameOverScene_) || voiceHandleGameOverScene_ == -1) {
+			voiceHandleGameOverScene_ = audio_->PlayWave(bgmHandleGameOverScene_);
+		}
+		break;
+	default:
+		break;
 	}
 
 	// オプション開くか
@@ -725,6 +773,13 @@ void GameScene::FadeInOutUpdate() {
 			fadeTimer_ = kFadeTime_;
 			currentScene_ = nextScene_;
 			fadeColor_.w = 1.0f;
+
+			// 一度BGMを止める
+			audio_->StopWave(voiceHandleTitleScene_);
+			audio_->StopWave(voiceHandleTutorialScene_);
+			audio_->StopWave(voiceHandleGameScene_);
+			audio_->StopWave(voiceHandleGameClearScene_);
+			audio_->StopWave(voiceHandleGameOverScene_);
 
 			//セットアップ
 			switch (nextScene_) {

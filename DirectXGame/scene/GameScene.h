@@ -326,6 +326,19 @@ private: // メンバ変数
 	uint32_t soundHandleBossEnemyDamage_; // ダメージ
 	uint32_t soundHandleBossEnemyDeath_;  // 死亡
 	
+	// BGM関係
+	uint32_t bgmHandleTitleScene_; // タイトル
+	uint32_t bgmHandleTutorialScene_; // チュートリアル
+	uint32_t bgmHandleGameScene_; // ゲーム
+	uint32_t bgmHandleGameClearScene_; // ゲームクリア
+	uint32_t bgmHandleGameOverScene_; // ゲームオーバー
+	// BGMのボイスハンドル
+	int voiceHandleTitleScene_ = -1; // タイトル
+	int voiceHandleTutorialScene_ = -1; // チュートリアル
+	int voiceHandleGameScene_ = -1; // ゲーム
+	int voiceHandleGameClearScene_ = -1; // ゲームクリア
+	int voiceHandleGameOverScene_ = -1; // ゲームクリア
+
 	//スプライト
 	// ボスHP
 	std::unique_ptr<Sprite> bossHpSprite_;
