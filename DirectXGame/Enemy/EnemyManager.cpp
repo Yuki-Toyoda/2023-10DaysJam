@@ -19,12 +19,12 @@ void EnemyManager::Initialize(
 	// エネミーのテクスチャハンドル
 	textureHandles_ = textureHandles; 
 
-	initialHp_[Enemy::EnemyType::None] = 3;
-	initialHp_[Enemy::EnemyType::Fire] = 3;
-	initialHp_[Enemy::EnemyType::Ice] = 3;
-	initialHp_[Enemy::EnemyType::Thunder] = 3;
+	initialHp_[Enemy::EnemyType::None] = 2;
+	initialHp_[Enemy::EnemyType::Fire] = 2;
+	initialHp_[Enemy::EnemyType::Ice] = 2;
+	initialHp_[Enemy::EnemyType::Thunder] = 2;
 
-	bossInitialHp_ = 10;
+	bossInitialHp_ = 120;
 	
 	// 調整項目クラスのインスタンス取得
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();

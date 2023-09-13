@@ -1,10 +1,10 @@
 {
     "EnemyManager": {
-        "BossInitialHp": 10,
+        "BossInitialHp": 120,
         "EnemyMax": 20,
-        "InitialHpFire": 3,
-        "InitialHpIce": 3,
-        "InitialHpNone": 3,
-        "InitialHpThunder": 3
+        "InitialHpFire": 2,
+        "InitialHpIce": 2,
+        "InitialHpNone": 2,
+        "InitialHpThunder": 2
     }
 }
