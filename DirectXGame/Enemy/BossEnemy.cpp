@@ -196,6 +196,7 @@ void BossEnemy::Update(std::list<Enemy*>* enemies) {
 		UnderAttack();
 		break;
 	case BossEnemy::Down:
+		DownMove();
 		break;
 	default:
 		break;
@@ -655,7 +656,13 @@ void BossEnemy::ShotAttack() {
 
 }
 
-void BossEnemy::Dead() {}
+void BossEnemy::Dead() {
+
+	bossEnemyState_ = Down;
+	
+	audio_->PlayWave(audioHandles_[Audio::BossEnemyDeath]);
+
+}
 
 void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
@@ -726,6 +733,21 @@ Vector3 BossEnemy::ModelShake() {
 	}
 
 	return shakeWorldTransformTranslation;
+
+}
+
+void BossEnemy::DownMove() {
+
+	//したに落ちる
+	float down = 1.0f;
+	worldTransform_.translation_.y -= down;
+	//上を向く
+	Vector3 rotate = Vector3(float(std::numbers::pi / 2.0f), worldTransform_.rotation_.y, 0.0f);
+	MoveRotation(rotate);
+	//落ちきったらクリアへ
+	if (worldTransform_.translation_.y <= -70.0f) {
+		isDead_ = true;
+	}
 
 }
 

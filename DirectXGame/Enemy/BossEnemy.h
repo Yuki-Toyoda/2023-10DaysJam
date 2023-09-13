@@ -110,6 +110,11 @@ public: // メンバ関数
 	/// </summary>
 	Vector3 ModelShake();
 
+	/// <summary>
+	/// ダウンムーブ
+	/// </summary>
+	void DownMove();
+
 public: // 衝突処理
 
 	/// <summary>

@@ -418,6 +418,8 @@ void GameScene::Initialize() {
 	//タイトルセットアップ
 	TitleSetup();
 
+	theGameIsOver = false;
+
 }
 
 void GameScene::Update() {
@@ -689,11 +691,10 @@ void GameScene::MainUpdate() {
 	// 当たり判定
 	collisionManager->CheakAllCollision();
 
-
 	// ゲームクリアか?
 	theGameIsOver = true;
 	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
-		if (bossEnemy->GetHp() > 0) {
+		if (!bossEnemy->GetIsDead()) {
 			theGameIsOver = false;
 			break;
 		}
@@ -702,7 +703,6 @@ void GameScene::MainUpdate() {
 		FadeInOutSetUp(GameClear);
 	}
 
-	//ゲームオーバーか?
 	if (player_->GetHp() <= 0) {
 		FadeInOutSetUp(GameOver);
 		theGameIsOver = true;
