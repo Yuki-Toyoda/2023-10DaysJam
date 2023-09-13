@@ -367,6 +367,9 @@ void GameScene::Initialize() {
 	bossHpFrameTextureHandle_ = textureHandle1x1_;
 	bossHpFrameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
 
+	//bossHpNameTextureHandle_ = TextureManager::Load("./Resources/Image/Boss/bossText.png");
+	//bossHpNameSprite_.reset(Sprite::Create(bossHpTextureHandle_, spritePos));
+
 
 	//エネミーマネージャー
 	enemyManager_->Initialize(
