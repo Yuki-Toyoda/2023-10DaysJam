@@ -678,22 +678,32 @@ void GameScene::MainUpdate() {
 	// 行列を定数バッファに転送
 	viewProjection_->TransferMatrix();
 
+	bool notEnemyCollision = true; 
+	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+		if (bossEnemy->GetHp() <= 0) {
+			notEnemyCollision = false;
+			break;
+		}
+	}
+
 	// リストをクリア
 	collisionManager->ListClear();
 	// コライダーをリストに登録
 	// 自機について
 	collisionManager->ListRegister(player_.get());
-	// 敵全てについて
-	for (Enemy* enemy : enemyManager_->GetEnemies()) {
-		collisionManager->ListRegister(enemy);
-	}
-	// 敵弾全てについて
-	for (EnemyBullet* enemybullet : enemyManager_->GetEnemyBullets()) {
-		collisionManager->ListRegister(enemybullet);
-	}
-	// ボス敵全てについて
-	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
-		collisionManager->ListRegister(bossEnemy);
+	if (notEnemyCollision) {
+		// 敵全てについて
+		for (Enemy* enemy : enemyManager_->GetEnemies()) {
+			collisionManager->ListRegister(enemy);
+		}
+		// 敵弾全てについて
+		for (EnemyBullet* enemybullet : enemyManager_->GetEnemyBullets()) {
+			collisionManager->ListRegister(enemybullet);
+		}
+		// ボス敵全てについて
+		for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+			collisionManager->ListRegister(bossEnemy);
+		}
 	}
 	// 自弾全てについて
 	for (PlayerBullet* playerBullet : player_->GetBullets()) {
@@ -703,20 +713,23 @@ void GameScene::MainUpdate() {
 	collisionManager->CheakAllCollision();
 
 	// ゲームクリアか?
-	theGameIsOver = true;
-	for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
-		if (!bossEnemy->GetIsDead()) {
-			theGameIsOver = false;
-			break;
-		}
-	}
-	if (theGameIsOver) {
-		FadeInOutSetUp(GameClear);
-	}
-
-	if (player_->GetHp() <= 0) {
-		FadeInOutSetUp(GameOver);
+	if (!theGameIsOver) {
 		theGameIsOver = true;
+		for (BossEnemy* bossEnemy : enemyManager_->GetBossEnemis()) {
+			if (!bossEnemy->GetIsDead()) {
+				theGameIsOver = false;
+				break;
+			}
+		}
+		if (theGameIsOver) {
+			FadeInOutSetUp(GameClear);
+		}
+
+		if (player_->GetHp() <= 0) {
+			FadeInOutSetUp(GameOver);
+			theGameIsOver = true;
+		}
+
 	}
 
 	#ifdef _DEBUG
