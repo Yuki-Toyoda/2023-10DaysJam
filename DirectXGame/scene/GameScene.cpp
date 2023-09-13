@@ -302,7 +302,7 @@ void GameScene::Initialize() {
 	std::vector<uint32_t> enemyAudioHandles = { soundHandleEnemyDamage_, soundHandleEnemyDeath_ };
 
 	soundHandleBossEnemyDamage_ = audio_->LoadWave("/Audio/SE/BossEnemyDamage.wav");
-	soundHandleBossEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
+	soundHandleBossEnemyDeath_ = audio_->LoadWave("/Audio/SE/ExplosiveBoss.wav");
 	std::vector<uint32_t> bossEnemyAudioHandles = {
 		soundHandleBossEnemyDamage_, soundHandleBossEnemyDeath_ };
 
@@ -384,6 +384,7 @@ void GameScene::Initialize() {
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
 	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, 
 		std::vector<Model*>{modelFireBullet_.get()},
+		std::vector<Model*>{modelDebris_.get()},
 		bossEnemySprites, enemyAudioHandles,
 	    bossEnemyAudioHandles);
 	

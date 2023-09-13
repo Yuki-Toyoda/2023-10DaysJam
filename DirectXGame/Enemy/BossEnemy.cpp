@@ -9,6 +9,7 @@
 #include "Collision/ColliderShape/OBB.h"
 #include "EnemyManager.h"
 #include <Ambient/Field.h>
+#include "Effect/EffectManager.h"
 
 /// <summary>
 /// 初期化
@@ -17,7 +18,7 @@
 void BossEnemy::Initialize(
     const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
     Player* player, uint32_t hp, const std::vector<uint32_t>& audioHandles,
-    const std::vector<Model*>& explosionModels) {
+    const std::vector<Model*>& explosionModels, const std::vector<Model*>& explosiveModels) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -165,6 +166,7 @@ void BossEnemy::Initialize(
 
 	//爆破
 	explosionModels_ = explosionModels;
+	explosiveModels_ = explosiveModels;
 	for (size_t i = 0; i < 3; i++) {
 		explosionWorldTransform_[i].Initialize();
 		explosionTimerStart[i] = uint32_t(i * 30);
@@ -679,7 +681,7 @@ void BossEnemy::Dead() {
 
 	bossEnemyState_ = Down;
 	
-	audio_->PlayWave(audioHandles_[Audio::BossEnemyDeath], false, 0.15f);
+	audio_->PlayWave(audioHandles_[Audio::BossEnemyDeath], false, 0.25f);
 
 	for (int i = 0; i < 3; i++) {
 		explosionWorldTransform_[i].translation_ = colliderShape_->GetCenter();
@@ -781,6 +783,8 @@ void BossEnemy::DownMove() {
 		if (!isExplosion_[i] && explosionTimer_ >= explosionTimerStart[i] &&
 		    explosionTimer_ <= explosionTimerend[i]) {
 			isExplosion_[i] = true;
+			EffectManager::GetInstance()->PlayExplosiveEffect(
+			    explosiveModels_, explosionWorldTransform_[i].translation_, 5.0f);
 		}
 		if (isExplosion_[i] && explosionTimer_ > explosionTimerend[i]) {
 			isExplosion_[i] = false;

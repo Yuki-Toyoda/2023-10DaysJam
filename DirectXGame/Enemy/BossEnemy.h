@@ -32,7 +32,7 @@ public: // メンバ関数
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
 	    Player* player, uint32_t hp, const std::vector<uint32_t>& audioHandles,
-	    const std::vector<Model*>& explosionModels);
+	    const std::vector<Model*>& explosionModels, const std::vector<Model*>& explosiveModels);
 
 	/// <summary>
 	/// 更新
@@ -326,6 +326,8 @@ private: // メンバ変数
 	//爆破モデル
 	std::vector<Model*> explosionModels_;
 
+	std::vector<Model*> explosiveModels_;
+
 	WorldTransform explosionWorldTransform_[3];
 
 	uint32_t explosionTimer_;
@@ -334,6 +336,5 @@ private: // メンバ変数
 	uint32_t explosionTimerend[3] = {60, 90, 120};
 
 	bool isExplosion_[3];
-
 
 };
