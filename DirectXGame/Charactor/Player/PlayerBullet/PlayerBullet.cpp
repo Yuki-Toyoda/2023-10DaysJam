@@ -736,12 +736,6 @@ void PlayerBullet::OnCollision(Collider* collision) {
 		}
 		break;
 	case PlayerBullet::Thunder:
-		if (!isHit_) {
-			if (collision->GetTag() == TagPlayerBulletIce || collision->GetTag() == TagEnemy ||
-			    collision->GetTag() == TagBossEnemy || collision->GetTag() == TagEnemyBullet) {
-				velocity_ = velocity_ * -reflectionCoefficient;
-			}
-		}
 		break;
 	default:
 		break;
