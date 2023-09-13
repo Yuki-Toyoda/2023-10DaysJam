@@ -121,7 +121,8 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 
 	//十字上
 	if (gamePad.wButtons & XINPUT_GAMEPAD_DPAD_UP &&
-	    !(preGamePad.wButtons & XINPUT_GAMEPAD_DPAD_UP)) {
+	        !(preGamePad.wButtons & XINPUT_GAMEPAD_DPAD_UP) ||
+	    Input::GetInstance()->TriggerKey(DIK_W)) {
 
 		// 次へ音再生
 		audio_->PlayWave(audioHandles_[Audio::MoveItem]);
@@ -144,7 +145,8 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	} 
 	// 十字下
 	else if (gamePad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN &&
-	    !(preGamePad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)) {
+	        !(preGamePad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) ||
+	    Input::GetInstance()->TriggerKey(DIK_S)) {
 	
 		// 次へ音再生
 		audio_->PlayWave(audioHandles_[Audio::MoveItem]);
@@ -167,8 +169,8 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	}
 	// 十字右
 	else if (
-	    gamePad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT &&
-		besideButtonCooltimer_ == 0) {
+	    gamePad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && besideButtonCooltimer_ == 0 ||
+	    Input::GetInstance()->PushKey(DIK_D)) {
 
 		// 値変更音再生
 		audio_->PlayWave(audioHandles_[Audio::ChangeValue]);
@@ -196,8 +198,8 @@ void OptionManager::Update(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePad) 
 	}
 	// 十字左
 	else if (
-	    gamePad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT &&
-		besideButtonCooltimer_ == 0) {
+	    gamePad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && besideButtonCooltimer_ == 0 ||
+	    Input::GetInstance()->PushKey(DIK_A)) {
 
 		// 値変更音再生
 		audio_->PlayWave(audioHandles_[Audio::ChangeValue]);
@@ -336,7 +338,7 @@ void OptionManager::OpenClose(_XINPUT_GAMEPAD gamePad, _XINPUT_GAMEPAD preGamePa
 
 	//スタートボタンがおされたら切り替える
 	if (gamePad.wButtons & XINPUT_GAMEPAD_START && 
-			!(preGamePad.wButtons & XINPUT_GAMEPAD_START)) {
+			!(preGamePad.wButtons & XINPUT_GAMEPAD_START) || Input::GetInstance()->TriggerKey(DIK_ESCAPE)) {
 
 		//開くまたは閉じる
 		if (isOpen_) {

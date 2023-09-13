@@ -951,10 +951,29 @@ void Player::OnCollisionEnemy() {
 }
 
 void Player::Move() {
+
 	// スティックの入力に応じて移動
-	Vector3 move = {
-	    (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
-	    (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+	Vector3 move = {0.0f, 0.0f, 0.0f};
+
+	// ゲームパッドの状態取得
+	if (input_->GetJoystickState(0, joyState)) {
+		move = {
+		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
+		    (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
+	}
+
+	if (input_->PushKey(DIK_W)) {
+		move.z = 1.0f;
+	}
+	if (input_->PushKey(DIK_A)) {
+		move.x = -1.0f;
+	}
+	if (input_->PushKey(DIK_S)) {
+		move.z = -1.0f;
+	}
+	if (input_->PushKey(DIK_D)) {
+		move.x = 1.0f;
+	}
 
 	// 移動量を正規化、スピードを加算
 	move = MyMath::Normalize(move) * moveSpeed_;
@@ -1057,7 +1076,8 @@ void Player::Jump() {
 	if (canJump_) {
 		// Aボタンが押されたら
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+		        !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) ||
+		    input_->TriggerKey(DIK_LCONTROL)) {
 			// ジャンプ音を鳴らす
 			audio_->PlayWave(audioHandles_[Audio::Jump]);
 			// ジャンプさせる
@@ -1093,7 +1113,7 @@ void Player::Jump() {
 }
 
 void Player::Shot() {
-
+	
 	// ビューポート行列の生成
 	Matrix4x4 matViewport =
 	    MyMath::MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
@@ -1124,7 +1144,7 @@ void Player::Shot() {
 	worldTransform3DReticle_.translation_ = mouseDirection + posNear;
 
 	// Rトリガーが押されたら
-	if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+	if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_ || input_->PushKey(DIK_SPACE)) {
 		// 射撃可能
 		if (fireCoolTime_ <= 0) {
 			// 弾の生成
@@ -1220,7 +1240,8 @@ void Player::SpecialShot() {
 
 		// 左トリガーが押されたら特殊射撃
 		if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ &&
-		    !(preJoyState.Gamepad.bLeftTrigger > triggerDeadZone_L_)) {
+		    !(preJoyState.Gamepad.bLeftTrigger > triggerDeadZone_L_)
+		        || input_->TriggerKey(DIK_LSHIFT)) {
 			if (canSpecialShot_) {
 				// 弾の生成
 				PlayerBullet* newBullet = new PlayerBullet();
@@ -1292,7 +1313,8 @@ void Player::SpecialShot() {
 	if (rootCanChangeOrbColor_) {
 		// 変換するオーブの種類を選択
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP &&
-		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)) {
+		        !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) ||
+		    input_->TriggerKey(DIK_TAB)) {
 			if (selectedChangeType_ < PlayerBullet::Thunder) {
 				// 変換タイプを次のに設定
 				selectedChangeType_++;
@@ -1331,7 +1353,7 @@ void Player::SpecialShot() {
 
 		// 十字右
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT &&
-		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)) {
+		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) || input_->TriggerKey(DIK_E)) {
 			if (havingOrbCount >= 2) {
 				// オーブ選択音を鳴らす
 				audio_->PlayWave(audioHandles_[Audio::ChoiceOrb]);
@@ -1346,7 +1368,8 @@ void Player::SpecialShot() {
 		}
 		// 十字左
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT &&
-		    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)) {
+		        !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) ||
+		    input_->TriggerKey(DIK_Q)) {
 			if (havingOrbCount >= 2) {
 				// オーブ選択音を鳴らす
 				audio_->PlayWave(audioHandles_[Audio::ChoiceOrb]);
@@ -1369,7 +1392,8 @@ void Player::SpecialShot() {
 		if (havingOrbCount > 0 && needChangeOrbEnemyCount_ <= 0) {
 			// 選択したオーブを別のオーブに変換する
 			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_X &&
-			    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_X)) {
+			        !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_X) ||
+			    input_->TriggerKey(DIK_R)) {
 				if (havingOrbs_[selectedChangeOrb_] != selectedChangeType_) {
 					// オーブ変換成功を鳴らす
 					audio_->PlayWave(audioHandles_[Audio::ChangeOrbSuccess]);
@@ -1616,14 +1640,14 @@ void Player::UIUpdate() {
 	}
 
 	// Rトリガーが押されたら
-	if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_) {
+	if (joyState.Gamepad.bRightTrigger > triggerDeadZone_R_ || input_->PushKey(DIK_SPACE)) {
 		spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_P]);
 	} else {
 		spriteRightTrigger_->SetTextureHandle(textureHandles_[TextureManager::RT_N]);
 	}
 
 	// 左トリガー
-	if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_) {
+	if (joyState.Gamepad.bLeftTrigger > triggerDeadZone_L_ || input_->PushKey(DIK_LSHIFT)) {
 		// ボタンを押すとテクスチャを変更
 		spriteLeftTrigger_->SetTextureHandle(textureHandles_[TextureManager::LT_P]);
 	} else {

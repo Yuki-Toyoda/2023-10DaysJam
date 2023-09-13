@@ -439,7 +439,7 @@ void GameScene::Update() {
 	input_->GetJoystickState(0, joyState);
 
 	// ゲームパッドの状態取得
-	if (input_->GetJoystickState(0, joyState) && !optionManager_->GetIsOpen()) {
+	if (!optionManager_->GetIsOpen()) {
 		switch (currentScene_) {
 		case GameScene::Title:
 			TitleUpdate();
@@ -557,7 +557,8 @@ void GameScene::TitleUpdate() {
 
 	// Aボタンでゲーム本編へ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+	        !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) ||
+	    input_->TriggerKey(DIK_SPACE)) {
 		FadeInOutSetUp(Main);
 	}
 	// Bボタンでチュートリアルへ
@@ -749,12 +750,14 @@ void GameScene::GameClearUpdate() {
 
 	// Aボタンでゲーム本編へ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+	        !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) ||
+	    input_->TriggerKey(DIK_R)) {
 		FadeInOutSetUp(Main);
 	}
 	// Bボタンでタイトルへ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
-	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) ||
+	    input_->TriggerKey(DIK_SPACE)) {
 		FadeInOutSetUp(Title);
 	}
 	skyDome_->Update(); // 天球
@@ -770,12 +773,14 @@ void GameScene::GameOverUpdate() {
 
 	// Aボタンでゲーム本編へ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A &&
-	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A)) {
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) ||
+	    input_->TriggerKey(DIK_R)) {
 		FadeInOutSetUp(Main);
 	}
 	// Bボタンでタイトルへ
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B &&
-	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B)) {
+	    !(preJoyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) ||
+	    input_->TriggerKey(DIK_SPACE)) {
 		FadeInOutSetUp(Title);
 	}
 	skyDome_->Update(); // 天球
@@ -1002,11 +1007,6 @@ void GameScene::Draw() {
 	}
 
 	Sprite::PreDraw(commandList);
-	// ゲームパッドの状態取得
-	if (!input_->GetJoystickState(0, joyState)) {
-		disconectControllerUI_->Draw();
-		
-	}
 	// オプション描画
 	optionManager_->Draw();
 	Sprite::PostDraw();

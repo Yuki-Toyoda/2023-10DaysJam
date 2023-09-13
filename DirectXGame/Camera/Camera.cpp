@@ -57,6 +57,49 @@ void Camera::Update(bool isOption) {
 		if (viewProjection_.rotation_.z >= (float)std::numbers::pi * 2.0f ||
 		    (float)-std::numbers::pi * 2.0f >= viewProjection_.rotation_.z)
 			viewProjection_.rotation_.z = 0.0f;
+		
+	} else {
+		// 矢印キーで視点移動
+		Vector3 move = {0.0f, 0.0f, 0.0f};
+		if (input_->PushKey(DIK_UPARROW)) {
+			move.x = 1.0f;
+		}
+		if (input_->PushKey(DIK_LEFTARROW)) {
+			move.y = -1.0f;
+		}
+		if (input_->PushKey(DIK_DOWNARROW)) {
+			move.x = -1.0f;
+		}
+		if (input_->PushKey(DIK_RIGHTARROW)) {
+			move.y = 1.0f;
+		}
+
+		// 移動量を正規化、スピードを加算
+		move = MyMath::Normalize(move);
+		move.x = move.x * cameraSensitivity_.x;
+		move.y = move.y * cameraSensitivity_.y;
+
+		viewProjection_.rotation_.x -= move.x;
+		viewProjection_.rotation_.y += move.y;
+
+		// 角度制限
+		if (viewProjection_.rotation_.x <= -1.50f) {
+			viewProjection_.rotation_.x = -1.50f;
+		} else if (viewProjection_.rotation_.x >= 1.50f) {
+			viewProjection_.rotation_.x = 1.50f;
+		}
+
+		// カメラ回転角のリセット
+		if (viewProjection_.rotation_.x >= (float)std::numbers::pi * 2.0f ||
+		    (float)-std::numbers::pi * 2.0f >= viewProjection_.rotation_.x)
+			viewProjection_.rotation_.x = 0.0f;
+		if (viewProjection_.rotation_.y >= (float)std::numbers::pi * 2.0f ||
+		    (float)-std::numbers::pi * 2.0f >= viewProjection_.rotation_.y)
+			viewProjection_.rotation_.y = 0.0f;
+		if (viewProjection_.rotation_.z >= (float)std::numbers::pi * 2.0f ||
+		    (float)-std::numbers::pi * 2.0f >= viewProjection_.rotation_.z)
+			viewProjection_.rotation_.z = 0.0f;
+
 	}
 
 	// 追従対象が存在すれば
