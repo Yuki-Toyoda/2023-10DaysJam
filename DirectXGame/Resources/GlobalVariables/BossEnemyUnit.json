@@ -1,55 +1,55 @@
 {
     "BossEnemyUnit": {
-        "UnitTransformNum0": 8,
+        "UnitTransformNum0": 10,
         "UnitTtransformData0_0": [
-            30.0,
+            45.0,
             0.0,
             0.0
         ],
         "UnitTtransformData0_1": [
-            21.2132034,
-            21.2132034,
+            -45.0,
+            0.0,
             0.0
         ],
         "UnitTtransformData0_10": [
-            0.0,
-            0.0,
+            45.0,
+            -20.0,
             0.0
         ],
         "UnitTtransformData0_11": [
-            0.0,
-            0.0,
-            0.0
+            -45.0,
+            -20.0,
+            80.0
         ],
         "UnitTtransformData0_12": [
+            45.0,
             0.0,
-            0.0,
-            0.0
+            -80.0
         ],
         "UnitTtransformData0_13": [
+            -45.0,
             0.0,
-            0.0,
-            0.0
+            -80.0
         ],
         "UnitTtransformData0_14": [
-            0.0,
-            0.0,
-            0.0
+            45.0,
+            20.0,
+            -80.0
         ],
         "UnitTtransformData0_15": [
-            0.0,
-            0.0,
-            0.0
+            -45.0,
+            20.0,
+            -80.0
         ],
         "UnitTtransformData0_16": [
-            0.0,
-            0.0,
-            0.0
+            45.0,
+            -20.0,
+            -80.0
         ],
         "UnitTtransformData0_17": [
-            0.0,
-            0.0,
-            0.0
+            -45.0,
+            -20.0,
+            -80.0
         ],
         "UnitTtransformData0_18": [
             0.0,
@@ -62,44 +62,44 @@
             0.0
         ],
         "UnitTtransformData0_2": [
-            0.0,
-            30.0,
+            45.0,
+            20.0,
             0.0
         ],
         "UnitTtransformData0_3": [
-            -21.2132034,
-            21.2132034,
+            -45.0,
+            20.0,
             0.0
         ],
         "UnitTtransformData0_4": [
-            -30.0,
-            0.0,
+            45.0,
+            -20.0,
             0.0
         ],
         "UnitTtransformData0_5": [
-            -21.2132034,
-            -21.2132034,
+            -45.0,
+            -20.0,
             0.0
         ],
         "UnitTtransformData0_6": [
-            0.0,
-            -30.0,
-            0.0
+            45.0,
+            10.0,
+            -80.0
         ],
         "UnitTtransformData0_7": [
-            21.2132034,
-            -21.2132034,
-            0.0
+            -45.0,
+            10.0,
+            -80.0
         ],
         "UnitTtransformData0_8": [
-            0.0,
-            0.0,
-            0.0
+            45.0,
+            -10.0,
+            -80.0
         ],
         "UnitTtransformData0_9": [
-            0.0,
-            0.0,
-            0.0
+            -45.0,
+            -10.0,
+            -80.0
         ]
     }
 }
