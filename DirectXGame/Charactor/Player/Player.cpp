@@ -308,10 +308,10 @@ void Player::Initialize(
 	kChangeCoolTime_ = 120;
 
 	// バレットダメージ
-	bulletDamage_[0] = 1;
-	bulletDamage_[1] = 1;
-	bulletDamage_[2] = 1;
-	bulletDamage_[3] = 1;
+	bulletDamage_[PlayerBullet::None] = 1;
+	bulletDamage_[PlayerBullet::Fire] = 1;
+	bulletDamage_[PlayerBullet::Ice] = 1;
+	bulletDamage_[PlayerBullet::Thunder] = 1;
 
 	// 体力
 	hp_ = StartHp;
