@@ -837,7 +837,7 @@ void GameScene::TitleSetup() {
 	// エネミーマネージャー
 	enemyManager_->AddBossEnemy();
 
-	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->rotation_ = {0.0f, 0.0f, 0.0f};
 	viewProjection_->translation_.y = 100.0f;
 	viewProjection_->fovAngleY = camera_->GetFov();
 	viewProjection_->UpdateMatrix();
@@ -926,7 +926,7 @@ void GameScene::GameClearSetup() {
 	// クリアサイズ
 	gameclearSize_ = gameclearSpraite_->GetSize();
 
-	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->rotation_ = {0.0f, 0.0f, 0.0f};
 	viewProjection_->translation_.y = 100.0f;
 	viewProjection_->fovAngleY = camera_->GetFov();
 	viewProjection_->UpdateMatrix();
@@ -945,7 +945,7 @@ void GameScene::GameOverSetup() {
 	// オーバーサイズ
 	gameoverSize_ = titleNameSpraite_->GetSize();
 
-	viewProjection_->rotation_.x = 0.35f;
+	viewProjection_->rotation_ = {0.0f,0.0f,0.0f};
 	viewProjection_->translation_.y = 100.0f;
 	viewProjection_->fovAngleY = camera_->GetFov();
 	viewProjection_->UpdateMatrix();
