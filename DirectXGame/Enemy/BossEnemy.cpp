@@ -666,7 +666,7 @@ void BossEnemy::Dead() {
 
 void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
-	if (isInvincible_) {
+	if (isInvincible_ || bossEnemyState_ == Down) {
 		return;
 	}
 
