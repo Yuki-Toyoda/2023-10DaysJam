@@ -33,7 +33,8 @@ public: // メンバ変数
 	    const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
 	    const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
 	    const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite,
-	    Sprite* bossHpFrameSprite, const std::vector<uint32_t>& audioHandles);
+	    Sprite* bossHpFrameSprite, const std::vector<uint32_t>& enemyAudioHandles,
+	    const std::vector<uint32_t>& bosEenemyAudioHandles);
 
 	/// <summary>
 	/// 更新
@@ -214,6 +215,8 @@ private: // メンバ変数
 	const ViewProjection* viewProjection_ = nullptr;
 
 	// 効果音リスト
-	std::vector<uint32_t> audioHandles_;
+	std::vector<uint32_t> enemyAudioHandles_;
+	std::vector<uint32_t> bossEnemyAudioHandles_;
+
 
 };

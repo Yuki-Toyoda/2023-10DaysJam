@@ -11,7 +11,8 @@ void EnemyManager::Initialize(
     const std::vector<Model*>& models, std::vector<uint32_t> textureHandles,
     const std::vector<Model*>& bossModels, const std::vector<Model*>& bulletModels,
     const std::vector<Model*>& deathEffectModels, Sprite* bossHpSprite, Sprite* bossHpFrameSprite,
-    const std::vector<uint32_t>& audioHandles) {
+    const std::vector<uint32_t>& enemyAudioHandles,
+    const std::vector<uint32_t>& bosEenemyAudioHandles) {
 	
 	//モデル
 	models_ = models;
@@ -70,7 +71,8 @@ void EnemyManager::Initialize(
 	bossHpFrameSprite_->SetColor(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
 	//効果音
-	audioHandles_ = audioHandles;
+	enemyAudioHandles_ = enemyAudioHandles;
+	bossEnemyAudioHandles_ = bosEenemyAudioHandles;
 
 	// エネミースポナーの追加
 	spawnerNumber_ = 0;
@@ -166,8 +168,8 @@ void EnemyManager::AddEnemy(Vector3 position, Enemy::EnemyType enemyTypeNext, bo
 
 		enemy->Initialize(
 		    models_, textureHandles_[enemyTypeNext], enemyTypeNext, position,
-		    initialHp_[enemyTypeNext], this, player_, &bossEnemies_, deathEffectModels_,
-		    isTutorial, viewProjection_,audioHandles_);
+		    initialHp_[enemyTypeNext], this, player_, &bossEnemies_, deathEffectModels_, isTutorial,
+		    viewProjection_, enemyAudioHandles_);
 		enemies_.push_back(enemy);
 		enemyCount_++;
 	}
@@ -212,7 +214,7 @@ void EnemyManager::AddBossEnemy() {
 
 	BossEnemy* bossEnemy = new BossEnemy();
 
-	bossEnemy->Initialize(bossModels_, bossTextureHandles_, this, player_,bossInitialHp_);
+	bossEnemy->Initialize(bossModels_, bossTextureHandles_, this, player_,bossInitialHp_,bossEnemyAudioHandles_);
 	bossEnemies_.push_back(bossEnemy);
 
 }

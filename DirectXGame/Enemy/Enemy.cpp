@@ -108,7 +108,7 @@ void Enemy::Initialize(const std::vector<Model*>& models, uint32_t textureHandle
 	//効果音
 	audioHandles_ = audioHandles;
 	
-	audio = Audio::GetInstance();
+	audio_ = Audio::GetInstance();
 
 	// コライダーの形
 	OBB* obb = new OBB();
@@ -589,7 +589,7 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 
 	hp_ -= damage;
 	if (hp_ <= 0) {
-		audio->PlayWave(audioHandles_[Audio::EnemyDeath], false, 0.1f);
+		audio_->PlayWave(audioHandles_[Audio::EnemyDeath]);
 		Dead();
 	} else {
 		//無敵
@@ -598,7 +598,7 @@ void Enemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 		//シェイク
 		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
 		// 音
-		audio->PlayWave(audioHandles_[Audio::EnemyAudios::EnemyDamage]);
+		audio_->PlayWave(audioHandles_[Audio::EnemyAudios::EnemyDamage]);
 	}
 
 }
@@ -883,7 +883,7 @@ void Enemy::CollisionBulletIce(Collider* collision) {
 
 		} else {
 			Dead();
-			audio->PlayWave(audioHandles_[Audio::EnemyDeath], false, 0.1f);
+			audio_->PlayWave(audioHandles_[Audio::EnemyDeath]);
 		}
 	} else {
 		HpFluctuation(

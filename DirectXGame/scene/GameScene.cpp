@@ -288,6 +288,11 @@ void GameScene::Initialize() {
 	soundHandleEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
 	std::vector<uint32_t> enemyAudioHandles = {soundHandleEnemyDamage_, soundHandleEnemyDeath_};
 
+	soundHandleBossEnemyDamage_ = audio_->LoadWave("/Audio/SE/EnemyDamage.wav");
+	soundHandleBossEnemyDeath_ = audio_->LoadWave("/Audio/SE/EnemyDeath.wav");
+	std::vector<uint32_t> bossEnemyAudioHandles = {
+	    soundHandleBossEnemyDamage_, soundHandleBossEnemyDeath_};
+
 	// エフェクトマネージャーの取得
 	effectManager_ = EffectManager::GetInstance();
 	// 取得したエフェクトマネージャーの初期化
@@ -355,7 +360,7 @@ void GameScene::Initialize() {
 	    std::vector<Model*>{modelEnemy_.get(), modelEnemyMark_.get()}, enemyTextureHandles,
 	    std::vector<Model*>{modelBossEnemy_.get()}, std::vector<Model*>{modelEnemyBullet_.get()},
 	    std::vector<Model*>{modelEnemyDeathEffect_.get()}, bossHpSprite_.get(),
-	    bossHpFrameSprite_.get(), enemyAudioHandles);
+	    bossHpFrameSprite_.get(), enemyAudioHandles,bossEnemyAudioHandles);
 	
 	
 	enemyManager_->SetViewProjection(camera_->GetViewProjection());

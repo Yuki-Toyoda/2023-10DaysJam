@@ -332,6 +332,6 @@ private: //メンバ変数
 	std::vector<uint32_t> audioHandles_;
 
 	//オーディオ
-	Audio* audio;
+	Audio* audio_;
 
 };

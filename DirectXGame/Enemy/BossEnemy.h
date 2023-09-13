@@ -1,5 +1,6 @@
 #pragma once
 #include "../Charactor/BaseCharacter.h"
+#include "../audio/Audio.h"
 
 // プレイヤークラス前方宣言
 class Player;
@@ -30,7 +31,7 @@ public: // メンバ関数
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(
 	    const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
-	    Player* player, uint32_t hp);
+	    Player* player, uint32_t hp, const std::vector<uint32_t>& audioHandles);
 
 	/// <summary>
 	/// 更新
@@ -309,5 +310,12 @@ private: // メンバ変数
 
 	// モデル
 	WorldTransform modelWorldTransform_;
+
+	//効果音リスト
+	std::vector<uint32_t> audioHandles_;
+	
+	// オーディオ
+	Audio* audio_;
+
 
 };

@@ -71,6 +71,12 @@ public: // サブクラス
 		EnemyDeath
 	};
 
+	// ボスエネミー効果音リスト
+	enum BossEnemyAudios { 
+		BossEnemyDamage, 
+		BossEnemyDeath
+	};
+
 public:
 	// サウンドデータの最大数
 	static const int kMaxSoundData = 256;

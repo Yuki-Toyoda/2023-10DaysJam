@@ -321,6 +321,10 @@ private: // メンバ変数
 	// エネミー関連
 	uint32_t soundHandleEnemyDamage_; //ダメージ
 	uint32_t soundHandleEnemyDeath_; //死亡
+
+	// ボスエネミー関連
+	uint32_t soundHandleBossEnemyDamage_; // ダメージ
+	uint32_t soundHandleBossEnemyDeath_;  // 死亡
 	
 	//スプライト
 	// ボスHP

@@ -16,7 +16,7 @@
 /// <param name="models">モデルデータ配列</param>
 void BossEnemy::Initialize(
     const std::vector<Model*>& models, uint32_t textureHandle, EnemyManager* enemyManager,
-    Player* player, uint32_t hp) {
+    Player* player, uint32_t hp, const std::vector<uint32_t>& audioHandles) {
 
 	// NULLポインタチェック
 	assert(models.front());
@@ -100,6 +100,12 @@ void BossEnemy::Initialize(
 	enemies_ = enemyManager_->GetEnemiesAddress();
 	//プレイヤー
 	player_ = player;
+
+	//効果音リスト
+	audioHandles_ = audioHandles;
+
+	//オーディオ
+	audio_ = Audio::GetInstance();
 
 	// 衝突属性を設定
 	SetCollisionAttribute(0xfffffffb);
@@ -665,6 +671,8 @@ void BossEnemy::HpFluctuation(int32_t damage, uint32_t InvincibilityTime) {
 		invincibilityTimer_ = InvincibilityTime;
 		// シェイク
 		PlayModelShake(Vector3(3.0f, 3.0f, 3.0f), float(InvincibilityTime) / 60.0f);
+
+		audio_->PlayWave(audioHandles_[Audio::BossEnemyDamage]);
 	}
 
 }
